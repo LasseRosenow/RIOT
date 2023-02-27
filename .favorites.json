@@ -32,5 +32,14 @@
         "workspacePath": "examples/registry",
         "id": "4YbTtIZDkBeOSKCE",
         "label": "example"
+    },
+    {
+        "type": "Directory",
+        "name": "/home/lasse/Schreibtisch/RIOT/riot-registry/RIOT/tests/sys_registry",
+        "parent_id": null,
+        "workspaceRoot": "/home/lasse/Schreibtisch/RIOT/riot-registry/RIOT",
+        "workspacePath": "tests/sys_registry",
+        "id": "Kk9UgEycGMOwVYmB",
+        "label": "tests"
     }
 ]
