@@ -23,7 +23,15 @@
         "string.h": "c",
         "pm.h": "c",
         "periph_cpu.h": "c",
-        "cpu.h": "c"
+        "cpu.h": "c",
+        "storage_facilities.h": "c",
+        "stdlib.h": "c",
+        "fcntl.h": "c",
+        "vfs.h": "c",
+        "debug.h": "c",
+        "ps.h": "c",
+        "thread.h": "c",
+        "sched.h": "c"
     },
     "[shellscript][c][cpp]": {
         "editor.tabSize": 4,

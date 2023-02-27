@@ -1,3 +1,8 @@
+
+ifneq (,$(filter registry_storage_facility_%,$(USEMODULE)))
+  USEMODULE += registry_storage_facilities
+endif
+
 ifneq (,$(filter registry_schema_%,$(USEMODULE)))
   USEMODULE += registry_schemas
 endif

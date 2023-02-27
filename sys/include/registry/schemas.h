@@ -36,6 +36,7 @@ typedef enum {
 /* ------------- Schemas ------------- */
 
 /* RGB-LED */
+#if IS_USED(MODULE_REGISTRY_SCHEMA_RGB_LED) || IS_ACTIVE(DOXYGEN)
 extern registry_schema_t registry_schema_rgb_led;
 
 typedef struct {
@@ -50,6 +51,7 @@ typedef enum {
     REGISTRY_SCHEMA_RGB_LED_GREEN,
     REGISTRY_SCHEMA_RGB_LED_BLUE,
 } registry_schema_rgb_led_indices_t;
+#endif
 
 #ifdef __cplusplus
 }

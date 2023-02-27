@@ -23,9 +23,12 @@
 
 #include "msg.h"
 #include "shell.h"
+#include "board.h"
+#include "mtd.h"
 #include "registry.h"
 #include "registry/cli.h"
 #include "registry/schemas.h"
+#include "registry/storage_facilities.h"
 
 #define SHELL_QUEUE_SIZE (8)
 static msg_t _shell_queue[SHELL_QUEUE_SIZE];
@@ -35,10 +38,48 @@ static const shell_command_t shell_commands[] = {
     { NULL, NULL, NULL }
 };
 
+// Littlefs2
+#if IS_USED(MODULE_LITTLEFS2)
+#include "fs/littlefs2_fs.h"
+#define FS_DRIVER littlefs2_file_system
+static littlefs2_desc_t fs_desc = {
+    .lock = MUTEX_INIT,
+};
+#elif IS_USED(MODULE_FATFS_VFS)
+#include "fs/fatfs.h"
+#define FS_DRIVER fatfs_file_system
+static fatfs_desc_t fs_desc;
+#endif
+
+
+
+static vfs_mount_t _vfs_mount = {
+    .fs = &FS_DRIVER,
+    .mount_point = "/sda",
+    .private_data = &fs_desc,
+};
+
+static registry_storage_facility_instance_t vfs_instance_1 = {
+    .itf = &registry_storage_facility_vfs,
+    .data = &_vfs_mount,
+};
+
+static registry_storage_facility_instance_t vfs_instance_2 = {
+    .itf = &registry_storage_facility_vfs,
+    .data = &_vfs_mount,
+};
+
 int main(void)
 {
     registry_init();
     registry_schemas_init();
+
+    /* init storage_facilities */
+    if (IS_USED(MODULE_LITTLEFS2)) {
+        fs_desc.dev = MTD_0;
+    }
+    registry_register_storage_facility_src(&vfs_instance_1);
+    registry_register_storage_facility_dst(&vfs_instance_2);
 
     /* Init CLI */
     msg_init_queue(_shell_queue, SHELL_QUEUE_SIZE);

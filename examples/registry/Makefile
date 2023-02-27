@@ -10,8 +10,12 @@ RIOTBASE ?= $(CURDIR)/../..
 # required modules
 USEMODULE += shell
 
+USEMODULE += littlefs2
+USEMODULE += mtd
+
 USEMODULE +=  registry_cli
 USEMODULE +=  registry_schema_rgb_led
+USEMODULE +=  registry_storage_facility_vfs
 
 # Comment this out to disable code in RIOT that does safety checking
 # which is not needed in a production environment but helps in the
