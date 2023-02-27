@@ -1,0 +1,36 @@
+[
+    {
+        "type": "Directory",
+        "name": "/home/lasse/Schreibtisch/RIOT/riot-registry/RIOT/sys/include/registry",
+        "parent_id": null,
+        "workspaceRoot": "/home/lasse/Schreibtisch/RIOT/riot-registry/RIOT",
+        "workspacePath": "sys/include/registry",
+        "id": "V2E5C4uIhnHiWUAK",
+        "label": "include"
+    },
+    {
+        "type": "Group",
+        "name": "test",
+        "parent_id": "V2E5C4uIhnHiWUAK",
+        "workspaceRoot": null,
+        "workspacePath": null,
+        "id": "4kdNMrZ0eLwsn2u7"
+    },
+    {
+        "type": "Directory",
+        "name": "/home/lasse/Schreibtisch/RIOT/riot-registry/RIOT/sys/registry",
+        "parent_id": null,
+        "workspaceRoot": "/home/lasse/Schreibtisch/RIOT/riot-registry/RIOT",
+        "workspacePath": "sys/registry",
+        "id": "nH3Ea0ALTdV6yp52"
+    },
+    {
+        "type": "Directory",
+        "name": "/home/lasse/Schreibtisch/RIOT/riot-registry/RIOT/examples/registry",
+        "parent_id": null,
+        "workspaceRoot": "/home/lasse/Schreibtisch/RIOT/riot-registry/RIOT",
+        "workspacePath": "examples/registry",
+        "id": "4YbTtIZDkBeOSKCE",
+        "label": "example"
+    }
+]

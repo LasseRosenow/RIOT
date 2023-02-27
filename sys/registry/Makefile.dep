@@ -1,0 +1,7 @@
+ifneq (,$(filter registry_schema_%,$(USEMODULE)))
+  USEMODULE += registry_schemas
+endif
+
+ifneq (,$(filter registry_%,$(USEMODULE)))
+  USEMODULE += registry
+endif

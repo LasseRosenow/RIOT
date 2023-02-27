@@ -10,8 +10,8 @@ RIOTBASE ?= $(CURDIR)/../..
 # required modules
 USEMODULE += shell
 
-USEMODULE += registry
 USEMODULE +=  registry_cli
+USEMODULE +=  registry_schema_rgb_led
 
 # Comment this out to disable code in RIOT that does safety checking
 # which is not needed in a production environment but helps in the

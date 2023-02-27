@@ -19,13 +19,13 @@
  */
 
 #include <string.h>
-// #include <shell.h>
-#include <msg.h>
 #include <stdio.h>
-#include <shell.h>
 
+#include "msg.h"
+#include "shell.h"
 #include "registry.h"
 #include "registry/cli.h"
+#include "registry/schemas.h"
 
 #define SHELL_QUEUE_SIZE (8)
 static msg_t _shell_queue[SHELL_QUEUE_SIZE];
@@ -38,6 +38,7 @@ static const shell_command_t shell_commands[] = {
 int main(void)
 {
     registry_init();
+    registry_schemas_init();
 
     /* Init CLI */
     msg_init_queue(_shell_queue, SHELL_QUEUE_SIZE);
