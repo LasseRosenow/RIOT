@@ -31,7 +31,13 @@
         "debug.h": "c",
         "ps.h": "c",
         "thread.h": "c",
-        "sched.h": "c"
+        "sched.h": "c",
+        "float.h": "c",
+        "inttypes.h": "c",
+        "assert.h": "c",
+        "littlefs2_fs.h": "c",
+        "tests_registry.h": "c",
+        "registry_schema_full_example.h": "c"
     },
     "[shellscript][c][cpp]": {
         "editor.tabSize": 4,

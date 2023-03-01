@@ -19,9 +19,12 @@
  */
 
 #include <stdio.h>
+#include "tests_registry.h"
 
 int main(void)
 {
-    puts("Generated RIOT application: 'registry'");
+    registry_tests_api_run();
+    registry_tests_stack_run();
+
     return 0;
 }
