@@ -41,5 +41,5 @@ extern registry_storage_facility_t registry_storage_facility_vfs;
 }
 #endif
 
-/** @} */
 #endif /* REGISTRY_STORAGE_FACILITIES_H */
+/** @} */

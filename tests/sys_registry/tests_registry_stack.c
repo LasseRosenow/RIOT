@@ -7,9 +7,8 @@
  */
 
 /**
- * @defgroup    sys_registry_cli RIOT Registry Tests
- * @ingroup     sys
- * @brief       RIOT Registry Tests module providing unit tests for the RIOT Registry sys module
+ * @defgroup    benchmark
+ * @brief       Benchmark for the ``registry`` module stack consumption
  * @{
  *
  * @file
@@ -179,10 +178,10 @@ static int test_export_func(const registry_path_t path,
 }
 
 /* Instace */
-static int stack_test_instance_commit_cb(const registry_path_t path, const void *context)
+static int stack_test_instance_commit_cb(const registry_id_t *id, const void *context)
 {
     (void)context;
-    (void)path;
+    (void)id;
     return 0;
 }
 
@@ -238,10 +237,10 @@ static void setup(void)
     registry_schemas_init();
 
     /* Add stack test app schema */
-    registry_register_schema(REGISTRY_ROOT_GROUP_APP, &registry_app_schema_stack_test);
+    registry_register_schema(REGISTRY_NAMESPACE_APP, &registry_app_schema_stack_test);
 
     /* add schema instances */
-    registry_register_schema_instance(REGISTRY_ROOT_GROUP_APP, REGISTRY_APP_SCHEMA_STACK_TEST,
+    registry_register_schema_instance(REGISTRY_NAMESPACE_APP, REGISTRY_APP_SCHEMA_STACK_TEST,
                                       &stack_test_instance);
 
     /* init storage_facilities */
@@ -292,7 +291,7 @@ static registry_id_t parameter_path_level_6[] = {
 };
 
 static registry_path_t path = {
-    .namespace_id = (registry_namespace_id_t[]) { REGISTRY_ROOT_GROUP_APP },
+    .namespace_id = (registry_namespace_id_t[]) { REGISTRY_NAMESPACE_APP },
     .schema_id = (registry_id_t[]) { REGISTRY_APP_SCHEMA_STACK_TEST },
     .instance_id = (registry_id_t[]) { 0 },
     .path = parameter_path_level_1,

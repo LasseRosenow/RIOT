@@ -7,7 +7,7 @@
  */
 
 /**
- * @defgroup    sys_registry_cli RIOT Registry Storage Facilities: Heap Dummy
+ * @defgroup    sys_registry_storage_facility_heap_dummy RIOT Registry Storage Facilities: Heap Dummy
  * @ingroup     sys
  * @brief       RIOT Registry Heap Dummy Storage Facility, only uses the heap for testing.
  * @{
@@ -15,6 +15,8 @@
  * @file
  *
  * @author      Lasse Rosenow <lasse.rosenow@haw-hamburg.de>
+ *
+ * @}
  */
 
 #include <string.h>
@@ -25,8 +27,6 @@
 #include "errno.h"
 
 #include "registry/storage_facilities.h"
-
-#if IS_USED(MODULE_REGISTRY_STORAGE_FACILITY_HEAP_DUMMY) || IS_ACTIVE(DOXYGEN)
 
 #define DUMMY_STORE_CAPACITY 100
 
@@ -148,7 +148,3 @@ static int save(const registry_storage_facility_instance_t *instance, const regi
     dummy_storage_facility[free_slot].buf_len = value.buf_len;
     return 0;
 }
-
-#endif
-
-/** @} */

@@ -30,5 +30,5 @@ extern int registry_cli_cmd(int argc, char **argv);
 }
 #endif
 
-/** @} */
 #endif /* REGISTRY_CLI_H */
+/** @} */

@@ -37,7 +37,8 @@
         "assert.h": "c",
         "littlefs2_fs.h": "c",
         "tests_registry.h": "c",
-        "registry_schema_full_example.h": "c"
+        "registry_schema_full_example.h": "c",
+        "util.h": "c"
     },
     "[shellscript][c][cpp]": {
         "editor.tabSize": 4,

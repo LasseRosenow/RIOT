@@ -7,7 +7,7 @@
  */
 
 /**
- * @defgroup    sys_registry_cli RIOT Registry Storage Facilities: VFS
+ * @defgroup    sys_registry_storage_facility_vfs RIOT Registry Storage Facilities: VFS
  * @ingroup     sys
  * @brief       RIOT Registry VFS Storage Facility allows using the RIOT VFS module as a RIOT Registry data storage facility.
  * @{
@@ -15,6 +15,8 @@
  * @file
  *
  * @author      Lasse Rosenow <lasse.rosenow@haw-hamburg.de>
+ *
+ * @}
  */
 
 #include <stdlib.h>
@@ -63,12 +65,12 @@ static int _parse_string_path(char *path, registry_id_t *buf, size_t *buf_len)
 
     size_t i = 0;
 
-    if (path[0] == REGISTRY_NAME_SEPARATOR) {
+    if (path[0] == '/') {
         i = 1;
     }
 
     for (; i <= path_len; i++) {
-        if (path[i] == REGISTRY_NAME_SEPARATOR || i == path_len) {
+        if (path[i] == '/' || i == path_len) {
             buf[buf_index++] = atoi(curr_path_segment);
             curr_path_segment_index = 0;
         }
@@ -393,5 +395,3 @@ static int save(const registry_storage_facility_instance_t *instance, const regi
 
     return 0;
 }
-
-/** @} */

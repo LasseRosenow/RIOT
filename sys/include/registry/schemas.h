@@ -7,7 +7,7 @@
  */
 
 /**
- * @defgroup    sys_registry_cli RIOT Registry Schemas
+ * @defgroup    sys_registry_schemas RIOT Registry Schemas
  * @ingroup     sys
  * @brief       RIOT Registry Schemas module providing common sys schemas for the RIOT Registry sys module
  * @{
@@ -57,5 +57,5 @@ typedef enum {
 }
 #endif
 
-/** @} */
 #endif /* REGISTRY_SCHEMAS_H */
+/** @} */

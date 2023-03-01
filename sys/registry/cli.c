@@ -1,3 +1,24 @@
+/*
+ * Copyright (C) 2023 HAW Hamburg
+ *
+ * This file is subject to the terms and conditions of the GNU Lesser
+ * General Public License v2.1. See the file LICENSE in the top level
+ * directory for more details.
+ */
+
+/**
+ * @defgroup    sys_registry_cli RIOT Registry CLI
+ * @ingroup     sys
+ * @brief       RIOT Registry module providing a CLI for the RIOT Registry sys module
+ * @{
+ *
+ * @file
+ *
+ * @author      Lasse Rosenow <lasse.rosenow@haw-hamburg.de>
+ *
+ * @}
+ */
+
 #include <stdint.h>
 #include <stdio.h>
 #include <stdlib.h>
@@ -10,6 +31,11 @@
 
 #define ENABLE_DEBUG (0)
 #include "debug.h"
+
+/**
+ * @brief Separator character to define hierarchy in configurations names.
+ */
+#define REGISTRY_CLI_PATH_SEPARATOR    '/'
 
 static void _print_registry_value(const registry_value_t *value)
 {
@@ -53,9 +79,9 @@ static void _print_registry_value(const registry_value_t *value)
 static registry_namespace_t *_namespace_lookup(const registry_namespace_id_t namespace_id)
 {
     switch (namespace_id) {
-    case REGISTRY_ROOT_GROUP_SYS:
+    case REGISTRY_NAMESPACE_SYS:
         return &registry_namespace_sys;
-    case REGISTRY_ROOT_GROUP_APP:
+    case REGISTRY_NAMESPACE_APP:
         return &registry_namespace_app;
     }
 
@@ -72,7 +98,7 @@ static int _parse_string_path(const char *string_path, registry_id_t *buf, size_
     size_t path_len = strlen(string_path);
 
     for (size_t i = 0; i <= path_len; i++) {
-        if (string_path[i] == REGISTRY_NAME_SEPARATOR || i == path_len) {
+        if (string_path[i] == REGISTRY_CLI_PATH_SEPARATOR || i == path_len) {
             buf[buf_index++] = atoi(curr_path_segment);
             curr_path_segment_index = 0;
         }

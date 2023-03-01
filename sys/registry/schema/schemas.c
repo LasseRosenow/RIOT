@@ -15,6 +15,8 @@
  * @file
  *
  * @author      Lasse Rosenow <lasse.rosenow@haw-hamburg.de>
+ *
+ * @}
  */
 
 #include "registry.h"
@@ -24,8 +26,6 @@
 void registry_schemas_init(void)
 {
 #if IS_USED(MODULE_REGISTRY_SCHEMA_RGB_LED) || IS_ACTIVE(DOXYGEN)
-    registry_register_schema(REGISTRY_ROOT_GROUP_SYS, &registry_schema_rgb_led);
+    registry_register_schema(REGISTRY_NAMESPACE_SYS, &registry_schema_rgb_led);
 #endif
 }
-
-/** @} */

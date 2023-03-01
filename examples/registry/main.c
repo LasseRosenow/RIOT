@@ -38,16 +38,18 @@ static const shell_command_t shell_commands[] = {
     { NULL, NULL, NULL }
 };
 
-int rgb_led_instance_0_commit_cb(const registry_path_t path, const void *context)
+int rgb_led_instance_0_commit_cb(const registry_id_t *id, const void *context)
 {
     (void)context;
-    printf("RGB instance commit_cb was executed: %d", *path.namespace_id);
-    if (path.schema_id) {
-        printf("/%d", *path.schema_id);
+    rintf("RGB instance commit_cb was executed on ");
+
+    if (id != NULL) {
+        printf("param: /%d", *id);
     }
-    if (path.instance_id) {
-        printf("/%d", *path.instance_id);
+    else {
+        printf("whole instance");
     }
+
     printf("\n");
 
     return 0;
@@ -112,9 +114,9 @@ int main(void)
 
     /* init schemas */
     registry_schemas_init();
-    registry_register_schema_instance(REGISTRY_ROOT_GROUP_SYS, registry_schema_rgb_led.id,
+    registry_register_schema_instance(REGISTRY_NAMESPACE_SYS, registry_schema_rgb_led.id,
                                       &rgb_led_instance_0);
-    registry_register_schema_instance(REGISTRY_ROOT_GROUP_SYS, registry_schema_rgb_led.id,
+    registry_register_schema_instance(REGISTRY_NAMESPACE_SYS, registry_schema_rgb_led.id,
                                       &rgb_led_instance_1);
 
     /* init storage_facilities */

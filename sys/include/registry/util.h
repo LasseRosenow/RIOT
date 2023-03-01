@@ -7,15 +7,17 @@
  */
 
 /**
- * @defgroup    sys_registry RIOT Registry
+ * @defgroup    sys_registry_util RIOT Registry utilities
  * @ingroup     sys
- * @brief       RIOT Registry module for handling runtime configurations
+ * @brief       RIOT Registry Util module providing utility functions
  * @{
  *
  * @file
  *
  * @author      Leandro Lanzieri <leandro.lanzieri@haw-hamburg.de>
  * @author      Lasse Rosenow <lasse.rosenow@haw-hamburg.de>
+ *
+ * @}
  */
 
 #ifndef REGISTRY_REGISTRY_UTIL_H
@@ -24,6 +26,14 @@
 #ifdef __cplusplus
 extern "C" {
 #endif
+
+#include "registry.h"
+
+void _debug_print_value(const registry_value_t *value);
+registry_namespace_t *_namespace_lookup(const registry_namespace_id_t namespace_id);
+registry_schema_t *_schema_lookup(const registry_namespace_t *namespace,
+                                  const int schema_id);
+registry_instance_t *_instance_lookup(const registry_schema_t *schema, const int instance_id);
 
 /**
  * @brief Convenience function to parse a configuration parameter value from

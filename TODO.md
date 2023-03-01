@@ -6,3 +6,7 @@
 
 - make registry_path optional and move it outside registry_core
   - if a storage facility needs paths, make path a requirement of that storage facility
+
+## Known issues
+
+- Commit by path cannot only commit a certain parameter. It can only commit a whole instance.

@@ -15,6 +15,8 @@
  * @file
  *
  * @author      Lasse Rosenow <lasse.rosenow@haw-hamburg.de>
+ *
+ * @}
  */
 
 #include <errno.h>
@@ -73,5 +75,3 @@ REGISTRY_SCHEMA(
         "blue", "Intensity of the blue color of the rgb lamp.")
 
     );
-
-/** @} */

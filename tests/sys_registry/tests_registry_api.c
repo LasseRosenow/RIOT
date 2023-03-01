@@ -7,9 +7,8 @@
  */
 
 /**
- * @defgroup    sys_registry_cli RIOT Registry Tests
- * @ingroup     sys
- * @brief       RIOT Registry Tests module providing unit tests for the RIOT Registry sys module
+ * @defgroup    unittests
+ * @brief       Unittests for the ``registry`` module
  * @{
  *
  * @file
@@ -64,14 +63,12 @@ static registry_storage_facility_instance_t vfs_instance_2 = {
 
 static bool commit_success = false;
 
-static int test_instance_0_commit_cb(const registry_path_t path, const void *context)
+static int test_instance_0_commit_cb(const registry_id_t *id, const void *context)
 {
     (void)path;
     (void)context;
 
-    if (*path.namespace_id == REGISTRY_ROOT_GROUP_SYS &&
-        *path.schema_id == REGISTRY_SCHEMA_FULL_EXAMPLE &&
-        *path.instance_id == 0) {
+    if (id != NULL && *id == REGISTRY_SCHEMA_FULL_EXAMPLE_BOOL) {
         commit_success = true;
     }
 
@@ -114,7 +111,7 @@ static void test_registry_setup(void)
     registry_schemas_init();
 
     /* add schema instances */
-    registry_register_schema_instance(REGISTRY_ROOT_GROUP_SYS, REGISTRY_SCHEMA_FULL_EXAMPLE,
+    registry_register_schema_instance(REGISTRY_NAMESPACE_SYS, REGISTRY_SCHEMA_FULL_EXAMPLE,
                                       &test_instance_1);
 
     /* init storage_facilities */
@@ -421,7 +418,8 @@ static void tests_registry_all_max_values(void)
 
 static void tests_registry_commit(void)
 {
-    registry_path_t path = REGISTRY_PATH_SYS(REGISTRY_SCHEMA_FULL_EXAMPLE, 0);
+    registry_path_t path = REGISTRY_PATH_SYS(REGISTRY_SCHEMA_FULL_EXAMPLE, 0,
+                                             REGISTRY_SCHEMA_FULL_EXAMPLE_BOOL);
 
     registry_commit(path);
 
@@ -441,7 +439,7 @@ static int _export_func(const registry_path_t path, const registry_schema_t *sch
     (void)value;
     (void)context;
 
-    if (*path.namespace_id == REGISTRY_ROOT_GROUP_SYS &&
+    if (*path.namespace_id == REGISTRY_NAMESPACE_SYS &&
         *path.schema_id == REGISTRY_SCHEMA_FULL_EXAMPLE &&
         *path.instance_id == 0 &&
         path.path[0] == REGISTRY_SCHEMA_FULL_EXAMPLE_STRING) {

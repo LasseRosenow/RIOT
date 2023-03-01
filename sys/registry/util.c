@@ -7,15 +7,17 @@
  */
 
 /**
- * @defgroup    sys_registry RIOT Registry
+ * @defgroup    sys_registry_util RIOT Registry utilities
  * @ingroup     sys
- * @brief       RIOT Registry module for handling runtime configurations
+ * @brief       RIOT Registry Util module providing utility functions
  * @{
  *
  * @file
  *
  * @author      Leandro Lanzieri <leandro.lanzieri@haw-hamburg.de>
  * @author      Lasse Rosenow <lasse.rosenow@haw-hamburg.de>
+ *
+ * @}
  */
 
 #include <stdbool.h>
@@ -26,6 +28,8 @@
 #include <inttypes.h>
 
 #include <assert.h>
+#define ENABLE_DEBUG (0)
+#include <debug.h>
 #include <base64.h>
 #include <kernel_defines.h>
 
@@ -35,6 +39,107 @@
 #if IS_ACTIVE(CONFIG_REGISTRY_USE_INT64) || defined(CONFIG_REGISTRY_USE_UINT64)
 #include <fmt.h>
 #endif /* CONFIG_REGISTRY_USE_INT64 || CONFIG_REGISTRY_USE_UINT64 */
+
+void _debug_print_value(const registry_value_t *value)
+{
+    if (ENABLE_DEBUG) {
+        switch (value->type) {
+        case REGISTRY_TYPE_NONE: break;
+        case REGISTRY_TYPE_OPAQUE: {
+            DEBUG("opaque (hex): ");
+            for (size_t i = 0; i < value->buf_len; i++) {
+                DEBUG("%02x", ((uint8_t *)value->buf)[i]);
+            }
+            break;
+        }
+        case REGISTRY_TYPE_STRING: DEBUG("string: %s", (char *)value->buf); break;
+        case REGISTRY_TYPE_BOOL: DEBUG("bool: %d", *(bool *)value->buf); break;
+
+        case REGISTRY_TYPE_UINT8: DEBUG("uint8: %d", *(uint8_t *)value->buf); break;
+        case REGISTRY_TYPE_UINT16: DEBUG("uint16: %d", *(uint16_t *)value->buf); break;
+        case REGISTRY_TYPE_UINT32: DEBUG("uint32: %d", *(uint32_t *)value->buf); break;
+    #if IS_ACTIVE(CONFIG_REGISTRY_USE_UINT64)
+        case REGISTRY_TYPE_UINT64: DEBUG("uint64: %lld", *(uint64_t *)value->buf); break;
+    #endif /* CONFIG_REGISTRY_USE_UINT64 */
+
+        case REGISTRY_TYPE_INT8: DEBUG("int8: %d", *(int8_t *)value->buf); break;
+        case REGISTRY_TYPE_INT16: DEBUG("int16: %d", *(int16_t *)value->buf); break;
+        case REGISTRY_TYPE_INT32: DEBUG("int32: %d", *(int32_t *)value->buf); break;
+
+    #if IS_ACTIVE(CONFIG_REGISTRY_USE_INT64)
+        case REGISTRY_TYPE_INT64: DEBUG("int64: %lld", *(int64_t *)value->buf); break;
+    #endif /* CONFIG_REGISTRY_USE_INT64 */
+
+    #if IS_ACTIVE(CONFIG_REGISTRY_USE_FLOAT32)
+        case REGISTRY_TYPE_FLOAT32: DEBUG("f32: %f", *(float *)value->buf); break;
+    #endif /* CONFIG_REGISTRY_USE_FLOAT32 */
+
+    #if IS_ACTIVE(CONFIG_REGISTRY_USE_FLOAT64)
+        case REGISTRY_TYPE_FLOAT64: DEBUG("f64: %f", *(double *)value->buf); break;
+    #endif /* CONFIG_REGISTRY_USE_FLOAT32 */
+        }
+    }
+}
+
+registry_namespace_t *_namespace_lookup(const registry_namespace_id_t namespace_id)
+{
+    switch (namespace_id) {
+    case REGISTRY_NAMESPACE_SYS:
+        return &registry_namespace_sys;
+    case REGISTRY_NAMESPACE_APP:
+        return &registry_namespace_app;
+    }
+
+    return NULL;
+}
+
+static int _registry_cmp_schema_id(clist_node_t *current, void *id)
+{
+    assert(current != NULL);
+    registry_schema_t *schema = container_of(current, registry_schema_t, node);
+
+    return !(schema->id - *(int *)id);
+}
+
+registry_schema_t *_schema_lookup(const registry_namespace_t *namespace,
+                                  const int schema_id)
+{
+    clist_node_t *node;
+    registry_schema_t *schema = NULL;
+
+    node =
+        clist_foreach((clist_node_t *)&namespace->schemas, _registry_cmp_schema_id,
+                      (clist_node_t *)&schema_id);
+
+    if (node != NULL) {
+        schema = container_of(node, registry_schema_t, node);
+    }
+
+    return schema;
+}
+
+registry_instance_t *_instance_lookup(const registry_schema_t *schema, const int instance_id)
+{
+    assert(schema != NULL);
+
+    /* find instance with correct instance_id */
+    clist_node_t *node = schema->instances.next;
+    int index = 0;
+
+    do {
+        node = node->next;
+        registry_instance_t *instance = container_of(node, registry_instance_t, node);
+
+        /* check if index equals instance_id */
+        if (index == instance_id) {
+            return instance;
+        }
+
+        index++;
+    } while (node != schema->instances.next);
+
+    return NULL;
+}
 
 static int _get_string_len(const registry_value_t *value)
 {
