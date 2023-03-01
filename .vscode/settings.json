@@ -68,4 +68,5 @@
     "favorites.currentGroup": "Default",
     "favorites.sortOrder": "DESC",
     "uncrustify.configPath.linux": "uncrustify-riot.cfg",
+    "favorites.sortDirection": "ASC",
 }

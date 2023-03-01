@@ -1,5 +1,13 @@
 [
     {
+        "type": "File",
+        "name": "/home/lasse/Schreibtisch/RIOT/riot-registry/RIOT/sys/include/registry.h",
+        "parent_id": null,
+        "workspaceRoot": "/home/lasse/Schreibtisch/RIOT/riot-registry/RIOT",
+        "workspacePath": "sys/include/registry.h",
+        "id": "Nzqu9YDJFce8xnCT"
+    },
+    {
         "type": "Directory",
         "name": "/home/lasse/Schreibtisch/RIOT/riot-registry/RIOT/sys/include/registry",
         "parent_id": null,
@@ -41,5 +49,13 @@
         "workspacePath": "tests/sys_registry",
         "id": "Kk9UgEycGMOwVYmB",
         "label": "tests"
+    },
+    {
+        "type": "File",
+        "name": "/home/lasse/Schreibtisch/RIOT/riot-registry/RIOT/TODO.md",
+        "parent_id": null,
+        "workspaceRoot": "/home/lasse/Schreibtisch/RIOT/riot-registry/RIOT",
+        "workspacePath": "TODO.md",
+        "id": "D2fWMdji3e9OFobC"
     }
 ]
