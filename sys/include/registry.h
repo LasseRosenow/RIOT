@@ -244,7 +244,7 @@ typedef struct _registry_schema_item_t registry_schema_item_t;
  * @brief Configuration group.
  */
 typedef struct {
-    const registry_schema_item_t *items;
+    const registry_schema_item_t * const items;
     const size_t items_len;
 } registry_schema_group_t;
 
@@ -291,13 +291,13 @@ typedef struct {
  * parameters.
  */
 typedef struct {
-    clist_node_t node;                      /**< Linked list node */
-    const registry_id_t id;                 /**< Integer representing the configuration group */
-    const char *name;                       /**< String describing the configuration group */
-    const char *description;                /**< String describing the configuration group with more details */
-    const registry_schema_item_t *items;    /**< Array representing all the configuration parameters that belong to this group */
-    const size_t items_len;                 /**< Size of items array */
-    clist_node_t instances;                 /**< Linked list of schema instances @ref registry_instance_t */
+    clist_node_t node;                          /**< Linked list node */
+    const registry_id_t id;                     /**< Integer representing the configuration group */
+    const char *name;                           /**< String describing the configuration group */
+    const char *description;                    /**< String describing the configuration group with more details */
+    const registry_schema_item_t * const items; /**< Array representing all the configuration parameters that belong to this group */
+    const size_t items_len;                     /**< Size of items array */
+    clist_node_t instances;                     /**< Linked list of schema instances @ref registry_instance_t */
 
     /**
      * @brief Mapping to connect configuration parameter IDs with the address in the storage.
@@ -307,8 +307,10 @@ typedef struct {
      * @param[in] val Pointer to buffer containing the new value
      * @param[in] val_len Pointer to length of the buffer to store the current value
      */
-    void (*mapping)(const registry_id_t param_id, const registry_instance_t *instance, void **val,
-                    size_t *val_len);
+    void(*const mapping)(const registry_id_t param_id,
+                         const registry_instance_t *instance,
+                         void **val,
+                         size_t *val_len);
 } registry_schema_t;
 
 /**

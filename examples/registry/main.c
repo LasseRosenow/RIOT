@@ -294,17 +294,17 @@ registry_schema_rgb_v2_t registry_schema_rgb_v2 = {
         .meta = &dynamic_registry_schema_rgb_v2.items[2],
         .get = registry_get_uint8_v2,
     },
-    .brightnesses = {
-        .meta = &dynamic_registry_schema_rgb_v2.items[3],
-        .white = {
-            .meta = &dynamic_registry_schema_rgb_v2.items[3].value.group.items[0],
-            .get = registry_get_uint8_v2,
-        },
-        .yellow = {
-            .meta = &dynamic_registry_schema_rgb_v2.items[3].value.group.items[1],
-            .get = registry_get_uint8_v2,
-        },
-    },
+    // .brightnesses = {
+    //     .meta = &dynamic_registry_schema_rgb_v2.items[3],
+    //     .white = {
+    //         .meta = &dynamic_registry_schema_rgb_v2.items[3].value.group.items[0],
+    //         .get = registry_get_uint8_v2,
+    //     },
+    //         .yellow = {
+    //             .meta = &dynamic_registry_schema_rgb_v2.items[3].value.group.items[1],
+    //             .get = registry_get_uint8_v2,
+    //         },
+    // },
 };
 
 // int main(void)
