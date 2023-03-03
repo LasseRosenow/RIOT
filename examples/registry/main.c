@@ -175,94 +175,142 @@ int main(void)
 //     .b = 8,
 // };
 
-// registry_schema_t dynamic_registry_schema_rgb = {
-//     .id = REGISTRY_SCHEMA_RGB_LED,
-//     .name = "rgb",
-//     .description = "Representation of an rgb color.",
-//     .mapping = mapping,
-//     .items = (registry_schema_item_t[]) {
-//         {
-//             .id = 0,
-//             .name = "red",
-//             .description = "Intensity of the red color of the rgb lamp.",
-//             .type = REGISTRY_SCHEMA_TYPE_PARAMETER,
-//             .value.parameter = { .type = REGISTRY_TYPE_UINT8, },
-//         },
-//         {
-//             .id = 1,
-//             .name = "green",
-//             .description = "Intensity of the green color of the rgb lamp.",
-//             .type = REGISTRY_SCHEMA_TYPE_PARAMETER,
-//             .value.parameter = { .type = REGISTRY_TYPE_UINT8, },
-//         },
-//         {
-//             .id = 2,
-//             .name = "blue",
-//             .description = "Intensity of the blue color of the rgb lamp.",
-//             .type = REGISTRY_SCHEMA_TYPE_PARAMETER,
-//             .value.parameter = { .type = REGISTRY_TYPE_UINT8, },
-//         },
-//     },
-// };
+static void mapping(const registry_id_t param_id, const registry_instance_t *instance,
+                    void **val,
+                    size_t *val_len)
+{
+    registry_schema_rgb_led_t *_instance = (registry_schema_rgb_led_t *)instance->data;
 
-// typedef struct {
-//     registry_schema_t *meta;
-//     struct {
-//         registry_schema_item_t *meta;
-//         int (*get)(uint8_t **val, size_t *val_len);
-//     } red;
-//     struct {
-//         registry_schema_item_t *meta;
-//         int (*get)(uint8_t **val, size_t *val_len);
-//     } green;
-//     struct {
-//         registry_schema_item_t *meta;
-//         int (*get)(uint8_t **val, size_t *val_len);
-//     } blue;
-//     struct {
-//         registry_schema_item_t *meta;
-//         struct {
-//             registry_schema_item_t *meta;
-//             int (*get)(uint8_t **val, size_t *val_len);
-//         } white;
-//         struct {
-//             registry_schema_item_t *meta;
-//             int (*get)(uint8_t **val, size_t *val_len);
-//         } yellow;
-//     } brightnesses;
-// } registry_schema_rgb_t;
+    switch (param_id) {
+    case REGISTRY_SCHEMA_RGB_LED_RED:
+        *val = &_instance->red;
+        *val_len = sizeof(_instance->red);
+        break;
 
-// registry_schema_rgb_t registry_schema_rgb = {
-//     .meta = &dynamic_registry_schema_rgb,
-//     .red = {
-//         .meta = &dynamic_registry_schema_rgb.items[0],
-//         .get = registry_get_uint8_v2,
-//     },
-//     .green = {
-//         .meta = &dynamic_registry_schema_rgb.items[1],
-//         .get = registry_get_uint8_v2,
-//     },
-//     .blue = {
-//         .meta = &dynamic_registry_schema_rgb.items[2],
-//         .get = registry_get_uint8_v2,
-//     },
-//     .brightnesses = {
-//         .meta = &dynamic_registry_schema_rgb.items[3],
-//         .white = {
-//             .meta = &dynamic_registry_schema_rgb.items[3].value.items[0],
-//             .get = registry_get_uint8_v2,
-//         },
-//         .yellow = {
-//             .meta = &dynamic_registry_schema_rgb.items[3].value.items[1],
-//             .get = registry_get_uint8_v2,
-//         },
-//     },
-// };
+    case REGISTRY_SCHEMA_RGB_LED_GREEN:
+        *val = &_instance->green;
+        *val_len = sizeof(_instance->green);
+        break;
+
+    case REGISTRY_SCHEMA_RGB_LED_BLUE:
+        *val = &_instance->blue;
+        *val_len = sizeof(_instance->blue);
+        break;
+    }
+}
+
+const registry_schema_t dynamic_registry_schema_rgb_v2 = {
+    .id = REGISTRY_SCHEMA_RGB_LED,
+    .name = "rgb",
+    .description = "Representation of an rgb color.",
+    .mapping = mapping,
+    .items = (const registry_schema_item_t[]) {
+        {
+            .id = 0,
+            .name = "red",
+            .description = "Intensity of the red color of the rgb lamp.",
+            .type = REGISTRY_SCHEMA_TYPE_PARAMETER,
+            .value.parameter = { .type = REGISTRY_TYPE_UINT8, },
+        },
+        {
+            .id = 1,
+            .name = "green",
+            .description = "Intensity of the green color of the rgb lamp.",
+            .type = REGISTRY_SCHEMA_TYPE_PARAMETER,
+            .value.parameter = { .type = REGISTRY_TYPE_UINT8, },
+        },
+        {
+            .id = 2,
+            .name = "blue",
+            .description = "Intensity of the blue color of the rgb lamp.",
+            .type = REGISTRY_SCHEMA_TYPE_PARAMETER,
+            .value.parameter = { .type = REGISTRY_TYPE_UINT8, },
+        },
+        {
+            .id = 3,
+            .name = "brightnesses",
+            .description = "Brightnesses of the white and yellow color of the rgb lamp.",
+            .type = REGISTRY_SCHEMA_TYPE_GROUP,
+            .value.group = {
+                .items = (const registry_schema_item_t[]) {
+                    {
+                        .id = 4,
+                        .name = "white",
+                        .description = "Intensity of the white color of the rgb lamp.",
+                        .type = REGISTRY_SCHEMA_TYPE_PARAMETER,
+                        .value.parameter = { .type = REGISTRY_TYPE_UINT8, },
+                    },
+                    {
+                        .id = 5,
+                        .name = "yellow",
+                        .description = "Intensity of the yellow color of the rgb lamp.",
+                        .type = REGISTRY_SCHEMA_TYPE_PARAMETER,
+                        .value.parameter = { .type = REGISTRY_TYPE_UINT8, },
+                    },
+                },
+            },
+        },
+    },
+};
+
+typedef struct {
+    const registry_schema_t *meta;
+    const struct {
+        const registry_schema_item_t *meta;
+        int (*get)(uint8_t **val, size_t *val_len);
+    } red;
+    const struct {
+        const registry_schema_item_t *meta;
+        int (*get)(uint8_t **val, size_t *val_len);
+    } green;
+    const struct {
+        const registry_schema_item_t *meta;
+        int (*get)(uint8_t **val, size_t *val_len);
+    } blue;
+    const struct {
+        const registry_schema_item_t *meta;
+        const struct {
+            const registry_schema_item_t *meta;
+            int (*get)(uint8_t **val, size_t *val_len);
+        } white;
+        const struct {
+            const registry_schema_item_t *meta;
+            int (*get)(uint8_t **val, size_t *val_len);
+        } yellow;
+    } brightnesses;
+} registry_schema_rgb_v2_t;
+
+registry_schema_rgb_v2_t registry_schema_rgb_v2 = {
+    .meta = &dynamic_registry_schema_rgb_v2,
+    .red = {
+        .meta = &dynamic_registry_schema_rgb_v2.items[0],
+        .get = registry_get_uint8_v2,
+    },
+    .green = {
+        .meta = &dynamic_registry_schema_rgb_v2.items[1],
+        .get = registry_get_uint8_v2,
+    },
+    .blue = {
+        .meta = &dynamic_registry_schema_rgb_v2.items[2],
+        .get = registry_get_uint8_v2,
+    },
+    .brightnesses = {
+        .meta = &dynamic_registry_schema_rgb_v2.items[3],
+        .white = {
+            .meta = &dynamic_registry_schema_rgb_v2.items[3].value.group.items[0],
+            .get = registry_get_uint8_v2,
+        },
+        .yellow = {
+            .meta = &dynamic_registry_schema_rgb_v2.items[3].value.group.items[1],
+            .get = registry_get_uint8_v2,
+        },
+    },
+};
 
 // int main(void)
 // {
 //     REGISTRY_SCHEMA_V2(
-//         rgb, 0,
+//         rgb_v2, 0,
 
 //         REGISTRY_PARAMETER_V2(red, uint8_t),
 //         REGISTRY_PARAMETER_V2(green, uint8_t),

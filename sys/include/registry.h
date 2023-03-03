@@ -235,7 +235,7 @@ typedef struct {
  * @brief Parameter of a configuration group.
  */
 typedef struct {
-    registry_type_t type; /**< Enum representing the type of the configuration parameter */
+    const registry_type_t type; /**< Enum representing the type of the configuration parameter */
 } registry_schema_parameter_t;
 
 typedef struct _registry_schema_item_t registry_schema_item_t;
@@ -244,8 +244,8 @@ typedef struct _registry_schema_item_t registry_schema_item_t;
  * @brief Configuration group.
  */
 typedef struct {
-    registry_schema_item_t *items;
-    size_t items_len;
+    const registry_schema_item_t *items;
+    const size_t items_len;
 } registry_schema_group_t;
 
 typedef enum {
@@ -254,14 +254,14 @@ typedef enum {
 } registry_schema_type_t;
 
 struct _registry_schema_item_t {
-    registry_id_t id;                           /**< Integer representing the path id of the schema item */
-    char *name;                                 /**< String describing the schema item */
-    char *description;                          /**< String describing the schema item with more details */
-    registry_schema_type_t type;                /**< Type of the schema item (group or parameter) */
-    union {
-        registry_schema_group_t group;          /**< Value of the schema item if it is a group. Contains an array of schema item children */
-        registry_schema_parameter_t parameter;  /**< Value of the schema item if it is a parameter. Contains its type */
-    } value;                                    /**< Union containing either group or parameter data */
+    const registry_id_t id;                             /**< Integer representing the path id of the schema item */
+    const char *name;                                   /**< String describing the schema item */
+    const char *description;                            /**< String describing the schema item with more details */
+    const registry_schema_type_t type;                  /**< Type of the schema item (group or parameter) */
+    const union {
+        const registry_schema_group_t group;            /**< Value of the schema item if it is a group. Contains an array of schema item children */
+        const registry_schema_parameter_t parameter;    /**< Value of the schema item if it is a parameter. Contains its type */
+    } value;                                            /**< Union containing either group or parameter data */
 };
 
 /**
@@ -291,13 +291,13 @@ typedef struct {
  * parameters.
  */
 typedef struct {
-    clist_node_t node;              /**< Linked list node */
-    registry_id_t id;               /**< Integer representing the configuration group */
-    char *name;                     /**< String describing the configuration group */
-    char *description;              /**< String describing the configuration group with more details */
-    registry_schema_item_t *items;  /**< Array representing all the configuration parameters that belong to this group */
-    size_t items_len;               /**< Size of items array */
-    clist_node_t instances;         /**< Linked list of schema instances @ref registry_instance_t */
+    clist_node_t node;                      /**< Linked list node */
+    const registry_id_t id;                 /**< Integer representing the configuration group */
+    const char *name;                       /**< String describing the configuration group */
+    const char *description;                /**< String describing the configuration group with more details */
+    const registry_schema_item_t *items;    /**< Array representing all the configuration parameters that belong to this group */
+    const size_t items_len;                 /**< Size of items array */
+    clist_node_t instances;                 /**< Linked list of schema instances @ref registry_instance_t */
 
     /**
      * @brief Mapping to connect configuration parameter IDs with the address in the storage.

@@ -64,11 +64,11 @@ static void _debug_print_path(const registry_path_t path)
 
 
 
-static registry_schema_item_t *_parameter_meta_lookup(const registry_path_t path,
-                                                      const registry_schema_t *schema)
+static const registry_schema_item_t *_parameter_meta_lookup(const registry_path_t path,
+                                                            const registry_schema_t *schema)
 {
-    registry_schema_item_t *schema_item;
-    registry_schema_item_t *schema_items = schema->items;
+    const registry_schema_item_t *schema_item;
+    const registry_schema_item_t *schema_items = schema->items;
     size_t schema_items_len = schema->items_len;
 
     for (size_t path_index = 0; path_index < path.path_len; path_index++) {
@@ -120,7 +120,7 @@ static int _registry_set_by_path(const registry_path_t path, const void *val,
     }
 
     /* lookup parameter meta data */
-    registry_schema_item_t *param_meta = _parameter_meta_lookup(path, schema);
+    const registry_schema_item_t *param_meta = _parameter_meta_lookup(path, schema);
 
     if (!param_meta) {
         return -EINVAL;
@@ -185,7 +185,7 @@ static int _registry_get_by_path(const registry_path_t path,
     }
 
     /* lookup parameter meta data */
-    registry_schema_item_t *param_meta = _parameter_meta_lookup(path, schema);
+    const registry_schema_item_t *param_meta = _parameter_meta_lookup(path, schema);
 
     if (!param_meta) {
         return -EINVAL;
@@ -409,7 +409,7 @@ static int _registry_export_instance_by_path(int (*export_func)(const registry_p
 
     /* schema/instance/item => export concrete schema item with data of the given instance */
     if (path.path_len > 0) {
-        registry_schema_item_t *schema_item = _parameter_meta_lookup(path, schema);
+        const registry_schema_item_t *schema_item = _parameter_meta_lookup(path, schema);
 
         /* create a new path which does not include the last value, because _registry_export_params_by_path will add it inside */
         registry_id_t _new_path_path[path.path_len - 1];

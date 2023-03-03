@@ -28,10 +28,10 @@ extern "C" {
 #include "registry.h"
 
 typedef struct {
-    registry_namespace_id_t *namespace_id;
-    registry_id_t *schema_id;
-    registry_id_t *instance_id;
-    registry_id_t *path;
+    const registry_namespace_id_t *namespace_id;
+    const registry_id_t *schema_id;
+    const registry_id_t *instance_id;
+    const registry_id_t *path;
     size_t path_len;
 } registry_path_t;
 
