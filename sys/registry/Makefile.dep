@@ -1,5 +1,5 @@
-ifneq (,$(filter registry_storage_facility_%,$(USEMODULE)))
-  include $(RIOTBASE)/sys/registry/storage_facility/Makefile.dep
+ifneq (,$(filter registry_storage_%,$(USEMODULE)))
+  include $(RIOTBASE)/sys/registry/storage/Makefile.dep
 endif
 
 ifneq (,$(filter registry_schema_%,$(USEMODULE)))

@@ -19,9 +19,13 @@
  * @}
  */
 
-#include "registry.h"
-#include "registry/schemas.h"
 #include <stdio.h>
+
+#define ENABLE_DEBUG (0)
+#include "debug.h"
+#include "registry.h"
+
+#include "registry/schemas.h"
 
 void registry_schemas_init(void)
 {

@@ -24,6 +24,8 @@
 #include <stdlib.h>
 #include <stdio.h>
 
+#define ENABLE_DEBUG (0)
+#include "debug.h"
 #include "kernel_defines.h"
 #include "registry.h"
 #include "registry/schemas.h"

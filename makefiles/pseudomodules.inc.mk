@@ -370,7 +370,7 @@ PSEUDOMODULES += random_cmd
 ## @}
 PSEUDOMODULES += registry_%
 NO_PSEUDOMODULES += registry_schemas
-NO_PSEUDOMODULES += registry_storage_facilities
+NO_PSEUDOMODULES += registry_storage
 
 PSEUDOMODULES += riotboot_%
 PSEUDOMODULES += rtt_cmd

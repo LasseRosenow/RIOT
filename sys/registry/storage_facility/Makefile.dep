@@ -1,9 +1,0 @@
-# Enable "registry_storage_facilities" module for all storage facilities
-ifneq (,$(filter registry_storage_facility_%,$(USEMODULE)))
-  USEMODULE += registry_storage_facilities
-endif
-
-# Enable "registry_path" module for vfs storage facility
-ifneq (,$(filter registry_storage_facility_vfs,$(USEMODULE)))
-  USEMODULE += registry_path
-endif

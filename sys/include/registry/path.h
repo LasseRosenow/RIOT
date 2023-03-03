@@ -35,6 +35,15 @@ typedef struct {
     size_t path_len;
 } registry_path_t;
 
+/**
+ * @brief Descriptor used to check duplications in storage facilities
+ */
+typedef struct {
+    const registry_path_t path; /**< path of the parameter being checked */
+    const registry_value_t val; /**< value of the parameter being checked */
+    bool is_dup;                /**< flag indicating if the parameter is duplicated or not */
+} registry_dup_check_arg_t;
+
 #define _REGISTRY_PATH_NUMARGS(...)  (sizeof((registry_id_t[]){ __VA_ARGS__ }) / \
                                       sizeof(registry_id_t))
 
@@ -115,7 +124,8 @@ typedef struct {
  */
 int registry_set_value_by_path(const registry_path_t path, const registry_value_t val);
 
-int registry_set_opaque_by_path(const registry_path_t path, const void *val, const size_t val_len);
+int registry_set_opaque_by_path(const registry_path_t path, const void *val,
+                                const size_t val_len);
 int registry_set_string_by_path(const registry_path_t path, const char *val);
 int registry_set_bool_by_path(const registry_path_t path, const bool val);
 int registry_set_uint8_by_path(const registry_path_t path, const uint8_t val);
@@ -146,8 +156,10 @@ int registry_set_float64_by_path(const registry_path_t path, const double val);
  */
 int registry_get_value_by_path(const registry_path_t path, registry_value_t *value);
 
-int registry_get_opaque_by_path(const registry_path_t path, const void **buf, size_t *buf_len);
-int registry_get_string_by_path(const registry_path_t path, const char **buf, size_t *buf_len);
+int registry_get_opaque_by_path(const registry_path_t path, const void **buf,
+                                size_t *buf_len);
+int registry_get_string_by_path(const registry_path_t path, const char **buf,
+                                size_t *buf_len);
 int registry_get_bool_by_path(const registry_path_t path, const bool **buf);
 int registry_get_uint8_by_path(const registry_path_t path, const uint8_t **buf);
 int registry_get_uint16_by_path(const registry_path_t path, const uint16_t **buf);

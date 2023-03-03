@@ -28,7 +28,7 @@
 #include "registry.h"
 #include "registry/cli.h"
 #include "registry/schemas.h"
-#include "registry/storage_facilities.h"
+#include "registry/storage.h"
 
 #define SHELL_QUEUE_SIZE (8)
 static msg_t _shell_queue[SHELL_QUEUE_SIZE];
@@ -41,7 +41,7 @@ static const shell_command_t shell_commands[] = {
 int rgb_led_instance_0_commit_cb(const registry_id_t *id, const void *context)
 {
     (void)context;
-    rintf("RGB instance commit_cb was executed on ");
+    printf("RGB instance commit_cb was executed on ");
 
     if (id != NULL) {
         printf("param: /%d", *id);
@@ -110,8 +110,6 @@ static registry_storage_facility_instance_t vfs_instance_2 = {
 
 int main(void)
 {
-    registry_init();
-
     /* init schemas */
     registry_schemas_init();
     registry_register_schema_instance(REGISTRY_NAMESPACE_SYS, registry_schema_rgb_led.id,
@@ -177,23 +175,106 @@ int main(void)
 //     .b = 8,
 // };
 
+// registry_schema_t dynamic_registry_schema_rgb = {
+//     .id = REGISTRY_SCHEMA_RGB_LED,
+//     .name = "rgb",
+//     .description = "Representation of an rgb color.",
+//     .mapping = mapping,
+//     .items = (registry_schema_item_t[]) {
+//         {
+//             .id = 0,
+//             .name = "red",
+//             .description = "Intensity of the red color of the rgb lamp.",
+//             .type = REGISTRY_SCHEMA_TYPE_PARAMETER,
+//             .value.parameter = { .type = REGISTRY_TYPE_UINT8, },
+//         },
+//         {
+//             .id = 1,
+//             .name = "green",
+//             .description = "Intensity of the green color of the rgb lamp.",
+//             .type = REGISTRY_SCHEMA_TYPE_PARAMETER,
+//             .value.parameter = { .type = REGISTRY_TYPE_UINT8, },
+//         },
+//         {
+//             .id = 2,
+//             .name = "blue",
+//             .description = "Intensity of the blue color of the rgb lamp.",
+//             .type = REGISTRY_SCHEMA_TYPE_PARAMETER,
+//             .value.parameter = { .type = REGISTRY_TYPE_UINT8, },
+//         },
+//     },
+// };
+
+// typedef struct {
+//     registry_schema_t *meta;
+//     struct {
+//         registry_schema_item_t *meta;
+//         int (*get)(uint8_t **val, size_t *val_len);
+//     } red;
+//     struct {
+//         registry_schema_item_t *meta;
+//         int (*get)(uint8_t **val, size_t *val_len);
+//     } green;
+//     struct {
+//         registry_schema_item_t *meta;
+//         int (*get)(uint8_t **val, size_t *val_len);
+//     } blue;
+//     struct {
+//         registry_schema_item_t *meta;
+//         struct {
+//             registry_schema_item_t *meta;
+//             int (*get)(uint8_t **val, size_t *val_len);
+//         } white;
+//         struct {
+//             registry_schema_item_t *meta;
+//             int (*get)(uint8_t **val, size_t *val_len);
+//         } yellow;
+//     } brightnesses;
+// } registry_schema_rgb_t;
+
+// registry_schema_rgb_t registry_schema_rgb = {
+//     .meta = &dynamic_registry_schema_rgb,
+//     .red = {
+//         .meta = &dynamic_registry_schema_rgb.items[0],
+//         .get = registry_get_uint8_v2,
+//     },
+//     .green = {
+//         .meta = &dynamic_registry_schema_rgb.items[1],
+//         .get = registry_get_uint8_v2,
+//     },
+//     .blue = {
+//         .meta = &dynamic_registry_schema_rgb.items[2],
+//         .get = registry_get_uint8_v2,
+//     },
+//     .brightnesses = {
+//         .meta = &dynamic_registry_schema_rgb.items[3],
+//         .white = {
+//             .meta = &dynamic_registry_schema_rgb.items[3].value.items[0],
+//             .get = registry_get_uint8_v2,
+//         },
+//         .yellow = {
+//             .meta = &dynamic_registry_schema_rgb.items[3].value.items[1],
+//             .get = registry_get_uint8_v2,
+//         },
+//     },
+// };
+
 // int main(void)
 // {
-//     registry_init();
-//     // REGISTRY_SCHEMA_V2(
-//     //     rgb, 0,
+//     REGISTRY_SCHEMA_V2(
+//         rgb, 0,
 
-//     //     REGISTRY_PARAMETER_V2(red, uint8_t),
-//     //     REGISTRY_PARAMETER_V2(green, uint8_t),
-//     //     REGISTRY_PARAMETER_V2(blue, uint8_t),
+//         REGISTRY_PARAMETER_V2(red, uint8_t),
+//         REGISTRY_PARAMETER_V2(green, uint8_t),
+//         REGISTRY_PARAMETER_V2(blue, uint8_t),
 
-//     //     REGISTRY_GROUP_V2(
-//     //         brightnesses,
+//         REGISTRY_GROUP_V2(
+//             brightnesses,
 
-//     //         REGISTRY_PARAMETER_V2(white, uint8_t),
-//     //         REGISTRY_PARAMETER_V2(yellow, uint8_t)
-//     //         )
-//     //     );
+//             REGISTRY_PARAMETER_V2(white, uint8_t),
+//             REGISTRY_PARAMETER_V2(yellow, uint8_t)
+//             )
+//         );
 
 //     // uint8_t *val;
 //     // size_t val_len;

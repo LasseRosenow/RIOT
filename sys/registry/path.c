@@ -23,14 +23,16 @@
 #include <stdio.h>
 #include <string.h>
 #include <errno.h>
-#include <clist.h>
-#include <kernel_defines.h>
 #include <assert.h>
-#define ENABLE_DEBUG (0)
-#include <debug.h>
 
+#define ENABLE_DEBUG (0)
+#include "debug.h"
+#include "kernel_defines.h"
+#include "clist.h"
 #include "registry.h"
 #include "registry/util.h"
+#include "registry/storage.h"
+
 #include "registry/path.h"
 
 static void _debug_print_path(const registry_path_t path)
@@ -92,7 +94,8 @@ static registry_schema_item_t *_parameter_meta_lookup(const registry_path_t path
     return NULL;
 }
 
-static int _registry_set_by_path(const registry_path_t path, const void *val, const int val_len,
+static int _registry_set_by_path(const registry_path_t path, const void *val,
+                                 const int val_len,
                                  const registry_type_t val_type)
 {
     /* lookup namespace */
@@ -653,7 +656,8 @@ int registry_set_value_by_path(const registry_path_t path, const registry_value_
     return _registry_set_by_path(path, val.buf, val.buf_len, val.type);
 }
 
-int registry_set_opaque_by_path(const registry_path_t path, const void *val, const size_t val_len)
+int registry_set_opaque_by_path(const registry_path_t path, const void *val,
+                                const size_t val_len)
 {
     return _registry_set_by_path(path, val, val_len, REGISTRY_TYPE_OPAQUE);
 }
@@ -750,11 +754,13 @@ static int _registry_get_buf_by_path(const registry_path_t path,
 
     return res;
 }
-int registry_get_opaque_by_path(const registry_path_t path, const void **buf, size_t *buf_len)
+int registry_get_opaque_by_path(const registry_path_t path, const void **buf,
+                                size_t *buf_len)
 {
     return _registry_get_buf_by_path(path, REGISTRY_TYPE_OPAQUE, buf, buf_len);
 }
-int registry_get_string_by_path(const registry_path_t path, const char **buf, size_t *buf_len)
+int registry_get_string_by_path(const registry_path_t path, const char **buf,
+                                size_t *buf_len)
 {
     return _registry_get_buf_by_path(path, REGISTRY_TYPE_STRING, (const void **)buf, buf_len);
 }
@@ -820,20 +826,30 @@ int registry_get_float64_by_path(const registry_path_t path, const double **buf)
 #endif /* CONFIG_REGISTRY_USE_FLOAT64 */
 
 /* registry_load */
-static void _registry_load_by_path_cb(const registry_path_t path, const registry_value_t value,
+static void _registry_load_by_path_cb(const storage_path_t path,
+                                      const registry_value_t value,
                                       const void *cb_arg)
 {
     (void)cb_arg;
 
+    // TODO improve this
+    registry_path_t registry_path = {
+        .namespace_id = path.namespace_id,
+        .schema_id = path.schema_id,
+        .instance_id = path.instance_id,
+        .path = path.path,
+        .path_len = path.path_len,
+    };
+
     if (ENABLE_DEBUG) {
         DEBUG("[registry_storage_facility] Loading: ");
-        _debug_print_path(path);
+        _debug_print_path(registry_path);
         DEBUG(" = ");
         _debug_print_value(&value);
         DEBUG("\n");
     }
 
-    registry_set_value_by_path(path, value);
+    registry_set_value_by_path(registry_path, value);
 }
 
 int registry_load_by_path(const registry_path_t path)
@@ -844,11 +860,21 @@ int registry_load_by_path(const registry_path_t path)
         return -ENOENT;
     }
 
+    // TODO improve this
+    storage_path_t storage_path = {
+        .namespace_id = path.namespace_id,
+        .schema_id = path.schema_id,
+        .instance_id = path.instance_id,
+        .path = path.path,
+        .path_len = path.path_len,
+    };
+
     do {
         registry_storage_facility_instance_t *src;
         src = container_of(node, registry_storage_facility_instance_t, node);
-        src->itf->load(src, path, _registry_load_by_path_cb, NULL);
+        src->itf->load(src, storage_path, _registry_load_by_path_cb, NULL);
     } while (node != _storage_facility_srcs.next);
+    // TODO Possible bug? SFs could override with outdated values if SF_DST is not last in SF_SRCs?
 
     return 0;
 }
@@ -923,7 +949,16 @@ static int _registry_save_by_path_export_func(const registry_path_t path,
     //     return -EEXIST;
     // }
 
-    return dst->itf->save(dst, path, *value);
+    // TODO improve this
+    storage_path_t storage_path = {
+        .namespace_id = path.namespace_id,
+        .schema_id = path.schema_id,
+        .instance_id = path.instance_id,
+        .path = path.path,
+        .path_len = path.path_len,
+    };
+
+    return dst->itf->save(dst, storage_path, *value);
 }
 
 int registry_save_by_path(const registry_path_t path)
@@ -938,7 +973,7 @@ int registry_save_by_path(const registry_path_t path)
         _storage_facility_dst->itf->save_start(_storage_facility_dst);
     }
 
-    res = registry_export(_registry_save_by_path_export_func, path, 0, NULL);
+    res = registry_export_by_path(_registry_save_by_path_export_func, path, 0, NULL);
 
     if (_storage_facility_dst->itf->save_end) {
         _storage_facility_dst->itf->save_end(_storage_facility_dst);

@@ -7,6 +7,6 @@ USEMODULE += vfs
 
 USEMODULE += registry
 USEMODULE += registry_schemas
-USEMODULE += registry_storage_facility_vfs
+USEMODULE += registry_storage_vfs
 
 include $(RIOTBASE)/Makefile.include

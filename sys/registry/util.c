@@ -26,12 +26,12 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <inttypes.h>
-
 #include <assert.h>
+
 #define ENABLE_DEBUG (0)
-#include <debug.h>
-#include <base64.h>
-#include <kernel_defines.h>
+#include "debug.h"
+#include "base64.h"
+#include "kernel_defines.h"
 
 #include "registry.h"
 #include "registry/util.h"

@@ -23,11 +23,12 @@
 #include <stdio.h>
 #include <string.h>
 #include <errno.h>
-#include <clist.h>
-#include <kernel_defines.h>
 #include <assert.h>
+
 #define ENABLE_DEBUG (0)
-#include <debug.h>
+#include "debug.h"
+#include "kernel_defines.h"
+#include "clist.h"
 
 #include "registry.h"
 #include "registry/util.h"
@@ -47,14 +48,6 @@ registry_namespace_t registry_namespace_app = {
     .description = "List of custom app schemas.",
     .schemas = { .next = NULL },
 };
-
-static const registry_storage_facility_instance_t *_storage_facility_dst;
-static clist_node_t _storage_facility_srcs;
-
-void registry_init(void)
-{
-    _storage_facility_srcs.next = NULL;
-}
 
 int registry_register_schema(const registry_namespace_id_t namespace_id,
                              const registry_schema_t *schema)
@@ -104,16 +97,4 @@ int registry_register_schema_instance(const registry_namespace_id_t namespace_id
     } while (node != namespace->schemas.next);
 
     return -EINVAL;
-}
-
-void registry_register_storage_facility_src(const registry_storage_facility_instance_t *src)
-{
-    assert(src != NULL);
-    clist_rpush((clist_node_t *)&_storage_facility_srcs, (clist_node_t *)&(src->node));
-}
-
-void registry_register_storage_facility_dst(const registry_storage_facility_instance_t *dst)
-{
-    assert(dst != NULL);
-    _storage_facility_dst = dst;
 }

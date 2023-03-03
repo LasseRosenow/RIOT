@@ -38,7 +38,16 @@
         "littlefs2_fs.h": "c",
         "tests_registry.h": "c",
         "registry_schema_full_example.h": "c",
-        "util.h": "c"
+        "util.h": "c",
+        "storage.h": "c",
+        "path.h": "c",
+        "features.h": "c",
+        "riot_version.h": "c",
+        "clist.h": "c",
+        "base64.h": "c",
+        "stddef.h": "c",
+        "stdbool.h": "c",
+        "ctype.h": "c"
     },
     "[shellscript][c][cpp]": {
         "editor.tabSize": 4,

@@ -24,19 +24,20 @@
 #include <string.h>
 #include <stdio.h>
 #include <fcntl.h>
+#include <errno.h>
 
-#include "kernel_defines.h"
-#include "errno.h"
-#include "vfs.h"
 #define ENABLE_DEBUG (0)
 #include "debug.h"
+#include "kernel_defines.h"
+#include "vfs.h"
 #include "ps.h"
+#include "registry/path.h"
 
-#include "registry/storage_facilities.h"
+#include "registry/storage.h"
 
-static int load(const registry_storage_facility_instance_t *instance, const registry_path_t path,
+static int load(const registry_storage_facility_instance_t *instance, const storage_path_t path,
                 const load_cb_t cb, const void *cb_arg);
-static int save(const registry_storage_facility_instance_t *instance, const registry_path_t path,
+static int save(const registry_storage_facility_instance_t *instance, const storage_path_t path,
                 const registry_value_t value);
 
 registry_storage_facility_t registry_storage_facility_vfs = {
@@ -133,7 +134,7 @@ static int _umount(vfs_mount_t *mount)
     return 0;
 }
 
-static int load(const registry_storage_facility_instance_t *instance, const registry_path_t path,
+static int load(const registry_storage_facility_instance_t *instance, const storage_path_t path,
                 const load_cb_t cb, const void *cb_arg)
 {
     (void)cb;
@@ -242,10 +243,8 @@ static int load(const registry_storage_facility_instance_t *instance, const regi
                                         "[registry storage_facility_vfs] load: Invalid registry path\n");
                                 }
                                 else {
-                                    /* convert int path to registry_path_t */
-                                    // TODO: Why is REGISTRY_PATH() Not working? (It should resolve to _REGISTRY_PATH_0()
-                                    // but somehow its not initializing namespace with NULL?? (makes no sense:( ... )))
-                                    registry_path_t path = _REGISTRY_PATH_0();
+                                    /* convert int path to storage_path_t */
+                                    storage_path_t path;
                                     for (size_t i = 0; i < path_items_len; i++) {
                                         switch (i) {
                                         case 0: path.namespace_id =
@@ -258,9 +257,18 @@ static int load(const registry_storage_facility_instance_t *instance, const regi
                                         }
                                     }
 
+                                    // TODO improve this
+                                    registry_path_t registry_path = {
+                                        .namespace_id = path.namespace_id,
+                                        .schema_id = path.schema_id,
+                                        .instance_id = path.instance_id,
+                                        .path = path.path,
+                                        .path_len = path.path_len,
+                                    };
+
                                     /* get registry meta data of configuration parameter */
                                     registry_value_t value;
-                                    registry_get_value(path, &value);
+                                    registry_get_value_by_path(registry_path, &value);
 
                                     /* read value from file */
                                     uint8_t new_value_buf[value.buf_len];
@@ -327,7 +335,7 @@ static int load(const registry_storage_facility_instance_t *instance, const regi
     return 0;
 }
 
-static int save(const registry_storage_facility_instance_t *instance, const registry_path_t path,
+static int save(const registry_storage_facility_instance_t *instance, const storage_path_t path,
                 const registry_value_t value)
 {
     (void)path;

@@ -24,13 +24,14 @@
 #include <stdlib.h>
 #include <string.h>
 #include <ctype.h>
-#include "errno.h"
-
-#include "registry.h"
-#include "registry/cli.h"
+#include <errno.h>
 
 #define ENABLE_DEBUG (0)
 #include "debug.h"
+#include "registry.h"
+#include "registry/path.h"
+
+#include "registry/cli.h"
 
 /**
  * @brief Separator character to define hierarchy in configurations names.
@@ -212,7 +213,7 @@ int registry_cli_cmd(int argc, char **argv)
         }
 
         registry_value_t value;
-        int res = registry_get_value(path, &value);
+        int res = registry_get_value_by_path(path, &value);
 
         if (res != 0) {
             printf("error: %d\n", res);
@@ -231,7 +232,7 @@ int registry_cli_cmd(int argc, char **argv)
             return 1;
         }
 
-        registry_set_string(path, argv[3]);
+        registry_set_string_by_path(path, argv[3]);
         return 0;
     }
     else if (strcmp(argv[1], "commit") == 0) {
@@ -241,7 +242,7 @@ int registry_cli_cmd(int argc, char **argv)
             return 1;
         }
 
-        registry_commit(path);
+        registry_commit_by_path(path);
         return 0;
     }
     else if (strcmp(argv[1], "export") == 0) {
@@ -265,7 +266,7 @@ int registry_cli_cmd(int argc, char **argv)
             recursion_level = atoi(argv[4]);
         }
 
-        registry_export(_export_func, path, recursion_level, NULL);
+        registry_export_by_path(_export_func, path, recursion_level, NULL);
         return 0;
     }
     else if (strcmp(argv[1], "load") == 0) {
@@ -276,11 +277,11 @@ int registry_cli_cmd(int argc, char **argv)
                 return 1;
             }
             else {
-                registry_load(path);
+                registry_load_by_path(path);
             }
         }
         else {
-            registry_load(_REGISTRY_PATH_0());
+            registry_load_by_path(_REGISTRY_PATH_0());
         }
 
         return 0;
@@ -293,11 +294,11 @@ int registry_cli_cmd(int argc, char **argv)
                 return 1;
             }
             else {
-                registry_save(path);
+                registry_save_by_path(path);
             }
         }
         else {
-            registry_save(_REGISTRY_PATH_0());
+            registry_save_by_path(_REGISTRY_PATH_0());
         }
 
         return 0;

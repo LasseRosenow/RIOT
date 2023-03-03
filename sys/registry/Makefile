@@ -2,8 +2,8 @@ SRC := core.c util.c
 
 SUBMODULES := 1
 
-ifneq (,$(filter registry_storage_facility_%,$(USEMODULE)))
-  DIRS += storage_facility
+ifneq (,$(filter registry_storage_%,$(USEMODULE)))
+  DIRS += storage
 endif
 
 ifneq (,$(filter registry_schema_%,$(USEMODULE)))
