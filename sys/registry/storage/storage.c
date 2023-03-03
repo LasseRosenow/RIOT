@@ -26,17 +26,17 @@
 
 #include "registry/storage.h"
 
-const registry_storage_facility_instance_t *_storage_facility_dst;
-clist_node_t _storage_facility_srcs;
+const registry_storage_instance_t *_storage_dst;
+clist_node_t _storage_srcs;
 
-void registry_register_storage_facility_src(const registry_storage_facility_instance_t *src)
+void registry_register_storage_src(const registry_storage_instance_t *src)
 {
     assert(src != NULL);
-    clist_rpush((clist_node_t *)&_storage_facility_srcs, (clist_node_t *)&(src->node));
+    clist_rpush((clist_node_t *)&_storage_srcs, (clist_node_t *)&(src->node));
 }
 
-void registry_register_storage_facility_dst(const registry_storage_facility_instance_t *dst)
+void registry_register_storage_dst(const registry_storage_instance_t *dst)
 {
     assert(dst != NULL);
-    _storage_facility_dst = dst;
+    _storage_dst = dst;
 }

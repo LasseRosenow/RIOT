@@ -193,8 +193,7 @@ int registry_get_float64_by_path(const registry_path_t path, const double **buf)
 int registry_commit_by_path(const registry_path_t path);
 
 /**
- * @brief Load all configuration parameters that are included in the path from the registered storage
- * facility.
+ * @brief Load all configuration parameters that are included in the path from the registered storage.
  *
  * @param[in] path Path of the configuration parameters
  * @return 0 on success, non-zero on failure
@@ -203,7 +202,7 @@ int registry_load_by_path(const registry_path_t path);
 
 /**
  * @brief Save all configuration parameters of every configuration group to the
- * registered storage facility.
+ * registered storage.
  *
  * @param[in] path Path of the configuration parameters
  * @return 0 on success, non-zero on failure

@@ -31,7 +31,7 @@
 #include "vfs.h"
 #include "registry.h"
 #include "registry/schemas.h"
-#include "registry/storage_facilities.h"
+#include "registry/storage.h"
 
 #include "tests_registry.h"
 
@@ -218,13 +218,13 @@ static vfs_mount_t _vfs_mount = {
     .private_data = &fs_desc,
 };
 
-static registry_storage_facility_instance_t vfs_instance_1 = {
-    .itf = &registry_storage_facility_vfs,
+static registry_storage_instance_t vfs_instance_1 = {
+    .itf = &registry_storage_vfs,
     .data = &_vfs_mount,
 };
 
-static registry_storage_facility_instance_t vfs_instance_2 = {
-    .itf = &registry_storage_facility_vfs,
+static registry_storage_instance_t vfs_instance_2 = {
+    .itf = &registry_storage_vfs,
     .data = &_vfs_mount,
 };
 
@@ -247,8 +247,8 @@ static void setup(void)
     if (IS_USED(MODULE_LITTLEFS2)) {
         fs_desc.dev = MTD_0;
     }
-    registry_register_storage_facility_src(&vfs_instance_1);
-    registry_register_storage_facility_dst(&vfs_instance_2);
+    registry_register_storage_src(&vfs_instance_1);
+    registry_register_storage_dst(&vfs_instance_2);
 }
 
 static registry_id_t parameter_path_level_1[] = {

@@ -842,7 +842,7 @@ static void _registry_load_by_path_cb(const storage_path_t path,
     };
 
     if (ENABLE_DEBUG) {
-        DEBUG("[registry_storage_facility] Loading: ");
+        DEBUG("[registry_storage] Loading: ");
         _debug_print_path(registry_path);
         DEBUG(" = ");
         _debug_print_value(&value);
@@ -854,7 +854,7 @@ static void _registry_load_by_path_cb(const storage_path_t path,
 
 int registry_load_by_path(const registry_path_t path)
 {
-    clist_node_t *node = _storage_facility_srcs.next;
+    clist_node_t *node = _storage_srcs.next;
 
     if (!node) {
         return -ENOENT;
@@ -870,19 +870,19 @@ int registry_load_by_path(const registry_path_t path)
     };
 
     do {
-        registry_storage_facility_instance_t *src;
-        src = container_of(node, registry_storage_facility_instance_t, node);
+        registry_storage_instance_t *src;
+        src = container_of(node, registry_storage_instance_t, node);
         src->itf->load(src, storage_path, _registry_load_by_path_cb, NULL);
-    } while (node != _storage_facility_srcs.next);
+    } while (node != _storage_srcs.next);
     // TODO Possible bug? SFs could override with outdated values if SF_DST is not last in SF_SRCs?
 
     return 0;
 }
 
 /* registry_save */
-static void _registry_storage_facility_dup_check_cb(const registry_path_t path,
-                                                    const registry_value_t val,
-                                                    const void *cb_arg)
+static void _registry_storage_dup_check_cb(const registry_path_t path,
+                                           const registry_value_t val,
+                                           const void *cb_arg)
 {
     assert(cb_arg != NULL);
     registry_dup_check_arg_t *dup_arg = (registry_dup_check_arg_t *)cb_arg;
@@ -915,17 +915,17 @@ static int _registry_save_by_path_export_func(const registry_path_t path,
     (void)meta;
     (void)instance;
     (void)context;
-    (void)_registry_storage_facility_dup_check_cb;
+    (void)_registry_storage_dup_check_cb;
 
-    /* The registry also exports just the namespace or just a schema, but the storage facility is only interested in paths with values */
+    /* The registry also exports just the namespace or just a schema, but the storage is only interested in paths with values */
     if (value == NULL) {
         return 0;
     }
 
-    const registry_storage_facility_instance_t *dst = _storage_facility_dst;
+    const registry_storage_instance_t *dst = _storage_dst;
 
     if (ENABLE_DEBUG) {
-        DEBUG("[registry_storage_facility] Saving: ");
+        DEBUG("[registry_storage] Saving: ");
         _debug_print_path(path);
         DEBUG(" = ");
         _debug_print_value(value);
@@ -943,7 +943,7 @@ static int _registry_save_by_path_export_func(const registry_path_t path,
     //     .is_dup = false,
     // };
 
-    // _storage_facility_dst->itf->load(_storage_facility_dst, _registry_storage_facility_dup_check_cb, &dup);
+    // _storage_dst->itf->load(_storage_dst, _registry_storage_dup_check_cb, &dup);
 
     // if (dup.is_dup) {
     //     return -EEXIST;
@@ -965,18 +965,18 @@ int registry_save_by_path(const registry_path_t path)
 {
     int res;
 
-    if (!_storage_facility_dst) {
+    if (!_storage_dst) {
         return -ENOENT;
     }
 
-    if (_storage_facility_dst->itf->save_start) {
-        _storage_facility_dst->itf->save_start(_storage_facility_dst);
+    if (_storage_dst->itf->save_start) {
+        _storage_dst->itf->save_start(_storage_dst);
     }
 
     res = registry_export_by_path(_registry_save_by_path_export_func, path, 0, NULL);
 
-    if (_storage_facility_dst->itf->save_end) {
-        _storage_facility_dst->itf->save_end(_storage_facility_dst);
+    if (_storage_dst->itf->save_end) {
+        _storage_dst->itf->save_end(_storage_dst);
     }
 
     return res;

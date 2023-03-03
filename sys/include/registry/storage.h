@@ -35,72 +35,72 @@ typedef struct {
 } storage_path_t;
 
 /**
- * @brief Prototype of a callback function for the load action of a storage facility
+ * @brief Prototype of a callback function for the load action of a storage
  * interface
  */
 typedef void (*load_cb_t)(const storage_path_t path, const registry_value_t val,
                           const void *cb_arg);
 
-typedef struct _registry_storage_facility_t registry_storage_facility_t;
+typedef struct _registry_storage_t registry_storage_t;
 
 /**
- * @brief Store facility descriptor
+ * @brief Storage descriptor
  */
 typedef struct {
     clist_node_t node;                  /**< linked list node */
-    registry_storage_facility_t *itf;   /**< interface for the facility */
-    void *data;                         /**< Struct containing all config data for the storage facility */
-} registry_storage_facility_instance_t;
+    registry_storage_t *itf;            /**< interface for the storage */
+    void *data;                         /**< Struct containing all config data for the storage */
+} registry_storage_instance_t;
 
 /**
- * @brief Storage facility interface.
+ * @brief Storage interface.
  * All storage facilities should, at least, implement the load and save actions.
  */
-struct _registry_storage_facility_t {
+struct _registry_storage_t {
     /**
      * @brief Loads all saved parameters and calls the @p cb callback function.
      *
-     * @param[in] instance Storage facility descriptor
+     * @param[in] instance Storage descriptor
      * @param[in] path Path of the parameter
      * @param[in] cb Callback function to call for every saved parameter
      * @param[in] cb_arg Argument passed to @p cb function
      * @return 0 on success, non-zero on failure
      */
-    int (*load)(const registry_storage_facility_instance_t *instance, const storage_path_t path,
+    int (*load)(const registry_storage_instance_t *instance, const storage_path_t path,
                 const load_cb_t cb, const void *cb_arg);
 
     /**
      * @brief If implemented, it is used for any preparation the storage may
      * need before starting a saving process.
      *
-     * @param[in] instance Storage facility descriptor
+     * @param[in] instance Storage descriptor
      * @return 0 on success, non-zero on failure
      */
-    int (*save_start)(const registry_storage_facility_instance_t *instance);
+    int (*save_start)(const registry_storage_instance_t *instance);
 
     /**
      * @brief Saves a parameter into storage.
      *
-     * @param[in] instance Storage facility descriptor
+     * @param[in] instance Storage descriptor
      * @param[in] path Path of the parameter
      * @param[in] value Struct representing the value of the parameter
      * @return 0 on success, non-zero on failure
      */
-    int (*save)(const registry_storage_facility_instance_t *instance, const storage_path_t path,
+    int (*save)(const registry_storage_instance_t *instance, const storage_path_t path,
                 const registry_value_t value);
 
     /**
      * @brief If implemented, it is used for any tear-down the storage may need
      * after a saving process.
      *
-     * @param[in] instance Storage facility descriptor
+     * @param[in] instance Storage descriptor
      * @return 0 on success, non-zero on failure
      */
-    int (*save_end)(const registry_storage_facility_instance_t *instance);
+    int (*save_end)(const registry_storage_instance_t *instance);
 };
 
-extern const registry_storage_facility_instance_t *_storage_facility_dst;
-extern clist_node_t _storage_facility_srcs;
+extern const registry_storage_instance_t *_storage_dst;
+extern clist_node_t _storage_srcs;
 
 /**
  * @brief Registers a new storage as a source of configurations. Multiple
@@ -111,7 +111,7 @@ extern clist_node_t _storage_facility_srcs;
  *
  * @param[in] src Pointer to the storage to register as source.
  */
-void registry_register_storage_facility_src(const registry_storage_facility_instance_t *src);
+void registry_register_storage_src(const registry_storage_instance_t *src);
 
 /**
  * @brief Registers a new storage as a destination for saving configurations.
@@ -122,16 +122,16 @@ void registry_register_storage_facility_src(const registry_storage_facility_inst
  *
  * @param[in] dst Pointer to the storage to register
  */
-void registry_register_storage_facility_dst(const registry_storage_facility_instance_t *dst);
+void registry_register_storage_dst(const registry_storage_instance_t *dst);
 
 /* heap */
 #if IS_USED(MODULE_REGISTRY_STORAGE_HEAP) || IS_ACTIVE(DOXYGEN)
-extern registry_storage_facility_t registry_storage_facility_heap;
+extern registry_storage_t registry_storage_heap;
 #endif
 
 /* vfs */
 #if IS_USED(MODULE_REGISTRY_STORAGE_VFS) || IS_ACTIVE(DOXYGEN)
-extern registry_storage_facility_t registry_storage_facility_vfs;
+extern registry_storage_t registry_storage_vfs;
 #endif
 
 #ifdef __cplusplus

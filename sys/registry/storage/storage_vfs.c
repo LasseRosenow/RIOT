@@ -7,9 +7,9 @@
  */
 
 /**
- * @defgroup    sys_registry_storage_facility_vfs RIOT Registry Storage Facilities: VFS
+ * @defgroup    sys_registry_storage_vfs RIOT Registry Storage Facilities: VFS
  * @ingroup     sys
- * @brief       RIOT Registry VFS Storage Facility allows using the RIOT VFS module as a RIOT Registry data storage facility.
+ * @brief       RIOT Registry VFS Storage allows using the RIOT VFS module as a RIOT Registry data storage.
  * @{
  *
  * @file
@@ -35,12 +35,12 @@
 
 #include "registry/storage.h"
 
-static int load(const registry_storage_facility_instance_t *instance, const storage_path_t path,
+static int load(const registry_storage_instance_t *instance, const storage_path_t path,
                 const load_cb_t cb, const void *cb_arg);
-static int save(const registry_storage_facility_instance_t *instance, const storage_path_t path,
+static int save(const registry_storage_instance_t *instance, const storage_path_t path,
                 const registry_value_t value);
 
-registry_storage_facility_t registry_storage_facility_vfs = {
+registry_storage_t registry_storage_vfs = {
     .load = load,
     .save = save,
 };
@@ -134,7 +134,7 @@ static int _umount(vfs_mount_t *mount)
     return 0;
 }
 
-static int load(const registry_storage_facility_instance_t *instance, const storage_path_t path,
+static int load(const registry_storage_instance_t *instance, const storage_path_t path,
                 const load_cb_t cb, const void *cb_arg)
 {
     (void)cb;
@@ -166,7 +166,7 @@ static int load(const registry_storage_facility_instance_t *instance, const stor
     vfs_DIR dirp;
 
     if (vfs_opendir(&dirp, string_path) != 0) {
-        DEBUG("[registry storage_facility_vfs] load: Can not open dir\n");
+        DEBUG("[registry storage_vfs] load: Can not open dir\n");
     }
     else {
         struct stat _stat;
@@ -206,12 +206,12 @@ static int load(const registry_storage_facility_instance_t *instance, const stor
                                 /* close old directory */
                                 if (vfs_closedir(&dirp) != 0) {
                                     DEBUG(
-                                        "[registry storage_facility_vfs] load: Can not close dir\n");
+                                        "[registry storage_vfs] load: Can not close dir\n");
                                 }
 
                                 /* open new directory */
                                 if (vfs_opendir(&dirp, string_path) != 0) {
-                                    DEBUG("[registry storage_facility_vfs] load: Can not open dir\n");
+                                    DEBUG("[registry storage_vfs] load: Can not open dir\n");
                                 }
 
                                 /* move on to next sub path */
@@ -226,7 +226,7 @@ static int load(const registry_storage_facility_instance_t *instance, const stor
 
                                 if (fd <= 0) {
                                     DEBUG(
-                                        "[registry storage_facility_vfs] load: Can not open file: %d\n",
+                                        "[registry storage_vfs] load: Can not open file: %d\n",
                                         fd);
                                 }
 
@@ -240,7 +240,7 @@ static int load(const registry_storage_facility_instance_t *instance, const stor
                                                        path_items,
                                                        &path_items_len) < 0) {
                                     DEBUG(
-                                        "[registry storage_facility_vfs] load: Invalid registry path\n");
+                                        "[registry storage_vfs] load: Invalid registry path\n");
                                 }
                                 else {
                                     /* convert int path to storage_path_t */
@@ -274,7 +274,7 @@ static int load(const registry_storage_facility_instance_t *instance, const stor
                                     uint8_t new_value_buf[value.buf_len];
                                     if (vfs_read(fd, new_value_buf, value.buf_len) < 0) {
                                         DEBUG(
-                                            "[registry storage_facility_vfs] load: Can not read from file\n");
+                                            "[registry storage_vfs] load: Can not read from file\n");
                                     }
                                     else {
                                         /* add read value to value */
@@ -288,7 +288,7 @@ static int load(const registry_storage_facility_instance_t *instance, const stor
                                 /* close file */
                                 if (vfs_close(fd) != 0) {
                                     DEBUG(
-                                        "[registry storage_facility_vfs] load: Can not close file: %d\n",
+                                        "[registry storage_vfs] load: Can not close file: %d\n",
                                         fd);
                                 }
 
@@ -311,12 +311,12 @@ static int load(const registry_storage_facility_instance_t *instance, const stor
 
                             /* close old directory */
                             if (vfs_closedir(&dirp) != 0) {
-                                DEBUG("[registry storage_facility_vfs] load: Can not close dir\n");
+                                DEBUG("[registry storage_vfs] load: Can not close dir\n");
                             }
 
                             /* open new directory */
                             if (vfs_opendir(&dirp, string_path) != 0) {
-                                DEBUG("[registry storage_facility_vfs] load: Can not open dir\n");
+                                DEBUG("[registry storage_vfs] load: Can not open dir\n");
                             }
                         }
                     }
@@ -325,7 +325,7 @@ static int load(const registry_storage_facility_instance_t *instance, const stor
         }
 
         if (vfs_closedir(&dirp) != 0) {
-            DEBUG("[registry storage_facility_vfs] load: Can not close dir\n");
+            DEBUG("[registry storage_vfs] load: Can not close dir\n");
         }
     }
 
@@ -335,7 +335,7 @@ static int load(const registry_storage_facility_instance_t *instance, const stor
     return 0;
 }
 
-static int save(const registry_storage_facility_instance_t *instance, const storage_path_t path,
+static int save(const registry_storage_instance_t *instance, const storage_path_t path,
                 const registry_value_t value)
 {
     (void)path;
@@ -355,21 +355,21 @@ static int save(const registry_storage_facility_instance_t *instance, const stor
     int res = vfs_mkdir(string_path, 0);
 
     if (res < 0 && res != -EEXIST) {
-        DEBUG("[registry storage_facility_vfs] save: Can not make dir: %s\n", string_path);
+        DEBUG("[registry storage_vfs] save: Can not make dir: %s\n", string_path);
     }
 
     _string_path_append_item(string_path, *path.schema_id);
     res = vfs_mkdir(string_path, 0);
 
     if (res < 0 && res != -EEXIST) {
-        DEBUG("[registry storage_facility_vfs] save: Can not make dir: %s\n", string_path);
+        DEBUG("[registry storage_vfs] save: Can not make dir: %s\n", string_path);
     }
 
     _string_path_append_item(string_path, *path.instance_id);
     res = vfs_mkdir(string_path, 0);
 
     if (res < 0 && res != -EEXIST) {
-        DEBUG("[registry storage_facility_vfs] save: Can not make dir: %s\n", string_path);
+        DEBUG("[registry storage_vfs] save: Can not make dir: %s\n", string_path);
     }
 
     /* exclude the last element, as it will be the file name and not a folder */
@@ -377,7 +377,7 @@ static int save(const registry_storage_facility_instance_t *instance, const stor
         _string_path_append_item(string_path, path.path[i]);
         res = vfs_mkdir(string_path, 0);
         if (res != 0 && res != -EEXIST) {
-            DEBUG("[registry storage_facility_vfs] save: Can not create dir: %d\n", res);
+            DEBUG("[registry storage_vfs] save: Can not create dir: %d\n", res);
         }
     }
 
@@ -387,15 +387,15 @@ static int save(const registry_storage_facility_instance_t *instance, const stor
     int fd = vfs_open(string_path, O_CREAT | O_RDWR, 0);
 
     if (fd <= 0) {
-        DEBUG("[registry storage_facility_vfs] save: Can not open file: %d\n", fd);
+        DEBUG("[registry storage_vfs] save: Can not open file: %d\n", fd);
     }
 
     if (vfs_write(fd, value.buf, value.buf_len) < 0) {
-        DEBUG("[registry storage_facility_vfs] save: Can not write to file: %d\n", fd);
+        DEBUG("[registry storage_vfs] save: Can not write to file: %d\n", fd);
     }
 
     if (vfs_close(fd) != 0) {
-        DEBUG("[registry storage_facility_vfs] save: Can not close file: %d\n", fd);
+        DEBUG("[registry storage_vfs] save: Can not close file: %d\n", fd);
     }
 
     /* umount */
