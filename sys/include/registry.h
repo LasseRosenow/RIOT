@@ -234,29 +234,29 @@ typedef struct {
 /**
  * @brief Parameter of a configuration group.
  */
-typedef struct {
+typedef const struct {
     const registry_type_t type; /**< Enum representing the type of the configuration parameter */
 } registry_schema_parameter_t;
 
-typedef struct _registry_schema_item_t registry_schema_item_t;
+typedef const struct _registry_schema_item_t registry_schema_item_t;
 
 /**
  * @brief Configuration group.
  */
-typedef struct {
+typedef const struct {
     const registry_schema_item_t * const items;
     const size_t items_len;
 } registry_schema_group_t;
 
-typedef enum {
+typedef const enum {
     REGISTRY_SCHEMA_TYPE_GROUP,
     REGISTRY_SCHEMA_TYPE_PARAMETER,
 } registry_schema_type_t;
 
 struct _registry_schema_item_t {
     const registry_id_t id;                             /**< Integer representing the path id of the schema item */
-    const char *name;                                   /**< String describing the schema item */
-    const char *description;                            /**< String describing the schema item with more details */
+    const char * const name;                            /**< String describing the schema item */
+    const char * const description;                     /**< String describing the schema item with more details */
     const registry_schema_type_t type;                  /**< Type of the schema item (group or parameter) */
     const union {
         const registry_schema_group_t group;            /**< Value of the schema item if it is a group. Contains an array of schema item children */
@@ -269,8 +269,8 @@ struct _registry_schema_item_t {
  */
 typedef struct {
     clist_node_t node;  /**< Linked list node */
-    char *name;         /**< String describing the instance */
-    void *data;         /**< Struct containing all configuration parameters of the schema */
+    char * const name;  /**< String describing the instance */
+    void * const data;  /**< Struct containing all configuration parameters of the schema */
 
     /**
      * @brief Will be called after @ref registry_commit() was called on this instance.
@@ -293,8 +293,8 @@ typedef struct {
 typedef struct {
     clist_node_t node;                          /**< Linked list node */
     const registry_id_t id;                     /**< Integer representing the configuration group */
-    const char *name;                           /**< String describing the configuration group */
-    const char *description;                    /**< String describing the configuration group with more details */
+    const char * const name;                    /**< String describing the configuration group */
+    const char * const description;             /**< String describing the configuration group with more details */
     const registry_schema_item_t * const items; /**< Array representing all the configuration parameters that belong to this group */
     const size_t items_len;                     /**< Size of items array */
     clist_node_t instances;                     /**< Linked list of schema instances @ref registry_instance_t */
