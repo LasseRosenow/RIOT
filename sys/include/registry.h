@@ -175,6 +175,7 @@ extern "C" {
  */
 typedef enum {
     REGISTRY_TYPE_NONE = 0,     /**< No type specified */
+
     REGISTRY_TYPE_OPAQUE,       /**< OPAQUE */
     REGISTRY_TYPE_STRING,       /**< String */
     REGISTRY_TYPE_BOOL,         /**< Boolean */
@@ -348,6 +349,73 @@ int registry_register_schema_instance(const registry_namespace_id_t namespace_id
 
 /* ----------------------------- WIP ----------------------------- */
 
+typedef enum {
+    REGISTRY_TYPE_NONE_V2   = 0,    /**< No type specified */
+    REGISTRY_TYPE_GROUP_V2  = 1,    /**< GROUP contains parameters */
+
+    REGISTRY_TYPE_OPAQUE_V2,        /**< OPAQUE */
+    REGISTRY_TYPE_STRING_V2,        /**< String */
+    REGISTRY_TYPE_BOOL_V2,          /**< Boolean */
+
+    REGISTRY_TYPE_UINT8_V2,         /**< 8-bits unsigned integer */
+    REGISTRY_TYPE_UINT16_V2,        /**< 16-bits unsigned integer */
+    REGISTRY_TYPE_UINT32_V2,        /**< 32-bits unsigned integer */
+
+#if IS_ACTIVE(CONFIG_REGISTRY_USE_UINT64) || IS_ACTIVE(DOXYGEN)
+    REGISTRY_TYPE_UINT64_V2,     /**< 64-bits unsigned integer */
+#endif /* CONFIG_REGISTRY_USE_UINT64 */
+
+    REGISTRY_TYPE_INT8_V2,          /**< 8-bits signed integer */
+    REGISTRY_TYPE_INT16_V2,         /**< 16-bits signed integer */
+    REGISTRY_TYPE_INT32_V2,         /**< 32-bits signed integer */
+
+#if IS_ACTIVE(CONFIG_REGISTRY_USE_INT64) || IS_ACTIVE(DOXYGEN)
+    REGISTRY_TYPE_INT64_V2,     /**< 64-bits signed integer */
+#endif /* CONFIG_REGISTRY_USE_INT64 */
+
+#if IS_ACTIVE(CONFIG_REGISTRY_USE_FLOAT32) || IS_ACTIVE(DOXYGEN)
+    REGISTRY_TYPE_FLOAT32_V2,     /**< 32-bits float */
+#endif /* CONFIG_REGISTRY_USE_FLOAT32 */
+
+#if IS_ACTIVE(CONFIG_REGISTRY_USE_FLOAT64) || IS_ACTIVE(DOXYGEN)
+    REGISTRY_TYPE_FLOAT64_V2,     /**< 64-bits float */
+#endif /* CONFIG_REGISTRY_USE_FLOAT64 */
+} registry_type_v2_t;
+
+/* Registry schema */
+typedef struct {
+    const registry_id_t id;
+    const char * const name;
+    const char * const description;
+    clist_node_t instances;
+    void(*const mapping)(const registry_id_t param_id,
+                         const registry_instance_t *instance,
+                         void **val,
+                         size_t *val_len);
+} registry_schema_data_v2_t;
+
+typedef struct {
+    const registry_id_t id;
+    const char * const name;
+    const char * const description;
+    const registry_type_v2_t type;
+} registry_schema_item_data_v2_t;
+
+/* Dynamic registry path items structure */
+typedef const struct _registry_path_schema_item_v2_t registry_path_schema_item_v2_t;
+
+struct _registry_path_schema_item_v2_t {
+    const registry_schema_item_data_v2_t * const data;
+    const registry_path_schema_item_v2_t * const items;
+    const size_t items_len;
+};
+
+typedef const struct {
+    const registry_schema_data_v2_t * const data;
+    const registry_path_schema_item_v2_t * const items;
+    const size_t items_len;
+} registry_path_schema_v2_t;
+
 /**
  * Remove parenthesises
  */
@@ -410,12 +478,13 @@ int registry_get_uint8_v2(uint8_t **val, size_t *val_len);
 
 
 #define _REGISTRY_SCHEMA_PARAMETER_DECLARATION_V2(_field_name, _type) \
-    struct { \
+    const struct { \
+        const registry_schema_item_t * const meta; \
         int (*get)(_type **val, size_t *val_len); \
     } _field_name;
 
 #define _REGISTRY_SCHEMA_GROUP_DECLARATION_V2(_field_name, ...) \
-    struct { \
+    const struct { \
         _CALL_MACRO_FOR_EACH(_REGISTRY_SCHEMA_ITEM_DECLARATION_V2, __VA_ARGS__) \
     } _field_name;
 
@@ -440,10 +509,8 @@ int registry_get_uint8_v2(uint8_t **val, size_t *val_len);
 
 /* registry schema macros */
 #define REGISTRY_SCHEMA_V2(_field_name, _id, ...) \
-    typedef struct { \
-        struct { \
-            registry_id_t id; \
-        } meta; \
+    typedef const struct { \
+        const registry_schema_item_t * const meta; \
         _CALL_MACRO_FOR_EACH(_REGISTRY_SCHEMA_ITEM_DECLARATION_V2, __VA_ARGS__) \
     } registry_schema_ ## _field_name ## _t; \
     \
