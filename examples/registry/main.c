@@ -228,16 +228,16 @@ typedef const struct {
 
 registry_schema_rgb_v2_t registry_schema_rgb_v2 = {
     .data = {
-        .id = REGISTRY_SCHEMA_RGB_LED,
-        .name = "rgb",
-        .description = "Representation of an rgb color.",
+        .id = 0,
+        .name = "rgb_v2",
+        .description = "",
         .mapping = mapping,
     },
     .red = {
         .data = {
             .id = 0,
             .name = "red",
-            .description = "Intensity of the red color of the rgb lamp.",
+            .description = "",
             .type = REGISTRY_TYPE_UINT8_V2,
         },
         .get = registry_get_uint8_v2,
@@ -246,7 +246,7 @@ registry_schema_rgb_v2_t registry_schema_rgb_v2 = {
         .data = {
             .id = 1,
             .name = "green",
-            .description = "Intensity of the green color of the rgb lamp.",
+            .description = "",
             .type = REGISTRY_TYPE_UINT8_V2,
         },
         .get = registry_get_uint8_v2,
@@ -255,7 +255,7 @@ registry_schema_rgb_v2_t registry_schema_rgb_v2 = {
         .data = {
             .id = 2,
             .name = "blue",
-            .description = "Intensity of the blue color of the rgb lamp.",
+            .description = "",
             .type = REGISTRY_TYPE_UINT8_V2,
         },
         .get = registry_get_uint8_v2,
@@ -264,14 +264,14 @@ registry_schema_rgb_v2_t registry_schema_rgb_v2 = {
         .data = {
             .id = 3,
             .name = "brightnesses",
-            .description = "Brightnesses of the white and yellow color of the rgb lamp.",
+            .description = "",
             .type = REGISTRY_TYPE_GROUP_V2,
         },
         .white = {
             .data = {
                 .id = 4,
                 .name = "white",
-                .description = "Intensity of the white color of the rgb lamp.",
+                .description = "",
                 .type = REGISTRY_TYPE_UINT8_V2,
             },
             .get = registry_get_uint8_v2,
@@ -280,7 +280,7 @@ registry_schema_rgb_v2_t registry_schema_rgb_v2 = {
             .data = {
                 .id = 5,
                 .name = "yellow",
-                .description = "Intensity of the yellow color of the rgb lamp.",
+                .description = "",
                 .type = REGISTRY_TYPE_UINT8_V2,
             },
             .get = registry_get_uint8_v2,
@@ -290,100 +290,58 @@ registry_schema_rgb_v2_t registry_schema_rgb_v2 = {
 
 registry_path_schema_v2_t registry_path_schema_rgb_v2 = {
     .data = &registry_schema_rgb_v2.data,
-    .items = (registry_path_schema_item_v2_t[]){
+    .items = (registry_path_schema_item_v2_t[]) {
         {
             .data = &registry_schema_rgb_v2.red.data,
-            .items = NULL,
+            .items = ((void *)0),
             .items_len = 0,
         },
         {
             .data = &registry_schema_rgb_v2.green.data,
-            .items = NULL,
+            .items = ((void *)0),
             .items_len = 0,
         },
         {
             .data = &registry_schema_rgb_v2.blue.data,
-            .items = NULL,
+            .items = ((void *)0),
             .items_len = 0,
         },
         {
             .data = &registry_schema_rgb_v2.brightnesses.data,
-            .items = (registry_path_schema_item_v2_t[]){
+            .items = (registry_path_schema_item_v2_t[]) {
                 {
                     .data = &registry_schema_rgb_v2.brightnesses.white.data,
-                    .items = NULL,
+                    .items = ((void *)0),
                     .items_len = 0,
                 },
                 {
                     .data = &registry_schema_rgb_v2.brightnesses.yellow.data,
-                    .items = NULL,
+                    .items = ((void *)0),
                     .items_len = 0,
                 },
             },
-            .items_len = 2,
+            .items_len = 0,
         },
     },
-    .items_len = 4,
+    .items_len = 0,
 };
-
-// GENERATED:
-
-// typedef struct {
-//     struct {
-//         registry_id_t id;
-//     } meta;
-//     struct {
-//         int (*get)(uint8_t **val, size_t *val_len);
-//     } red;
-//     struct {
-//         int (*get)(uint8_t **val, size_t *val_len);
-//     } green;
-//     struct {
-//         int (*get)(uint8_t **val, size_t *val_len);
-//     } blue;
-//     struct {
-//         struct { int (*get)(uint8_t **val, size_t *val_len); } white;
-//         struct { int (*get)(uint8_t **val, size_t *val_len); } yellow;
-//     } brightnesses;
-// } registry_schema_rgb_v2_t;
-
-// registry_schema_rgb_v2_t registry_schema_rgb_v2 = {
-//     .meta = {
-//         .id = 0,
-//     },
-//     .red = {
-//         .get = registry_get_uint8_v2,
-//     },
-//     .green = {
-//         .get = registry_get_uint8_v2,
-//     },
-//     .blue = {
-//         .get = registry_get_uint8_v2,
-//     },
-//     .brightnesses = {
-//         .white = {
-//             .get = registry_get_uint8_v2,
-//         },
-//         .yellow = {
-//             .get = registry_get_uint8_v2,
-//         },
-//     },
-// };
 
 int main(void)
 {
     // REGISTRY_SCHEMA_V2(
-    //     rgb_v2, 0,
+    //     rgb_v2, 0, "", mapping,
 
-    //     REGISTRY_PARAMETER_V2(red, uint8_t),
-    //     REGISTRY_PARAMETER_V2(green, uint8_t),
-    //     REGISTRY_PARAMETER_V2(blue, uint8_t),
+    //     REGISTRY_PARAMETER_V2(red, 0, REGISTRY_TYPE_UINT8_V2, uint8_t, ""),
+    //     REGISTRY_PARAMETER_V2(green, 1, REGISTRY_TYPE_UINT8_V2, uint8_t, ""),
+    //     REGISTRY_PARAMETER_V2(blue, 2,  REGISTRY_TYPE_UINT8_V2, uint8_t, ""),
 
     //     REGISTRY_GROUP_V2(
     //         brightnesses,
+    //         3,
+    //         "",
 
-    //         REGISTRY_PARAMETER_V2(white, uint8_t),
-    //         REGISTRY_PARAMETER_V2(yellow, uint8_t)
+    //         REGISTRY_PARAMETER_V2(white, 4, REGISTRY_TYPE_UINT8_V2, uint8_t, ""),
+    //         REGISTRY_PARAMETER_V2(yellow, 5, REGISTRY_TYPE_UINT8_V2, uint8_t, "")
     //         )
     //     );
 

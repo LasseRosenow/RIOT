@@ -426,12 +426,12 @@ typedef const struct {
 /**
  * IF inside macros
  */
-#define CONCAT2(A, B) A ## B
-#define CONCAT2_DEFERRED(A, B) CONCAT2(A, B)
-#define IF_0(true_case, false_case) false_case
-#define IF_1(true_case, false_case) true_case
+#define _CONCAT2(A, B) A ## B
+#define _CONCAT2_DEFERRED(A, B) _CONCAT2(A, B)
+#define _IF_0(true_case, false_case) false_case
+#define _IF_1(true_case, false_case) true_case
 #define IF(condition, true_case, false_case) \
-    CONCAT2_DEFERRED(IF_, condition)(true_case, false_case)
+    _CONCAT2_DEFERRED(_IF_, condition)(true_case, false_case)
 
 
 /**
@@ -444,21 +444,26 @@ typedef const struct {
  * Define some macros to help us create overrides based on the
  * Here, N == 6.
  */
-#define _registry_fe_0(_call, ...)
-#define _registry_fe_1(_call, x) _call x
-#define _registry_fe_2(_call, x, ...) _call x _registry_fe_1(_call, __VA_ARGS__)
-#define _registry_fe_3(_call, x, ...) _call x _registry_fe_2(_call, __VA_ARGS__)
-#define _registry_fe_4(_call, x, ...) _call x _registry_fe_3(_call, __VA_ARGS__)
+#define __registry_fe(_macro, ...) \
+    _macro(__VA_ARGS__)
+#define _registry_fe(_macro, _context, _params) \
+    __registry_fe(_macro, _context, _REMOVE_PARENTHESISES(_params))
+
+#define _registry_fe_0(m, c, ...)
+#define _registry_fe_1(m, c, x) _registry_fe(m, c, x)
+#define _registry_fe_2(m, c, x, ...) _registry_fe(m, c, x) _registry_fe_1(m, c, __VA_ARGS__)
+#define _registry_fe_3(m, c, x, ...) _registry_fe(m, c, x) _registry_fe_2(m, c, __VA_ARGS__)
+#define _registry_fe_4(m, c, x, ...) _registry_fe(m, c, x) _registry_fe_3(m, c, __VA_ARGS__)
 
 /**
  * Provide a for-each construct for variadic macros. Supports up
  * to 4 args.
  */
-#define _CALL_MACRO_FOR_EACH(x, ...) \
+#define _CALL_MACRO_FOR_EACH(_macro, _context, ...) \
     _REGISTRY_GET_NTH_ARG( \
         "ignored", ## __VA_ARGS__, \
         _registry_fe_4, _registry_fe_3, _registry_fe_2, _registry_fe_1, _registry_fe_0 \
-        ) (x, __VA_ARGS__)
+        ) (_macro, _context, __VA_ARGS__)
 
 
 
@@ -468,7 +473,7 @@ int registry_get_uint8_v2(uint8_t **val, size_t *val_len);
                                                 sizeof(registry_schema_item_t))
 
 /* declaration */
-#define _REGISTRY_SCHEMA_ITEM_DECLARATION_V2(_is_group, ...) \
+#define _REGISTRY_SCHEMA_ITEM_DECLARATION_V2(_context, _is_group, ...) \
     _REMOVE_PARENTHESISES( \
         IF( \
             _is_group, \
@@ -477,19 +482,21 @@ int registry_get_uint8_v2(uint8_t **val, size_t *val_len);
             ))
 
 
-#define _REGISTRY_SCHEMA_PARAMETER_DECLARATION_V2(_field_name, _type) \
+#define _REGISTRY_SCHEMA_PARAMETER_DECLARATION_V2(_field_name, _id, _registry_type, _c_type, \
+                                                  _description) \
     const struct { \
-        const registry_schema_item_t * const meta; \
-        int (*get)(_type **val, size_t *val_len); \
+        const registry_schema_item_data_v2_t data; \
+        int (*get)(_c_type **val, size_t *val_len); \
     } _field_name;
 
-#define _REGISTRY_SCHEMA_GROUP_DECLARATION_V2(_field_name, ...) \
+#define _REGISTRY_SCHEMA_GROUP_DECLARATION_V2(_field_name, _id, _description, ...) \
     const struct { \
-        _CALL_MACRO_FOR_EACH(_REGISTRY_SCHEMA_ITEM_DECLARATION_V2, __VA_ARGS__) \
+        const registry_schema_item_data_v2_t data; \
+        _CALL_MACRO_FOR_EACH(_REGISTRY_SCHEMA_ITEM_DECLARATION_V2, NULL, __VA_ARGS__) \
     } _field_name;
 
 /* initialization */
-#define _REGISTRY_SCHEMA_ITEM_INITIALIZATION_V2(_is_group, ...) \
+#define _REGISTRY_SCHEMA_ITEM_INITIALIZATION_V2(_context, _is_group, ...) \
     _REMOVE_PARENTHESISES( \
         IF( \
             _is_group, \
@@ -497,35 +504,94 @@ int registry_get_uint8_v2(uint8_t **val, size_t *val_len);
             (_REGISTRY_SCHEMA_PARAMETER_INITIALIZATION_V2(__VA_ARGS__)) \
             ))
 
-#define _REGISTRY_SCHEMA_PARAMETER_INITIALIZATION_V2(_field_name, _type) \
+#define _REGISTRY_SCHEMA_PARAMETER_INITIALIZATION_V2(_field_name, _id, _registry_type, _c_type, \
+                                                     _description) \
     ._field_name = { \
+        .data = { \
+            .id = _id, \
+            .name = #_field_name, \
+            .description = _description, \
+            .type = _registry_type, \
+        }, \
         .get = registry_get_uint8_v2, \
     },
 
-#define _REGISTRY_SCHEMA_GROUP_INITIALIZATION_V2(_field_name, ...) \
+#define _REGISTRY_SCHEMA_GROUP_INITIALIZATION_V2(_field_name, _id, _description, ...) \
     ._field_name = { \
-        _CALL_MACRO_FOR_EACH(_REGISTRY_SCHEMA_ITEM_INITIALIZATION_V2, __VA_ARGS__) \
+        .data = { \
+            .id = _id, \
+            .name = #_field_name, \
+            .description = _description, \
+            .type = REGISTRY_TYPE_GROUP_V2, \
+        }, \
+        _CALL_MACRO_FOR_EACH(_REGISTRY_SCHEMA_ITEM_INITIALIZATION_V2, NULL, __VA_ARGS__) \
     },
 
+/* registry path structure initialization */
+#define _REGISTRY_SCHEMA_PATH_ITEM_INITIALIZATION_V2(_context, _is_group, ...) \
+    _REMOVE_PARENTHESISES( \
+        IF( \
+            _is_group, \
+            (_REGISTRY_SCHEMA_PATH_GROUP_INITIALIZATION_V2(_context, __VA_ARGS__)), \
+            (_REGISTRY_SCHEMA_PATH_PARAMETER_INITIALIZATION_V2(_context, __VA_ARGS__)) \
+            ))
+
+#define _REGISTRY_SCHEMA_PATH_PARAMETER_INITIALIZATION_V2(_current_path, _field_name, _id, \
+                                                          _registry_type, _c_type, \
+                                                          _description) \
+    { \
+        .data = & ## _current_path ## . ## _field_name ## .data, \
+        .items = NULL, \
+        .items_len = 0, \
+    },
+
+#define _REGISTRY_SCHEMA_PATH_GROUP_INITIALIZATION_V2(_current_path, _field_name, _id, _description, \
+                                                      ...) \
+    { \
+        .data = & ## _current_path ## . ## _field_name ## .data, \
+        .items = (registry_path_schema_item_v2_t[]) { \
+            _CALL_MACRO_FOR_EACH(_REGISTRY_SCHEMA_PATH_ITEM_INITIALIZATION_V2, \
+                                 _current_path ## . ## _field_name, \
+                                 __VA_ARGS__) \
+        }, \
+        .items_len = 0 /*_REGISTRY_SCHEMA_ITEM_NUMARGS_V2(__VA_ARGS__)*/, \
+    },
+
+
 /* registry schema macros */
-#define REGISTRY_SCHEMA_V2(_field_name, _id, ...) \
+#define REGISTRY_SCHEMA_V2(_field_name, _id, _description, _mapping, ...) \
     typedef const struct { \
-        const registry_schema_item_t * const meta; \
-        _CALL_MACRO_FOR_EACH(_REGISTRY_SCHEMA_ITEM_DECLARATION_V2, __VA_ARGS__) \
+        const registry_schema_data_v2_t data; \
+        _CALL_MACRO_FOR_EACH(_REGISTRY_SCHEMA_ITEM_DECLARATION_V2, NULL, __VA_ARGS__) \
     } registry_schema_ ## _field_name ## _t; \
     \
     registry_schema_ ## _field_name ## _t registry_schema_ ## _field_name = { \
-        .meta = { \
+        .data = { \
             .id = _id, \
+            .name = #_field_name, \
+            .description = _description, \
+            .mapping = _mapping, \
         }, \
-        _CALL_MACRO_FOR_EACH(_REGISTRY_SCHEMA_ITEM_INITIALIZATION_V2, __VA_ARGS__) \
+        _CALL_MACRO_FOR_EACH(_REGISTRY_SCHEMA_ITEM_INITIALIZATION_V2, NULL, __VA_ARGS__) \
+    }; \
+    \
+    registry_path_schema_v2_t registry_path_schema_ ## _field_name = { \
+        .data = & ## registry_schema_ ## _field_name ## .data, \
+        .items = (registry_path_schema_item_v2_t[]) { \
+            _CALL_MACRO_FOR_EACH(_REGISTRY_SCHEMA_PATH_ITEM_INITIALIZATION_V2, \
+                                 registry_schema_ ## _field_name, \
+                                 __VA_ARGS__) \
+        }, \
+        .items_len = 0 /*_REGISTRY_SCHEMA_ITEM_NUMARGS_V2(__VA_ARGS__)*/, \
     };
 
-#define REGISTRY_PARAMETER_V2(_field_name, _type) \
-    (0, _field_name, _type)
 
-#define REGISTRY_GROUP_V2(_field_name, ...) \
-    (1, _field_name, __VA_ARGS__)
+
+#define REGISTRY_PARAMETER_V2(_field_name, _id, _registry_type, _c_type, _description) \
+    (0, _field_name, _id, _registry_type, _c_type, _description)
+
+#define REGISTRY_GROUP_V2(_field_name, _id, _description, ...) \
+    (1, _field_name, _id, _description, __VA_ARGS__)
 
 
 
