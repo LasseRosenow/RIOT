@@ -540,7 +540,7 @@ int registry_get_uint8_v2(uint8_t **val, size_t *val_len);
                                                           _registry_type, _c_type, \
                                                           _description) \
     { \
-        .data = & ## _current_path ## . ## _field_name ## .data, \
+        .data = & ## _current_path._field_name.data, \
         .items = NULL, \
         .items_len = 0, \
     },
@@ -548,10 +548,10 @@ int registry_get_uint8_v2(uint8_t **val, size_t *val_len);
 #define _REGISTRY_SCHEMA_PATH_GROUP_INITIALIZATION_V2(_current_path, _field_name, _id, _description, \
                                                       ...) \
     { \
-        .data = & ## _current_path ## . ## _field_name ## .data, \
+        .data = & ## _current_path._field_name.data, \
         .items = (registry_path_schema_item_v2_t[]) { \
             _CALL_MACRO_FOR_EACH(_REGISTRY_SCHEMA_PATH_ITEM_INITIALIZATION_V2, \
-                                 _current_path ## . ## _field_name, \
+                                 _current_path._field_name, \
                                  __VA_ARGS__) \
         }, \
         .items_len = 0 /*_REGISTRY_SCHEMA_ITEM_NUMARGS_V2(__VA_ARGS__)*/, \
@@ -576,7 +576,7 @@ int registry_get_uint8_v2(uint8_t **val, size_t *val_len);
     }; \
     \
     registry_path_schema_v2_t registry_path_schema_ ## _field_name = { \
-        .data = & ## registry_schema_ ## _field_name ## .data, \
+        .data = & ## registry_schema_ ## _field_name.data, \
         .items = (registry_path_schema_item_v2_t[]) { \
             _CALL_MACRO_FOR_EACH(_REGISTRY_SCHEMA_PATH_ITEM_INITIALIZATION_V2, \
                                  registry_schema_ ## _field_name, \

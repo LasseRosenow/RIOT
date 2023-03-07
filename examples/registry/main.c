@@ -199,152 +199,152 @@ static void mapping(const registry_id_t param_id, const registry_instance_t *ins
     }
 }
 
-typedef const struct {
-    const registry_schema_data_v2_t data;
-    const struct {
-        const registry_schema_item_data_v2_t data;
-        int (*get)(uint8_t **val, size_t *val_len);
-    } red;
-    const struct {
-        const registry_schema_item_data_v2_t data;
-        int (*get)(uint8_t **val, size_t *val_len);
-    } green;
-    const struct {
-        const registry_schema_item_data_v2_t data;
-        int (*get)(uint8_t **val, size_t *val_len);
-    } blue;
-    const struct {
-        const registry_schema_item_data_v2_t data;
-        const struct {
-            const registry_schema_item_data_v2_t data;
-            int (*get)(uint8_t **val, size_t *val_len);
-        } white;
-        const struct {
-            const registry_schema_item_data_v2_t data;
-            int (*get)(uint8_t **val, size_t *val_len);
-        } yellow;
-    } brightnesses;
-} registry_schema_rgb_v2_t;
+// typedef const struct {
+//     const registry_schema_data_v2_t data;
+//     const struct {
+//         const registry_schema_item_data_v2_t data;
+//         int (*get)(uint8_t **val, size_t *val_len);
+//     } red;
+//     const struct {
+//         const registry_schema_item_data_v2_t data;
+//         int (*get)(uint8_t **val, size_t *val_len);
+//     } green;
+//     const struct {
+//         const registry_schema_item_data_v2_t data;
+//         int (*get)(uint8_t **val, size_t *val_len);
+//     } blue;
+//     const struct {
+//         const registry_schema_item_data_v2_t data;
+//         const struct {
+//             const registry_schema_item_data_v2_t data;
+//             int (*get)(uint8_t **val, size_t *val_len);
+//         } white;
+//         const struct {
+//             const registry_schema_item_data_v2_t data;
+//             int (*get)(uint8_t **val, size_t *val_len);
+//         } yellow;
+//     } brightnesses;
+// } registry_schema_rgb_v2_t;
 
-registry_schema_rgb_v2_t registry_schema_rgb_v2 = {
-    .data = {
-        .id = 0,
-        .name = "rgb_v2",
-        .description = "",
-        .mapping = mapping,
-    },
-    .red = {
-        .data = {
-            .id = 0,
-            .name = "red",
-            .description = "",
-            .type = REGISTRY_TYPE_UINT8_V2,
-        },
-        .get = registry_get_uint8_v2,
-    },
-    .green = {
-        .data = {
-            .id = 1,
-            .name = "green",
-            .description = "",
-            .type = REGISTRY_TYPE_UINT8_V2,
-        },
-        .get = registry_get_uint8_v2,
-    },
-    .blue = {
-        .data = {
-            .id = 2,
-            .name = "blue",
-            .description = "",
-            .type = REGISTRY_TYPE_UINT8_V2,
-        },
-        .get = registry_get_uint8_v2,
-    },
-    .brightnesses = {
-        .data = {
-            .id = 3,
-            .name = "brightnesses",
-            .description = "",
-            .type = REGISTRY_TYPE_GROUP_V2,
-        },
-        .white = {
-            .data = {
-                .id = 4,
-                .name = "white",
-                .description = "",
-                .type = REGISTRY_TYPE_UINT8_V2,
-            },
-            .get = registry_get_uint8_v2,
-        },
-        .yellow = {
-            .data = {
-                .id = 5,
-                .name = "yellow",
-                .description = "",
-                .type = REGISTRY_TYPE_UINT8_V2,
-            },
-            .get = registry_get_uint8_v2,
-        },
-    },
-};
+// registry_schema_rgb_v2_t registry_schema_rgb_v2 = {
+//     .data = {
+//         .id = 0,
+//         .name = "rgb_v2",
+//         .description = "",
+//         .mapping = mapping,
+//     },
+//     .red = {
+//         .data = {
+//             .id = 0,
+//             .name = "red",
+//             .description = "",
+//             .type = REGISTRY_TYPE_UINT8_V2,
+//         },
+//         .get = registry_get_uint8_v2,
+//     },
+//     .green = {
+//         .data = {
+//             .id = 1,
+//             .name = "green",
+//             .description = "",
+//             .type = REGISTRY_TYPE_UINT8_V2,
+//         },
+//         .get = registry_get_uint8_v2,
+//     },
+//     .blue = {
+//         .data = {
+//             .id = 2,
+//             .name = "blue",
+//             .description = "",
+//             .type = REGISTRY_TYPE_UINT8_V2,
+//         },
+//         .get = registry_get_uint8_v2,
+//     },
+//     .brightnesses = {
+//         .data = {
+//             .id = 3,
+//             .name = "brightnesses",
+//             .description = "",
+//             .type = REGISTRY_TYPE_GROUP_V2,
+//         },
+//         .white = {
+//             .data = {
+//                 .id = 4,
+//                 .name = "white",
+//                 .description = "",
+//                 .type = REGISTRY_TYPE_UINT8_V2,
+//             },
+//             .get = registry_get_uint8_v2,
+//         },
+//         .yellow = {
+//             .data = {
+//                 .id = 5,
+//                 .name = "yellow",
+//                 .description = "",
+//                 .type = REGISTRY_TYPE_UINT8_V2,
+//             },
+//             .get = registry_get_uint8_v2,
+//         },
+//     },
+// };
 
-registry_path_schema_v2_t registry_path_schema_rgb_v2 = {
-    .data = &registry_schema_rgb_v2.data,
-    .items = (registry_path_schema_item_v2_t[]) {
-        {
-            .data = &registry_schema_rgb_v2.red.data,
-            .items = ((void *)0),
-            .items_len = 0,
-        },
-        {
-            .data = &registry_schema_rgb_v2.green.data,
-            .items = ((void *)0),
-            .items_len = 0,
-        },
-        {
-            .data = &registry_schema_rgb_v2.blue.data,
-            .items = ((void *)0),
-            .items_len = 0,
-        },
-        {
-            .data = &registry_schema_rgb_v2.brightnesses.data,
-            .items = (registry_path_schema_item_v2_t[]) {
-                {
-                    .data = &registry_schema_rgb_v2.brightnesses.white.data,
-                    .items = ((void *)0),
-                    .items_len = 0,
-                },
-                {
-                    .data = &registry_schema_rgb_v2.brightnesses.yellow.data,
-                    .items = ((void *)0),
-                    .items_len = 0,
-                },
-            },
-            .items_len = 0,
-        },
-    },
-    .items_len = 0,
-};
+// registry_path_schema_v2_t registry_path_schema_rgb_v2 = {
+//     .data = &registry_schema_rgb_v2.data,
+//     .items = (registry_path_schema_item_v2_t[]) {
+//         {
+//             .data = &registry_schema_rgb_v2.red.data,
+//             .items = ((void *)0),
+//             .items_len = 0,
+//         },
+//         {
+//             .data = &registry_schema_rgb_v2.green.data,
+//             .items = ((void *)0),
+//             .items_len = 0,
+//         },
+//         {
+//             .data = &registry_schema_rgb_v2.blue.data,
+//             .items = ((void *)0),
+//             .items_len = 0,
+//         },
+//         {
+//             .data = &registry_schema_rgb_v2.brightnesses.data,
+//             .items = (registry_path_schema_item_v2_t[]) {
+//                 {
+//                     .data = &registry_schema_rgb_v2.brightnesses.white.data,
+//                     .items = ((void *)0),
+//                     .items_len = 0,
+//                 },
+//                 {
+//                     .data = &registry_schema_rgb_v2.brightnesses.yellow.data,
+//                     .items = ((void *)0),
+//                     .items_len = 0,
+//                 },
+//             },
+//             .items_len = 0,
+//         },
+//     },
+//     .items_len = 0,
+// };
+
+REGISTRY_SCHEMA_V2(
+    rgb_v2, 0, "", mapping,
+
+    REGISTRY_PARAMETER_V2(red, 0, REGISTRY_TYPE_UINT8_V2, uint8_t, ""),
+    REGISTRY_PARAMETER_V2(green, 1, REGISTRY_TYPE_UINT8_V2, uint8_t, ""),
+    REGISTRY_PARAMETER_V2(blue, 2,  REGISTRY_TYPE_UINT8_V2, uint8_t, ""),
+
+    REGISTRY_GROUP_V2(
+        brightnesses,
+        3,
+        "",
+
+        REGISTRY_PARAMETER_V2(white, 4, REGISTRY_TYPE_UINT8_V2, uint8_t, ""),
+        REGISTRY_PARAMETER_V2(yellow, 5, REGISTRY_TYPE_UINT8_V2, uint8_t, "")
+        )
+    );
 
 int main(void)
 {
-    // REGISTRY_SCHEMA_V2(
-    //     rgb_v2, 0, "", mapping,
-
-    //     REGISTRY_PARAMETER_V2(red, 0, REGISTRY_TYPE_UINT8_V2, uint8_t, ""),
-    //     REGISTRY_PARAMETER_V2(green, 1, REGISTRY_TYPE_UINT8_V2, uint8_t, ""),
-    //     REGISTRY_PARAMETER_V2(blue, 2,  REGISTRY_TYPE_UINT8_V2, uint8_t, ""),
-
-    //     REGISTRY_GROUP_V2(
-    //         brightnesses,
-    //         3,
-    //         "",
-
-    //         REGISTRY_PARAMETER_V2(white, 4, REGISTRY_TYPE_UINT8_V2, uint8_t, ""),
-    //         REGISTRY_PARAMETER_V2(yellow, 5, REGISTRY_TYPE_UINT8_V2, uint8_t, "")
-    //         )
-    //     );
-
     // uint8_t *val;
     // size_t val_len;
 
