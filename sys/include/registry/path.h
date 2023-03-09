@@ -29,7 +29,7 @@ extern "C" {
 
 /* Dynamic registry path */
 typedef struct {
-    const registry_namespace_id_t *namespace_id;
+    const registry_id_t *namespace_id;
     const registry_id_t *schema_id;
     const registry_id_t *instance_id;
     const registry_id_t *path;
@@ -129,6 +129,22 @@ typedef struct {
 
 #define REGISTRY_PATH_APP(...) \
     REGISTRY_PATH(REGISTRY_NAMESPACE_APP, ## __VA_ARGS__)
+
+/**
+ * @brief Registers a new namespace for configuration schemas.
+ *
+ * @param[in] namespace Pointer to the namespace object.
+ */
+int registry_path_register_namespace(const registry_namespace_data_t *namespace_data);
+
+/**
+ * @brief Registers a new schema on a given namespace.
+ *
+ * @param[in] namespace_id ID of the namespace.
+ * @param[in] schema Pointer to the schema structure.
+ */
+int registry_path_register_schema(const registry_id_t *namespace_id,
+                             const registry_schema_data_t *schema_data);
 
 /**
  * @brief Sets the value of a parameter that belongs to a configuration group.

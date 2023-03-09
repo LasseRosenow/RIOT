@@ -64,7 +64,7 @@ typedef const struct {
     } brightnesses;
 } registry_schema_rgb_led_t;
 
-extern registry_schema_rgb_led_t registry_schema_rgb_led;
+extern const registry_schema_rgb_led_t registry_schema_rgb_led;
 
 typedef struct {
     clist_node_t node;
@@ -86,15 +86,14 @@ typedef enum {
 
 // #endif
 
-/* ------------- Registry ------------- */
+/* ------------- Registry sys namespace ------------- */
 
 typedef const struct {
-    const struct {
-        registry_schema_rgb_led_t rgb_led;
-    } sys;
-} registry_t;
+    const registry_namespace_data_t data;
+    const registry_schema_rgb_led_t rgb_led;
+} registry_sys_t;
 
-extern registry_t registry;
+extern const registry_sys_t registry_sys;
 
 #ifdef __cplusplus
 }

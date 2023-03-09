@@ -87,23 +87,13 @@ typedef enum {
 #endif /* CONFIG_REGISTRY_USE_FLOAT64 */
 } registry_type_t;
 
-
-typedef enum {
-    REGISTRY_NAMESPACE_SYS,
-    REGISTRY_NAMESPACE_APP,
-} registry_namespace_id_t;
-
-typedef struct {
-    registry_namespace_id_t id;     /**< Integer representing the configuration namespace */
-    char *name;                     /**< String describing the configuration namespace */
-    char *description;              /**< String describing the configuration namespace with more details */
-    clist_node_t schemas;           /**< Linked list of schemas @ref registry_schema_t */
-} registry_namespace_t;
-
-extern registry_namespace_t registry_namespace_sys;
-extern registry_namespace_t registry_namespace_app;
-
 typedef uint32_t registry_id_t;
+
+typedef const struct {
+    const registry_id_t id;         /**< Integer representing the ID of the configuration namespace */
+    const char * const name;        /**< String describing the configuration namespace */
+    const char * const description; /**< String describing the configuration namespace with more details */
+} registry_namespace_data_t;
 
 /**
  * @brief Basic representation of a registry parameter, containing information about its type and its value.
@@ -118,9 +108,9 @@ typedef struct {
  * @brief Instance of a schema containing its data.
  */
 typedef struct {
-    clist_node_t node;  /**< Linked list node */
-    char * const name;  /**< String describing the instance */
-    void * const data;  /**< Struct containing all configuration parameters of the schema */
+    clist_node_t node;          /**< Linked list node */
+    const char * const name;    /**< String describing the instance */
+    const void * const data;    /**< Struct containing all configuration parameters of the schema */
 
     /**
      * @brief Will be called after @ref registry_commit() was called on this instance.
@@ -168,23 +158,12 @@ typedef struct {
 } registry_schema_item_data_t;
 
 /**
- * @brief Registers a new sys schema for a configuration group.
+ * @brief Adds a new instance to a schema.
  *
- * @param[in] namespace_id ID of the namespace.
- * @param[in] schema Pointer to the schema structure.
+ * @param[in] schema Pointer to the schema.
+ * @param[in] instance Pointer to the new instance.
  */
-int registry_register_schema(const registry_namespace_id_t namespace_id,
-                             const registry_schema_t *schema);
-
-/**
- * @brief Adds a new instance of a schema.
- *
- * @param[in] namespace_id ID of the namespace.
- * @param[in] schema_id ID of the schema.
- * @param[in] instance Pointer to instance structure.
- */
-int registry_register_schema_instance(const registry_namespace_id_t namespace_id,
-                                      const registry_id_t schema_id,
+int registry_register_schema_instance(const registry_schema_data_t schema,
                                       const registry_instance_t *instance);
 
 #ifdef __cplusplus
