@@ -166,6 +166,36 @@ typedef struct {
 int registry_register_schema_instance(const registry_schema_data_t schema,
                                       const registry_instance_t *instance);
 
+int registry_get(const registry_schema_data_t *schema, const registry_instance_t *instance,
+                 const registry_id_t parameter_id, registry_value_t *value);
+
+int registry_set(const registry_schema_data_t *schema, const registry_instance_t *instance,
+                 const registry_id_t parameter_id, const registry_value_t *value);
+
+int registry_commit(const registry_instance_t *instance, const registry_id_t parameter_id);
+
+typedef const union {
+    registry_namespace_data_t *namespace;
+    registry_schema_data_t *schema;
+    registry_instance_t *instance;
+    registry_schema_item_data_t *schema_item;
+} registry_data_union_t;
+
+typedef const enum {
+    REGISTRY_DATA_TYPE_NAMESPACE,
+    REGISTRY_DATA_TYPE_SCHEMA,
+    REGISTRY_DATA_TYPE_INSTANCE,
+    REGISTRY_DATA_TYPE_SCHEMA_ITEM,
+} registry_data_type_t;
+
+typedef int registry_export_cb_t(const registry_data_union_t data,
+                                 const registry_data_type_t data_type,
+                                 const registry_value_t *value,
+                                 const void *context);
+
+int registry_export(const registry_export_cb_t *export_cb, const registry_data_union_t data,
+                    const registry_data_type_t data_type, const void *context);
+
 #ifdef __cplusplus
 }
 #endif

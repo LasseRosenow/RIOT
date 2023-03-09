@@ -144,7 +144,7 @@ int registry_path_register_namespace(const registry_namespace_data_t *namespace_
  * @param[in] schema Pointer to the schema structure.
  */
 int registry_path_register_schema(const registry_id_t *namespace_id,
-                             const registry_schema_data_t *schema_data);
+                                  const registry_schema_data_t *schema_data);
 
 /**
  * @brief Sets the value of a parameter that belongs to a configuration group.
@@ -241,6 +241,12 @@ int registry_load_by_path(const registry_path_t path);
  */
 int registry_save_by_path(const registry_path_t path);
 
+typedef int registry_path_export_cb_t(const registry_path_t *path,
+                                      const registry_data_union_t data,
+                                      const registry_data_type_t data_type,
+                                      const registry_value_t *value,
+                                      const void *context);
+
 /**
  * @brief Export an specific or all configuration parameters using the
  * @p export_func function. If @p path is NULL then @p export_func is called for
@@ -253,13 +259,8 @@ int registry_save_by_path(const registry_path_t path);
  * @param[in] context Context that will be passed to @p export_func
  * @return 0 on success, non-zero on failure
  */
-int registry_export_by_path(int (*export_func)(const registry_path_t path,
-                                               const registry_schema_t *schema,
-                                               const registry_instance_t *instance,
-                                               const registry_schema_item_t *meta,
-                                               const registry_value_t *value,
-                                               const void *context),
-                            const registry_path_t path, const int recursion_depth, const void *context);
+int registry_export_by_path(const registry_path_export_cb_t *export_cb, const registry_path_t *path,
+                            const int recursion_depth, const void *context);
 
 
 
