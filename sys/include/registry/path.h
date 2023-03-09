@@ -27,6 +27,7 @@ extern "C" {
 
 #include "registry.h"
 
+/* Dynamic registry path */
 typedef struct {
     const registry_namespace_id_t *namespace_id;
     const registry_id_t *schema_id;
@@ -34,6 +35,21 @@ typedef struct {
     const registry_id_t *path;
     size_t path_len;
 } registry_path_t;
+
+/* Dynamic registry path items structure */
+typedef const struct _registry_path_schema_item_t registry_path_schema_item_t;
+
+struct _registry_path_schema_item_t {
+    const registry_schema_item_data_t * const data;
+    const registry_path_schema_item_t * const items;
+    const size_t items_len;
+};
+
+typedef const struct {
+    const registry_schema_data_t * const data;
+    const registry_path_schema_item_t * const items;
+    const size_t items_len;
+} registry_path_schema_t;
 
 /**
  * @brief Descriptor used to check duplications in storage facilities

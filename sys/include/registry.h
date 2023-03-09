@@ -42,129 +42,10 @@ extern "C" {
 
 /**
  * @brief Maximum length of a configuration name.
- * @{
  */
 #define REGISTRY_MAX_DIR_LEN      ((REGISTRY_MAX_DIR_NAME_LEN * \
                                     REGISTRY_MAX_DIR_DEPTH) + \
                                    (REGISTRY_MAX_DIR_DEPTH - 1))
-/** @} */
-
-/**
- * @brief Calculates the size of an @ref registry_schema_item_t array.
- *
- */
-#define _REGISTRY_SCHEMA_ITEM_NUMARGS(...)  (sizeof((registry_schema_item_t[]){ __VA_ARGS__ }) / \
-                                             sizeof(registry_schema_item_t))
-
-/**
- * @brief Creates and initializes a @ref registry_schema_t struct.
- *
- */
-#define REGISTRY_SCHEMA(_field_name, _id, _name, _description, _mapping, ...) \
-    registry_schema_t _field_name = { \
-        .id = _id, \
-        .name = _name, \
-        .description = _description, \
-        .mapping = _mapping, \
-        .items = (registry_schema_item_t[]) { __VA_ARGS__ }, \
-        .items_len = _REGISTRY_SCHEMA_ITEM_NUMARGS(__VA_ARGS__), \
-    }
-
-/**
- * @brief Creates and initializes a @ref registry_schema_item_t struct and defaults its type to @ref REGISTRY_SCHEMA_TYPE_GROUP.
- *
- */
-#define REGISTRY_GROUP(_id, _name, _description, ...) \
-    { \
-        .id = _id, \
-        .name = _name, \
-        .description = _description, \
-        .type = REGISTRY_SCHEMA_TYPE_GROUP, \
-        .value.group = { \
-            .items = (registry_schema_item_t[]) { __VA_ARGS__ }, \
-            .items_len = _REGISTRY_SCHEMA_ITEM_NUMARGS(__VA_ARGS__), \
-        }, \
-    },
-
-/**
- * @brief Creates and initializes a @ref registry_schema_item_t struct and defaults its type to @ref REGISTRY_SCHEMA_TYPE_PARAMETER.
- *
- */
-#define REGISTRY_PARAMETER(_id, _name, _description, _type) \
-    { \
-        .id = _id, \
-        .name = _name, \
-        .description = _description, \
-        .type = REGISTRY_SCHEMA_TYPE_PARAMETER, \
-        .value.parameter = { \
-            .type = _type, \
-        }, \
-    },
-
-#if IS_ACTIVE(CONFIG_REGISTRY_DISABLE_SCHEMA_NAME_FIELD) && \
-    IS_ACTIVE(CONFIG_REGISTRY_DISABLE_SCHEMA_DESCRIPTION_FIELD)
-/* no name and no description */
-# define _REGISTRY_PARAMETER(_id, _name, _description, _type) \
-    REGISTRY_PARAMETER(_id, "", "", _type)
-#elif IS_ACTIVE(CONFIG_REGISTRY_DISABLE_SCHEMA_NAME_FIELD)
-/* no name */
-# define _REGISTRY_PARAMETER(_id, _name, _description, _type) \
-    REGISTRY_PARAMETER(_id, "", _description, _type)
-#elif IS_ACTIVE(CONFIG_REGISTRY_DISABLE_SCHEMA_DESCRIPTION_FIELD)
-/* no description */
-# define _REGISTRY_PARAMETER(_id, _name, _description, _type) \
-    REGISTRY_PARAMETER(_id, _name, "", _type)
-#else
-/* keep name and description */
-# define _REGISTRY_PARAMETER(_id, _name, _description, _type) \
-    REGISTRY_PARAMETER(_id, _name, _description, _type)
-#endif
-
-#define REGISTRY_PARAMETER_STRING(_id, _name, _description) \
-    _REGISTRY_PARAMETER(_id, _name, _description, REGISTRY_TYPE_STRING)
-#define REGISTRY_PARAMETER_BOOL(_id, _name, _description) \
-    _REGISTRY_PARAMETER(_id, _name, _description, REGISTRY_TYPE_BOOL)
-#define REGISTRY_PARAMETER_UINT8(_id, _name, _description) \
-    _REGISTRY_PARAMETER(_id, _name, _description, REGISTRY_TYPE_UINT8)
-#define REGISTRY_PARAMETER_UINT16(_id, _name, _description) \
-    _REGISTRY_PARAMETER(_id, _name, _description, REGISTRY_TYPE_UINT16)
-#define REGISTRY_PARAMETER_UINT32(_id, _name, _description) \
-    _REGISTRY_PARAMETER(_id, _name, _description, REGISTRY_TYPE_UINT32)
-
-#if IS_ACTIVE(CONFIG_REGISTRY_USE_UINT64) || IS_ACTIVE(DOXYGEN)
-# define REGISTRY_PARAMETER_UINT64(_id, _name, _description) \
-    _REGISTRY_PARAMETER(_id, _name, _description, REGISTRY_TYPE_UINT64)
-#else
-# define REGISTRY_PARAMETER_UINT64(_id, _name, _description)
-#endif /* CONFIG_REGISTRY_USE_UINT64 */
-
-#define REGISTRY_PARAMETER_INT8(_id, _name, _description) \
-    _REGISTRY_PARAMETER(_id, _name, _description, REGISTRY_TYPE_INT8)
-#define REGISTRY_PARAMETER_INT16(_id, _name, _description) \
-    _REGISTRY_PARAMETER(_id, _name, _description, REGISTRY_TYPE_INT16)
-#define REGISTRY_PARAMETER_INT32(_id, _name, _description) \
-    _REGISTRY_PARAMETER(_id, _name, _description, REGISTRY_TYPE_INT32)
-
-#if IS_ACTIVE(CONFIG_REGISTRY_USE_INT64) || IS_ACTIVE(DOXYGEN)
-# define REGISTRY_PARAMETER_INT64(_id, _name, _description) \
-    _REGISTRY_PARAMETER(_id, _name, _description, REGISTRY_TYPE_INT64)
-#else
-# define REGISTRY_PARAMETER_INT64(_id, _name, _description)
-#endif /* CONFIG_REGISTRY_USE_INT64 */
-
-#if IS_ACTIVE(CONFIG_REGISTRY_USE_FLOAT32) || IS_ACTIVE(DOXYGEN)
-# define REGISTRY_PARAMETER_FLOAT32(_id, _name, _description) \
-    _REGISTRY_PARAMETER(_id, _name, _description, REGISTRY_TYPE_FLOAT32)
-#else
-# define REGISTRY_PARAMETER_FLOAT32(_id, _name, _description)
-#endif /* CONFIG_REGISTRY_USE_FLOAT32 */
-
-#if IS_ACTIVE(CONFIG_REGISTRY_USE_FLOAT64) || IS_ACTIVE(DOXYGEN)
-# define REGISTRY_PARAMETER_FLOAT64(_id, _name, _description) \
-    _REGISTRY_PARAMETER(_id, _name, _description, REGISTRY_TYPE_FLOAT64)
-#else
-# define REGISTRY_PARAMETER_FLOAT64(_id, _name, _description)
-#endif /* CONFIG_REGISTRY_USE_FLOAT64 */
 
 /**
  * @brief Data types of the registry
@@ -174,23 +55,24 @@ extern "C" {
  * as they bloat the code size.
  */
 typedef enum {
-    REGISTRY_TYPE_NONE = 0,     /**< No type specified */
+    REGISTRY_TYPE_NONE  = 0,        /**< No type specified */
+    REGISTRY_TYPE_GROUP = 1,        /**< GROUP contains parameters */
 
-    REGISTRY_TYPE_OPAQUE,       /**< OPAQUE */
-    REGISTRY_TYPE_STRING,       /**< String */
-    REGISTRY_TYPE_BOOL,         /**< Boolean */
+    REGISTRY_TYPE_OPAQUE,           /**< OPAQUE */
+    REGISTRY_TYPE_STRING,           /**< String */
+    REGISTRY_TYPE_BOOL,             /**< Boolean */
 
-    REGISTRY_TYPE_UINT8,        /**< 8-bits unsigned integer */
-    REGISTRY_TYPE_UINT16,       /**< 16-bits unsigned integer */
-    REGISTRY_TYPE_UINT32,       /**< 32-bits unsigned integer */
+    REGISTRY_TYPE_UINT8,            /**< 8-bits unsigned integer */
+    REGISTRY_TYPE_UINT16,           /**< 16-bits unsigned integer */
+    REGISTRY_TYPE_UINT32,           /**< 32-bits unsigned integer */
 
 #if IS_ACTIVE(CONFIG_REGISTRY_USE_UINT64) || IS_ACTIVE(DOXYGEN)
     REGISTRY_TYPE_UINT64,     /**< 64-bits unsigned integer */
 #endif /* CONFIG_REGISTRY_USE_UINT64 */
 
-    REGISTRY_TYPE_INT8,         /**< 8-bits signed integer */
-    REGISTRY_TYPE_INT16,        /**< 16-bits signed integer */
-    REGISTRY_TYPE_INT32,        /**< 32-bits signed integer */
+    REGISTRY_TYPE_INT8,             /**< 8-bits signed integer */
+    REGISTRY_TYPE_INT16,            /**< 16-bits signed integer */
+    REGISTRY_TYPE_INT32,            /**< 32-bits signed integer */
 
 #if IS_ACTIVE(CONFIG_REGISTRY_USE_INT64) || IS_ACTIVE(DOXYGEN)
     REGISTRY_TYPE_INT64,     /**< 64-bits signed integer */
@@ -233,39 +115,6 @@ typedef struct {
 } registry_value_t;
 
 /**
- * @brief Parameter of a configuration group.
- */
-typedef const struct {
-    const registry_type_t type; /**< Enum representing the type of the configuration parameter */
-} registry_schema_parameter_t;
-
-typedef const struct _registry_schema_item_t registry_schema_item_t;
-
-/**
- * @brief Configuration group.
- */
-typedef const struct {
-    const registry_schema_item_t * const items;
-    const size_t items_len;
-} registry_schema_group_t;
-
-typedef const enum {
-    REGISTRY_SCHEMA_TYPE_GROUP,
-    REGISTRY_SCHEMA_TYPE_PARAMETER,
-} registry_schema_type_t;
-
-struct _registry_schema_item_t {
-    const registry_id_t id;                             /**< Integer representing the path id of the schema item */
-    const char * const name;                            /**< String describing the schema item */
-    const char * const description;                     /**< String describing the schema item with more details */
-    const registry_schema_type_t type;                  /**< Type of the schema item (group or parameter) */
-    const union {
-        const registry_schema_group_t group;            /**< Value of the schema item if it is a group. Contains an array of schema item children */
-        const registry_schema_parameter_t parameter;    /**< Value of the schema item if it is a parameter. Contains its type */
-    } value;                                            /**< Union containing either group or parameter data */
-};
-
-/**
  * @brief Instance of a schema containing its data.
  */
 typedef struct {
@@ -292,13 +141,10 @@ typedef struct {
  * parameters.
  */
 typedef struct {
-    clist_node_t node;                          /**< Linked list node */
-    const registry_id_t id;                     /**< Integer representing the configuration group */
-    const char * const name;                    /**< String describing the configuration group */
-    const char * const description;             /**< String describing the configuration group with more details */
-    const registry_schema_item_t * const items; /**< Array representing all the configuration parameters that belong to this group */
-    const size_t items_len;                     /**< Size of items array */
-    clist_node_t instances;                     /**< Linked list of schema instances @ref registry_instance_t */
+    const registry_id_t id;         /**< Integer representing the configuration group */
+    const char * const name;        /**< String describing the configuration group */
+    const char * const description; /**< String describing the configuration group with more details */
+    clist_node_t instances;         /**< Linked list of schema instances @ref registry_instance_t */
 
     /**
      * @brief Mapping to connect configuration parameter IDs with the address in the storage.
@@ -312,7 +158,14 @@ typedef struct {
                          const registry_instance_t *instance,
                          void **val,
                          size_t *val_len);
-} registry_schema_t;
+} registry_schema_data_t;
+
+typedef struct {
+    const registry_id_t id;         /**< Integer representing the path id of the schema item */
+    const char * const name;        /**< String describing the schema item */
+    const char * const description; /**< String describing the schema item with more details */
+    const registry_type_t type;     /**< Type of the schema item (group or parameter) */
+} registry_schema_item_data_t;
 
 /**
  * @brief Registers a new sys schema for a configuration group.
@@ -333,268 +186,6 @@ int registry_register_schema(const registry_namespace_id_t namespace_id,
 int registry_register_schema_instance(const registry_namespace_id_t namespace_id,
                                       const registry_id_t schema_id,
                                       const registry_instance_t *instance);
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-/* ----------------------------- WIP ----------------------------- */
-
-typedef enum {
-    REGISTRY_TYPE_NONE_V2   = 0,    /**< No type specified */
-    REGISTRY_TYPE_GROUP_V2  = 1,    /**< GROUP contains parameters */
-
-    REGISTRY_TYPE_OPAQUE_V2,        /**< OPAQUE */
-    REGISTRY_TYPE_STRING_V2,        /**< String */
-    REGISTRY_TYPE_BOOL_V2,          /**< Boolean */
-
-    REGISTRY_TYPE_UINT8_V2,         /**< 8-bits unsigned integer */
-    REGISTRY_TYPE_UINT16_V2,        /**< 16-bits unsigned integer */
-    REGISTRY_TYPE_UINT32_V2,        /**< 32-bits unsigned integer */
-
-#if IS_ACTIVE(CONFIG_REGISTRY_USE_UINT64) || IS_ACTIVE(DOXYGEN)
-    REGISTRY_TYPE_UINT64_V2,     /**< 64-bits unsigned integer */
-#endif /* CONFIG_REGISTRY_USE_UINT64 */
-
-    REGISTRY_TYPE_INT8_V2,          /**< 8-bits signed integer */
-    REGISTRY_TYPE_INT16_V2,         /**< 16-bits signed integer */
-    REGISTRY_TYPE_INT32_V2,         /**< 32-bits signed integer */
-
-#if IS_ACTIVE(CONFIG_REGISTRY_USE_INT64) || IS_ACTIVE(DOXYGEN)
-    REGISTRY_TYPE_INT64_V2,     /**< 64-bits signed integer */
-#endif /* CONFIG_REGISTRY_USE_INT64 */
-
-#if IS_ACTIVE(CONFIG_REGISTRY_USE_FLOAT32) || IS_ACTIVE(DOXYGEN)
-    REGISTRY_TYPE_FLOAT32_V2,     /**< 32-bits float */
-#endif /* CONFIG_REGISTRY_USE_FLOAT32 */
-
-#if IS_ACTIVE(CONFIG_REGISTRY_USE_FLOAT64) || IS_ACTIVE(DOXYGEN)
-    REGISTRY_TYPE_FLOAT64_V2,     /**< 64-bits float */
-#endif /* CONFIG_REGISTRY_USE_FLOAT64 */
-} registry_type_v2_t;
-
-/* Registry schema */
-typedef struct {
-    const registry_id_t id;
-    const char * const name;
-    const char * const description;
-    clist_node_t instances;
-    void(*const mapping)(const registry_id_t param_id,
-                         const registry_instance_t *instance,
-                         void **val,
-                         size_t *val_len);
-} registry_schema_data_v2_t;
-
-typedef struct {
-    const registry_id_t id;
-    const char * const name;
-    const char * const description;
-    const registry_type_v2_t type;
-} registry_schema_item_data_v2_t;
-
-/* Dynamic registry path items structure */
-typedef const struct _registry_path_schema_item_v2_t registry_path_schema_item_v2_t;
-
-struct _registry_path_schema_item_v2_t {
-    const registry_schema_item_data_v2_t * const data;
-    const registry_path_schema_item_v2_t * const items;
-    const size_t items_len;
-};
-
-typedef const struct {
-    const registry_schema_data_v2_t * const data;
-    const registry_path_schema_item_v2_t * const items;
-    const size_t items_len;
-} registry_path_schema_v2_t;
-
-/**
- * Remove parenthesises
- */
-#define _REMOVE_PARENTHESISES_INTERN(...) __VA_ARGS__
-#define _REMOVE_PARENTHESISES(...) _REMOVE_PARENTHESISES_INTERN __VA_ARGS__
-
-
-/**
- * IF inside macros
- */
-#define _CONCAT2(A, B) A ## B
-#define _CONCAT2_DEFERRED(A, B) _CONCAT2(A, B)
-#define _IF_0(true_case, false_case) false_case
-#define _IF_1(true_case, false_case) true_case
-#define IF(condition, true_case, false_case) \
-    _CONCAT2_DEFERRED(_IF_, condition)(true_case, false_case)
-
-
-/**
- * Accept any number of args >= N, but expand to just the Nth one.
- * Here, N == 6.
- */
-#define _REGISTRY_GET_NTH_ARG(_1, _2, _3, _4, _5, N, ...) N
-
-/**
- * Define some macros to help us create overrides based on the
- * Here, N == 6.
- */
-#define __registry_fe(_macro, ...) \
-    _macro(__VA_ARGS__)
-#define _registry_fe(_macro, _context, _params) \
-    __registry_fe(_macro, _context, _REMOVE_PARENTHESISES(_params))
-
-#define _registry_fe_0(m, c, ...)
-#define _registry_fe_1(m, c, x) _registry_fe(m, c, x)
-#define _registry_fe_2(m, c, x, ...) _registry_fe(m, c, x) _registry_fe_1(m, c, __VA_ARGS__)
-#define _registry_fe_3(m, c, x, ...) _registry_fe(m, c, x) _registry_fe_2(m, c, __VA_ARGS__)
-#define _registry_fe_4(m, c, x, ...) _registry_fe(m, c, x) _registry_fe_3(m, c, __VA_ARGS__)
-
-/**
- * Provide a for-each construct for variadic macros. Supports up
- * to 4 args.
- */
-#define _CALL_MACRO_FOR_EACH(_macro, _context, ...) \
-    _REGISTRY_GET_NTH_ARG( \
-        "ignored", ## __VA_ARGS__, \
-        _registry_fe_4, _registry_fe_3, _registry_fe_2, _registry_fe_1, _registry_fe_0 \
-        ) (_macro, _context, __VA_ARGS__)
-
-
-
-int registry_get_uint8_v2(uint8_t **val, size_t *val_len);
-
-#define _REGISTRY_SCHEMA_ITEM_NUMARGS_V2(...)  (sizeof((registry_schema_item_t[]){ __VA_ARGS__ }) / \
-                                                sizeof(registry_schema_item_t))
-
-/* declaration */
-#define _REGISTRY_SCHEMA_ITEM_DECLARATION_V2(_context, _is_group, ...) \
-    _REMOVE_PARENTHESISES( \
-        IF( \
-            _is_group, \
-            (_REGISTRY_SCHEMA_GROUP_DECLARATION_V2(__VA_ARGS__)), \
-            (_REGISTRY_SCHEMA_PARAMETER_DECLARATION_V2(__VA_ARGS__)) \
-            ))
-
-
-#define _REGISTRY_SCHEMA_PARAMETER_DECLARATION_V2(_field_name, _id, _registry_type, _c_type, \
-                                                  _description) \
-    const struct { \
-        const registry_schema_item_data_v2_t data; \
-        int (*get)(_c_type **val, size_t *val_len); \
-    } _field_name;
-
-#define _REGISTRY_SCHEMA_GROUP_DECLARATION_V2(_field_name, _id, _description, ...) \
-    const struct { \
-        const registry_schema_item_data_v2_t data; \
-        _CALL_MACRO_FOR_EACH(_REGISTRY_SCHEMA_ITEM_DECLARATION_V2, NULL, __VA_ARGS__) \
-    } _field_name;
-
-/* initialization */
-#define _REGISTRY_SCHEMA_ITEM_INITIALIZATION_V2(_context, _is_group, ...) \
-    _REMOVE_PARENTHESISES( \
-        IF( \
-            _is_group, \
-            (_REGISTRY_SCHEMA_GROUP_INITIALIZATION_V2(__VA_ARGS__)), \
-            (_REGISTRY_SCHEMA_PARAMETER_INITIALIZATION_V2(__VA_ARGS__)) \
-            ))
-
-#define _REGISTRY_SCHEMA_PARAMETER_INITIALIZATION_V2(_field_name, _id, _registry_type, _c_type, \
-                                                     _description) \
-    ._field_name = { \
-        .data = { \
-            .id = _id, \
-            .name = #_field_name, \
-            .description = _description, \
-            .type = _registry_type, \
-        }, \
-        .get = registry_get_uint8_v2, \
-    },
-
-#define _REGISTRY_SCHEMA_GROUP_INITIALIZATION_V2(_field_name, _id, _description, ...) \
-    ._field_name = { \
-        .data = { \
-            .id = _id, \
-            .name = #_field_name, \
-            .description = _description, \
-            .type = REGISTRY_TYPE_GROUP_V2, \
-        }, \
-        _CALL_MACRO_FOR_EACH(_REGISTRY_SCHEMA_ITEM_INITIALIZATION_V2, NULL, __VA_ARGS__) \
-    },
-
-/* registry path structure initialization */
-#define _REGISTRY_SCHEMA_PATH_ITEM_INITIALIZATION_V2(_context, _is_group, ...) \
-    _REMOVE_PARENTHESISES( \
-        IF( \
-            _is_group, \
-            (_REGISTRY_SCHEMA_PATH_GROUP_INITIALIZATION_V2(_context, __VA_ARGS__)), \
-            (_REGISTRY_SCHEMA_PATH_PARAMETER_INITIALIZATION_V2(_context, __VA_ARGS__)) \
-            ))
-
-#define _REGISTRY_SCHEMA_PATH_PARAMETER_INITIALIZATION_V2(_current_path, _field_name, _id, \
-                                                          _registry_type, _c_type, \
-                                                          _description) \
-    { \
-        .data = & ## _current_path._field_name.data, \
-        .items = NULL, \
-        .items_len = 0, \
-    },
-
-#define _REGISTRY_SCHEMA_PATH_GROUP_INITIALIZATION_V2(_current_path, _field_name, _id, _description, \
-                                                      ...) \
-    { \
-        .data = & ## _current_path._field_name.data, \
-        .items = (registry_path_schema_item_v2_t[]) { \
-            _CALL_MACRO_FOR_EACH(_REGISTRY_SCHEMA_PATH_ITEM_INITIALIZATION_V2, \
-                                 _current_path._field_name, \
-                                 __VA_ARGS__) \
-        }, \
-        .items_len = 0 /*_REGISTRY_SCHEMA_ITEM_NUMARGS_V2(__VA_ARGS__)*/, \
-    },
-
-
-/* registry schema macros */
-#define REGISTRY_SCHEMA_V2(_field_name, _id, _description, _mapping, ...) \
-    typedef const struct { \
-        const registry_schema_data_v2_t data; \
-        _CALL_MACRO_FOR_EACH(_REGISTRY_SCHEMA_ITEM_DECLARATION_V2, NULL, __VA_ARGS__) \
-    } registry_schema_ ## _field_name ## _t; \
-    \
-    registry_schema_ ## _field_name ## _t registry_schema_ ## _field_name = { \
-        .data = { \
-            .id = _id, \
-            .name = #_field_name, \
-            .description = _description, \
-            .mapping = _mapping, \
-        }, \
-        _CALL_MACRO_FOR_EACH(_REGISTRY_SCHEMA_ITEM_INITIALIZATION_V2, NULL, __VA_ARGS__) \
-    }; \
-    \
-    registry_path_schema_v2_t registry_path_schema_ ## _field_name = { \
-        .data = & ## registry_schema_ ## _field_name.data, \
-        .items = (registry_path_schema_item_v2_t[]) { \
-            _CALL_MACRO_FOR_EACH(_REGISTRY_SCHEMA_PATH_ITEM_INITIALIZATION_V2, \
-                                 registry_schema_ ## _field_name, \
-                                 __VA_ARGS__) \
-        }, \
-        .items_len = 0 /*_REGISTRY_SCHEMA_ITEM_NUMARGS_V2(__VA_ARGS__)*/, \
-    };
-
-
-
-#define REGISTRY_PARAMETER_V2(_field_name, _id, _registry_type, _c_type, _description) \
-    (0, _field_name, _id, _registry_type, _c_type, _description)
-
-#define REGISTRY_GROUP_V2(_field_name, _id, _description, ...) \
-    (1, _field_name, _id, _description, __VA_ARGS__)
-
-
-
 
 #ifdef __cplusplus
 }
