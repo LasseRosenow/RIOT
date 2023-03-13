@@ -29,6 +29,8 @@
 #include "kernel_defines.h"
 #include "registry.h"
 #include "registry/schemas.h"
+#include "registry/path.h"
+#include "registry/schema/rgb_led.h"
 
 /* Mapping */
 

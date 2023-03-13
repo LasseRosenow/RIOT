@@ -25,66 +25,130 @@ extern "C" {
 #endif
 
 #include "registry.h"
+#include "registry/schema/rgb_led.h"
 
 void registry_schemas_init(void);
 
-/* Schema IDs */
+/* BASE GET FUNCTIONS */
+
+int registry_schema_get_opaque(const registry_instance_t *instance, void **val, size_t *val_len);
+
+/* BASE SET FUNCTIONS */
+
+int registry_schema_set_opaque(const registry_instance_t *instance, const void *val,
+                               const size_t val_len);
+/* BASE TYPES */
+
+typedef const struct {
+    const registry_schema_item_data_t data;
+    int (*get)(const registry_instance_t *instance, void **val, size_t *val_len);
+    int (*set)(const registry_instance_t *instance, const void *val, const size_t val_len);
+    int (*commit)(void);
+    int (*export)(const registry_export_cb_t *export_cb, const void *context);
+} registry_parameter_opaque_t;
+
+typedef const struct {
+    const registry_schema_item_data_t data;
+    int (*get)(const registry_instance_t *instance, char **val, size_t *val_len);
+    int (*set)(const registry_instance_t *instance, const char *val, const size_t val_len);
+    int (*commit)(void);
+    int (*export)(const registry_export_cb_t *export_cb, const void *context);
+} registry_parameter_string_t;
+
+typedef const struct {
+    const registry_schema_item_data_t data;
+    int (*get)(const registry_instance_t *instance, bool **val);
+    int (*set)(const registry_instance_t *instance, const bool val);
+    int (*commit)(void);
+    int (*export)(const registry_export_cb_t *export_cb, const void *context);
+} registry_parameter_bool_t;
+
+typedef const struct {
+    const registry_schema_item_data_t data;
+    int (*get)(const registry_instance_t *instance, uint8_t **val);
+    int (*set)(const registry_instance_t *instance, const uint8_t val);
+    int (*commit)(void);
+    int (*export)(const registry_export_cb_t *export_cb, const void *context);
+} registry_parameter_uint8_t;
+
+typedef const struct {
+    const registry_schema_item_data_t data;
+    int (*get)(const registry_instance_t *instance, uint16_t **val);
+    int (*set)(const registry_instance_t *instance, const uint16_t val);
+    int (*commit)(void);
+    int (*export)(const registry_export_cb_t *export_cb, const void *context);
+} registry_parameter_uint16_t;
+
+typedef const struct {
+    const registry_schema_item_data_t data;
+    int (*get)(const registry_instance_t *instance, uint32_t **val);
+    int (*set)(const registry_instance_t *instance, const uint32_t val);
+    int (*commit)(void);
+    int (*export)(const registry_export_cb_t *export_cb, const void *context);
+} registry_parameter_uint32_t;
+
+typedef const struct {
+    const registry_schema_item_data_t data;
+    int (*get)(const registry_instance_t *instance, uint64_t **val);
+    int (*set)(const registry_instance_t *instance, const uint64_t val);
+    int (*commit)(void);
+    int (*export)(const registry_export_cb_t *export_cb, const void *context);
+} registry_parameter_uint64_t;
+
+typedef const struct {
+    const registry_schema_item_data_t data;
+    int (*get)(const registry_instance_t *instance, int8_t **val);
+    int (*set)(const registry_instance_t *instance, const int8_t val);
+    int (*commit)(void);
+    int (*export)(const registry_export_cb_t *export_cb, const void *context);
+} registry_parameter_int8_t;
+
+typedef const struct {
+    const registry_schema_item_data_t data;
+    int (*get)(const registry_instance_t *instance, int16_t **val);
+    int (*set)(const registry_instance_t *instance, const int16_t val);
+    int (*commit)(void);
+    int (*export)(const registry_export_cb_t *export_cb, const void *context);
+} registry_parameter_int16_t;
+
+typedef const struct {
+    const registry_schema_item_data_t data;
+    int (*get)(const registry_instance_t *instance, int32_t **val);
+    int (*set)(const registry_instance_t *instance, const int32_t val);
+    int (*commit)(void);
+    int (*export)(const registry_export_cb_t *export_cb, const void *context);
+} registry_parameter_int32_t;
+
+typedef const struct {
+    const registry_schema_item_data_t data;
+    int (*get)(const registry_instance_t *instance, int64_t **val);
+    int (*set)(const registry_instance_t *instance, const int64_t val);
+    int (*commit)(void);
+    int (*export)(const registry_export_cb_t *export_cb, const void *context);
+} registry_parameter_int64_t;
+
+typedef const struct {
+    const registry_schema_item_data_t data;
+    int (*get)(const registry_instance_t *instance, float **val);
+    int (*set)(const registry_instance_t *instance, const float val);
+    int (*commit)(void);
+    int (*export)(const registry_export_cb_t *export_cb, const void *context);
+} registry_parameter_float32_t;
+
+typedef const struct {
+    const registry_schema_item_data_t data;
+    int (*get)(const registry_instance_t *instance, double **val);
+    int (*set)(const registry_instance_t *instance, const double val);
+    int (*commit)(void);
+    int (*export)(const registry_export_cb_t *export_cb, const void *context);
+} registry_parameter_float64_t;
+
+
+/* ------------- Schema IDs ------------- */
+
 typedef enum {
     REGISTRY_SCHEMA_RGB_LED = 0,
 } registry_schema_id_t;
-
-/* ------------- Schemas ------------- */
-
-/* RGB-LED */
-// #if IS_USED(MODULE_REGISTRY_SCHEMA_RGB_LED) || IS_ACTIVE(DOXYGEN)
-typedef const struct {
-    const registry_schema_data_t data;
-    const struct {
-        const registry_schema_item_data_t data;
-        int (*get)(uint8_t **val, size_t *val_len);
-    } red;
-    const struct {
-        const registry_schema_item_data_t data;
-        int (*get)(uint8_t **val, size_t *val_len);
-    } green;
-    const struct {
-        const registry_schema_item_data_t data;
-        int (*get)(uint8_t **val, size_t *val_len);
-    } blue;
-    const struct {
-        const registry_schema_item_data_t data;
-        const struct {
-            const registry_schema_item_data_t data;
-            int (*get)(uint8_t **val, size_t *val_len);
-        } white;
-        const struct {
-            const registry_schema_item_data_t data;
-            int (*get)(uint8_t **val, size_t *val_len);
-        } yellow;
-    } brightnesses;
-} registry_schema_rgb_led_t;
-
-extern const registry_schema_rgb_led_t registry_schema_rgb_led;
-
-typedef struct {
-    clist_node_t node;
-    uint8_t red;
-    uint8_t green;
-    uint8_t blue;
-    uint8_t white;
-    uint8_t yellow;
-} registry_schema_rgb_led_instance_t;
-
-typedef enum {
-    REGISTRY_SCHEMA_RGB_LED_RED,
-    REGISTRY_SCHEMA_RGB_LED_GREEN,
-    REGISTRY_SCHEMA_RGB_LED_BLUE,
-    REGISTRY_SCHEMA_RGB_LED_BRIGHTNESSES,
-    REGISTRY_SCHEMA_RGB_LED_BRIGHTNESSES_WHITE,
-    REGISTRY_SCHEMA_RGB_LED_BRIGHTNESSES_YELLOW,
-} registry_schema_rgb_led_indices_t;
-
-// #endif
 
 /* ------------- Registry sys namespace ------------- */
 

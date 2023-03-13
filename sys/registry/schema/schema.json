@@ -51,23 +51,7 @@
                         "type": "string"
                     },
                     "type": {
-                        "description": "Type of the parameter or group",
-                        "enum": [
-                            "group",
-                            "opaque",
-                            "string",
-                            "bool",
-                            "i8",
-                            "i16",
-                            "i32",
-                            "i64",
-                            "u8",
-                            "u16",
-                            "u32",
-                            "u64",
-                            "f32",
-                            "f64"
-                        ]
+                        "$ref": "./schema_parameter_type.json"
                     }
                 },
                 "allOf": [

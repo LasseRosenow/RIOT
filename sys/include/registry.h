@@ -175,10 +175,10 @@ int registry_set(const registry_schema_data_t *schema, const registry_instance_t
 int registry_commit(const registry_instance_t *instance, const registry_id_t parameter_id);
 
 typedef const union {
-    registry_namespace_data_t *namespace;
-    registry_schema_data_t *schema;
+    registry_namespace_data_t *namespace_data;
+    registry_schema_data_t *schema_data;
     registry_instance_t *instance;
-    registry_schema_item_data_t *schema_item;
+    registry_schema_item_data_t *schema_item_data;
 } registry_data_union_t;
 
 typedef const enum {

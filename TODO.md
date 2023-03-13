@@ -9,6 +9,9 @@
   - for the storage facility api (interface) we use pointers to the exact items (&namespace, &schema, &instance) instead of the path integers. pointers are also smaller. so it is an advantage.
   - commit function implementations will be generated. A commit function of a group contains .commig() calls for all its direct children etc.
   - registry_sys und registry_app structs werden einfach direct generiert. Für den app namespace muss entsprechend ne sinnvolle ID einfach festgelegt werden.
+  - get und set müssen nicht abstrahiert werden denke ich, weil es ja registry_get gibt, was path nutzen kann.
+  - commit und export könnte nice sein, wenn path da die statische infrastruktur einfach nutzen könnte, anstelle sachen doppelt zu implementieren.
+  - woher hat man bei get und set überhaupt den instance pointer? lwm2m z.B. gibt einem ja nur ne ID oder nicht? vielleicht lieber instance_id nehmen?
 
 ## Known issues
 
