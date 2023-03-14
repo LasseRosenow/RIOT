@@ -104,6 +104,12 @@ typedef struct {
     size_t buf_len;         /**< Length of the buffer */
 } registry_value_t;
 
+typedef const enum {
+    REGISTRY_COMMIT_INSTANCE,
+    REGISTRY_COMMIT_GROUP,
+    REGISTRY_COMMIT_PARAMETER,
+} registry_commit_scope_t;
+
 /**
  * @brief Instance of a schema containing its data.
  */
@@ -115,11 +121,13 @@ typedef struct {
     /**
      * @brief Will be called after @ref registry_commit() was called on this instance.
      *
+     * @param[in] scope Scope of what will be committed (a parameter, a group or the whole instance)
      * @param[in] id ID of the group or parameter to commit changes to, commits the whole instance on NULL
      * @param[in] context Context of the instance
      * @return 0 on success, non-zero on failure
      */
-    int (*commit_cb)(const registry_id_t *id, const void *context);
+    int (*commit_cb)(const registry_commit_scope_t scope, const registry_id_t *id,
+                     const void *context);
 
     void *context; /**< Optional context used by the instance */
 } registry_instance_t;
@@ -139,12 +147,12 @@ typedef struct {
     /**
      * @brief Mapping to connect configuration parameter IDs with the address in the storage.
      *
-     * @param[in] param_id ID of the parameter that contains the value
+     * @param[in] parameter_id ID of the parameter that contains the value
      * @param[in] instance Pointer to the instance of the schema, that contains the parameter
      * @param[in] val Pointer to buffer containing the new value
      * @param[in] val_len Pointer to length of the buffer to store the current value
      */
-    void(*const mapping)(const registry_id_t param_id,
+    void(*const mapping)(const registry_id_t parameter_id,
                          const registry_instance_t *instance,
                          void **val,
                          size_t *val_len);
@@ -172,29 +180,29 @@ int registry_get(const registry_schema_data_t *schema, const registry_instance_t
 int registry_set(const registry_schema_data_t *schema, const registry_instance_t *instance,
                  const registry_id_t parameter_id, const registry_value_t *value);
 
-int registry_commit(const registry_instance_t *instance, const registry_id_t parameter_id);
+int registry_commit(const registry_instance_t *instance, const registry_id_t *id);
 
 typedef const union {
     registry_namespace_data_t *namespace_data;
     registry_schema_data_t *schema_data;
     registry_instance_t *instance;
     registry_schema_item_data_t *schema_item_data;
-} registry_data_union_t;
+} registry_export_data_t;
 
 typedef const enum {
-    REGISTRY_DATA_TYPE_NAMESPACE,
-    REGISTRY_DATA_TYPE_SCHEMA,
-    REGISTRY_DATA_TYPE_INSTANCE,
-    REGISTRY_DATA_TYPE_SCHEMA_ITEM,
-} registry_data_type_t;
+    REGISTRY_EXPORT_INSTANCE,
+    REGISTRY_EXPORT_NAMESPACE,
+    REGISTRY_EXPORT_SCHEMA,
+    REGISTRY_EXPORT_SCHEMA_ITEM,
+} registry_export_data_type_t;
 
-typedef int registry_export_cb_t(const registry_data_union_t data,
-                                 const registry_data_type_t data_type,
+typedef int registry_export_cb_t(const registry_export_data_t data,
+                                 const registry_export_data_type_t data_type,
                                  const registry_value_t *value,
                                  const void *context);
 
-int registry_export(const registry_export_cb_t *export_cb, const registry_data_union_t data,
-                    const registry_data_type_t data_type, const void *context);
+int registry_export(const registry_export_cb_t *export_cb, const registry_export_data_t data,
+                    const registry_export_data_type_t data_type, const void *context);
 
 #ifdef __cplusplus
 }

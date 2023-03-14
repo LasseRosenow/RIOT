@@ -29,14 +29,18 @@ extern "C" {
 
 void registry_schemas_init(void);
 
-/* BASE GET FUNCTIONS */
+/* BASE GET FUNCTION */
 
-int registry_schema_get_opaque(const registry_instance_t *instance, void **val, size_t *val_len);
+inline int _registry_schema_get_buf(const registry_schema_data_t *schema,
+                                    const registry_instance_t *instance, registry_id_t parameter_id,
+                                    registry_type_t type, const void **val, size_t *val_len);
 
-/* BASE SET FUNCTIONS */
+/* BASE SET FUNCTION */
 
-int registry_schema_set_opaque(const registry_instance_t *instance, const void *val,
-                               const size_t val_len);
+inline int _registry_schema_set_buf(const registry_schema_data_t *schema,
+                                    const registry_instance_t *instance, registry_id_t parameter_id,
+                                    registry_type_t type, const void *val, size_t val_len);
+
 /* BASE TYPES */
 
 typedef const struct {

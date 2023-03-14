@@ -34,35 +34,35 @@
 
 /* Mapping */
 
-static void mapping(const registry_id_t param_id, const registry_instance_t *instance,
+static void mapping(const registry_id_t parameter_id, const registry_instance_t *instance,
                     void **val,
                     size_t *val_len)
 {
     registry_schema_rgb_led_instance_t *_instance =
         (registry_schema_rgb_led_instance_t *)instance->data;
 
-    switch (param_id) {
-    case REGISTRY_SCHEMA_RGB_LED_RED:
+    switch (parameter_id) {
+    case registry_schema_rgb_led.red.data.id:
         *val = &_instance->red;
         *val_len = sizeof(_instance->red);
         break;
 
-    case REGISTRY_SCHEMA_RGB_LED_GREEN:
+    case registry_schema_rgb_led.green.data.id:
         *val = &_instance->green;
         *val_len = sizeof(_instance->green);
         break;
 
-    case REGISTRY_SCHEMA_RGB_LED_BLUE:
+    case registry_schema_rgb_led.blue.data.id:
         *val = &_instance->blue;
         *val_len = sizeof(_instance->blue);
         break;
 
-    case REGISTRY_SCHEMA_RGB_LED_BRIGHTNESSES_WHITE:
+    case registry_schema_rgb_led.brightnesses.white.data.id:
         *val = &_instance->white;
         *val_len = sizeof(_instance->white);
         break;
 
-    case REGISTRY_SCHEMA_RGB_LED_BRIGHTNESSES_YELLOW:
+    case registry_schema_rgb_led.brightnesses.yellow.data.id:
         *val = &_instance->yellow;
         *val_len = sizeof(_instance->yellow);
         break;
@@ -71,7 +71,22 @@ static void mapping(const registry_id_t param_id, const registry_instance_t *ins
 
 /* Schema */
 
-registry_schema_rgb_led_t registry_schema_rgb_led = {
+static int _get_red(const registry_instance_t *instance, uint8_t **val)
+{
+    return _registry_schema_get_buf(&registry_schema_rgb_led.data, instance,
+                                    registry_schema_rgb_led.red.data.id,
+                                    registry_schema_rgb_led.red.data.type, val, NULL);
+}
+
+static int _set_red(const registry_instance_t *instance, uint8_t val)
+{
+    return _registry_schema_set_buf(&registry_schema_rgb_led.data, instance,
+                                    registry_schema_rgb_led.red.data.id,
+                                    registry_schema_rgb_led.red.data.type, &val, sizeof(uint8_t));
+}
+
+registry_schema_rgb_led_t registry_schema_rgb_led =
+{
     .data = {
         .id = REGISTRY_SCHEMA_RGB_LED,
         .name = "rgb_led",
@@ -80,55 +95,58 @@ registry_schema_rgb_led_t registry_schema_rgb_led = {
     },
     .red = {
         .data = {
-            .id = REGISTRY_SCHEMA_RGB_LED_RED,
+            .id = 0,
             .name = "red",
             .description = "",
             .type = REGISTRY_TYPE_UINT8,
         },
-        .get = registry_get_uint8,
+        .get = _get_red,
+        .set = _set_red,
+        .commit = _commit_red,
+        .export = _export_red,
     },
     .green = {
         .data = {
-            .id = REGISTRY_SCHEMA_RGB_LED_GREEN,
+            .id = 1,
             .name = "green",
             .description = "",
             .type = REGISTRY_TYPE_UINT8,
         },
-        .get = registry_get_uint8,
+        .get = _get_red,
     },
     .blue = {
         .data = {
-            .id = REGISTRY_SCHEMA_RGB_LED_BLUE,
+            .id = 2,
             .name = "blue",
             .description = "",
             .type = REGISTRY_TYPE_UINT8,
         },
-        .get = registry_get_uint8,
+        .get = _get_red,
     },
     .brightnesses = {
         .data = {
-            .id = REGISTRY_SCHEMA_RGB_LED_BRIGHTNESSES,
+            .id = 3,
             .name = "brightnesses",
             .description = "",
             .type = REGISTRY_TYPE_GROUP,
         },
         .white = {
             .data = {
-                .id = REGISTRY_SCHEMA_RGB_LED_BRIGHTNESSES_WHITE,
+                .id = 4,
                 .name = "white",
                 .description = "",
                 .type = REGISTRY_TYPE_UINT8,
             },
-            .get = registry_get_uint8,
+            .get = _get_red,
         },
         .yellow = {
             .data = {
-                .id = REGISTRY_SCHEMA_RGB_LED_BRIGHTNESSES_YELLOW,
+                .id = 5,
                 .name = "yellow",
                 .description = "",
                 .type = REGISTRY_TYPE_UINT8,
             },
-            .get = registry_get_uint8,
+            .get = _get_red,
         },
     },
 };

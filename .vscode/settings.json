@@ -1,6 +1,7 @@
 {
     "uncrustify.configPath.linux": "uncrustify-riot.cfg",
     "files.associations": {
-        "board.h": "c"
+        "board.h": "c",
+        "rgb_led.h": "c"
     },
 }

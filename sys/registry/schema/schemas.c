@@ -33,3 +33,39 @@ void registry_schemas_init(void)
     registry_register_schema(REGISTRY_NAMESPACE_SYS, &registry_schema_rgb_led);
 #endif
 }
+
+/* BASE GET FUNCTION */
+
+inline int _registry_schema_get_buf(const registry_schema_data_t *schema,
+                                    const registry_instance_t *instance, registry_id_t parameter_id,
+                                    registry_type_t type, const void **buf, size_t *buf_len)
+{
+    registry_value_t value;
+
+    int res = registry_get(schema, instance, parameter_id, &value);
+
+    *buf = value.buf;
+
+    if (buf_len != NULL) {
+        *buf_len = value.buf_len;
+    }
+
+    return res;
+}
+
+/* BASE SET FUNCTION */
+
+inline int _registry_schema_set_buf(const registry_schema_data_t *schema,
+                                    const registry_instance_t *instance, registry_id_t parameter_id,
+                                    registry_type_t type, const void *val, size_t val_len)
+{
+    const registry_value_t value = {
+        .buf = val,
+        .buf_len = val_len,
+        .type = type,
+    };
+
+    int res = registry_set(schema, instance, parameter_id, &value);
+
+    return res;
+}

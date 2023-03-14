@@ -53,15 +53,6 @@ typedef struct {
     uint8_t yellow;
 } registry_schema_rgb_led_instance_t;
 
-typedef enum {
-    REGISTRY_SCHEMA_RGB_LED_RED,
-    REGISTRY_SCHEMA_RGB_LED_GREEN,
-    REGISTRY_SCHEMA_RGB_LED_BLUE,
-    REGISTRY_SCHEMA_RGB_LED_BRIGHTNESSES,
-    REGISTRY_SCHEMA_RGB_LED_BRIGHTNESSES_WHITE,
-    REGISTRY_SCHEMA_RGB_LED_BRIGHTNESSES_YELLOW,
-} registry_schema_rgb_led_indices_t;
-
 // #endif
 
 #ifdef __cplusplus
