@@ -99,9 +99,9 @@ typedef struct {
 } registry_value_t;
 
 typedef const enum {
-    REGISTRY_COMMIT_INSTANCE,
-    REGISTRY_COMMIT_GROUP,
-    REGISTRY_COMMIT_PARAMETER,
+    REGISTRY_COMMIT_SCOPE_INSTANCE,
+    REGISTRY_COMMIT_SCOPE_GROUP,
+    REGISTRY_COMMIT_SCOPE_PARAMETER,
 } registry_commit_callback_scope_t;
 
 /**
@@ -187,14 +187,14 @@ int registry_register_namespace(const registry_namespace_t *namespace);
  * @param[in] schema Pointer to the schema.
  * @param[in] instance Pointer to the new instance.
  */
-int registry_register_schema_instance(const registry_schema_t schema,
+int registry_register_schema_instance(const registry_schema_t *schema,
                                       const registry_instance_t *instance);
 
 int registry_get(const registry_schema_t *schema, const registry_instance_t *instance,
-                 const registry_id_t parameter_id, registry_value_t *value);
+                 const registry_schema_item_t *parameter, registry_value_t *value);
 
 int registry_set(const registry_schema_t *schema, const registry_instance_t *instance,
-                 const registry_id_t parameter_id, const registry_value_t *value);
+                 const registry_schema_item_t *parameter, const registry_value_t *value);
 
 typedef const union {
     registry_namespace_t *namespace;

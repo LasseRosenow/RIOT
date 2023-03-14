@@ -35,66 +35,80 @@
 
 /* Implementation of the module */
 
-registry_namespace_t registry_namespace_sys = {
-    .id = REGISTRY_NAMESPACE_SYS,
-    .name = "sys",
-    .description = "List of RIOT sys schemas.",
-    .schemas = { .next = NULL },
-};
+clist_node_t registry_namespaces;
 
-registry_namespace_t registry_namespace_app = {
-    .id = REGISTRY_NAMESPACE_APP,
-    .name = "app",
-    .description = "List of custom app schemas.",
-    .schemas = { .next = NULL },
-};
-
-int registry_register_schema(const registry_namespace_id_t namespace_id,
-                             const registry_schema_t *schema)
+int registry_register_namespace(const registry_namespace_t *namespace)
 {
-    assert(schema != NULL);
+    assert(namespace != NULL);
 
-    /* find namespace with correct namespace id */
-    registry_namespace_t *namespace = _namespace_lookup(namespace_id);
-
-    if (!namespace) {
-        return -EINVAL;
-    }
-
-    clist_rpush((clist_node_t *)&namespace->schemas, (clist_node_t *)&(schema->node));
+    /* add namespace to list */
+    clist_rpush((clist_node_t *)&registry_namespaces, (clist_node_t *)&namespace->node);
 
     return 0;
 }
 
-int registry_register_schema_instance(const registry_namespace_id_t namespace_id,
-                                      const registry_id_t schema_id,
+int registry_register_schema_instance(const registry_schema_t *schema,
                                       const registry_instance_t *instance)
 {
+    assert(schema != NULL);
     assert(instance != NULL);
 
-    /* find namespace with correct namespace id */
-    registry_namespace_t *namespace = _namespace_lookup(namespace_id);
+    /* add instance to schema */
+    clist_rpush((clist_node_t *)&schema->instances, (clist_node_t *)&instance->node);
 
-    if (!namespace) {
+    return 0;
+}
+
+int registry_get(const registry_schema_t *schema, const registry_instance_t *instance,
+                 const registry_schema_item_t *parameter, registry_value_t *value)
+{
+    assert(schema != NULL);
+    assert(instance != NULL);
+    assert(value != NULL);
+
+    /* call handler to get pointer to registry internal value buffer and length */
+    void *intern_val = NULL;
+    size_t intern_val_len;
+
+    schema->mapping(parameter->id, instance, &intern_val, &intern_val_len);
+
+    /* update buf pointer in registry_value_t to point to the value inside the registry and set buf_len */
+    value->type = parameter->type;
+    value->buf = intern_val;
+    value->buf_len = intern_val_len;
+
+    return 0;
+}
+
+int registry_set(const registry_schema_t *schema, const registry_instance_t *instance,
+                 const registry_schema_item_t *parameter, const registry_value_t *value)
+{
+    /* get pointer to registry internal value buffer and length */
+    void *intern_val = NULL;
+    size_t intern_val_len;
+
+    schema->mapping(parameter->id, instance, &intern_val, &intern_val_len);
+
+    /* check if val_type is compatible with param_meta->value.parameter.type */
+    if (value->type != parameter->type) {
         return -EINVAL;
     }
+    else {
+        /* call handler to apply the new value to the correct parameter in the instance of the schema */
+        memcpy(intern_val, value->buf, intern_val_len);
+    }
 
-    /* find schema with correct schema_id */
-    clist_node_t *node = namespace->schemas.next;
+    return 0;
+}
 
-    do {
-        node = node->next;
-        registry_schema_t *schema = container_of(node, registry_schema_t, node);
+int registry_commit(const registry_commit_data_t data, const registry_commit_data_type_t data_type)
+{
 
-        /* check if schema has correct schema_id */
-        if (schema->id == schema_id) {
-            /* add instance to schema */
-            clist_rpush((clist_node_t *)&(schema->instances), (clist_node_t *)&instance->node);
+}
 
-            /* count instance index */
-            return clist_count(&schema->instances) - 1;
-        }
-    } while (node != namespace->schemas.next);
+int registry_export(const registry_export_cb_t *export_cb, const registry_export_data_t data,
+                    const registry_export_data_type_t data_type, const int recursion_depth,
+                    const void *context)
+{
 
-    return -EINVAL;
 }

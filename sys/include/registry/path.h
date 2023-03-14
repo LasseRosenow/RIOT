@@ -40,9 +40,9 @@ typedef struct {
  * @brief Descriptor used to check duplications in storage facilities
  */
 typedef struct {
-    const registry_path_t path; /**< path of the parameter being checked */
-    const registry_value_t val; /**< value of the parameter being checked */
-    bool is_dup;                /**< flag indicating if the parameter is duplicated or not */
+    const registry_path_t *path;    /**< path of the parameter being checked */
+    const registry_value_t *val;    /**< value of the parameter being checked */
+    bool is_dup;                    /**< flag indicating if the parameter is duplicated or not */
 } registry_dup_check_arg_t;
 
 #define _REGISTRY_PATH_NUMARGS(...)  (sizeof((registry_id_t[]){ __VA_ARGS__ }) / \
@@ -59,7 +59,7 @@ typedef struct {
 
 #define _REGISTRY_PATH_1(_namespace_id) \
         (registry_path_t) { \
-            .namespace_id = (registry_namespace_id_t[]) { _namespace_id }, \
+            .namespace_id = (registry_id_t[]) { _namespace_id }, \
             .schema_id = NULL, \
             .instance_id = NULL, \
             .path = NULL, \
@@ -68,7 +68,7 @@ typedef struct {
 
 #define _REGISTRY_PATH_2(_namespace_id, _schema_id) \
         (registry_path_t) { \
-            .namespace_id = (registry_namespace_id_t[]) { _namespace_id }, \
+            .namespace_id = (registry_id_t[]) { _namespace_id }, \
             .schema_id = (registry_id_t[]) { _schema_id }, \
             .instance_id = NULL, \
             .path = NULL, \
@@ -77,7 +77,7 @@ typedef struct {
 
 #define _REGISTRY_PATH_3(_namespace_id, _schema_id, _instance_id) \
         (registry_path_t) { \
-            .namespace_id = (registry_namespace_id_t[]) { _namespace_id }, \
+            .namespace_id = (registry_id_t[]) { _namespace_id }, \
             .schema_id = (registry_id_t[]) { _schema_id }, \
             .instance_id = (registry_id_t[]) { _instance_id }, \
             .path = NULL, \
@@ -86,7 +86,7 @@ typedef struct {
 
 #define _REGISTRY_PATH_4_AND_MORE(_namespace_id, _schema_id, _instance_id, ...) \
         (registry_path_t) { \
-            .namespace_id = (registry_namespace_id_t[]) { _namespace_id }, \
+            .namespace_id = (registry_id_t[]) { _namespace_id }, \
             .schema_id = (registry_id_t[]) { _schema_id }, \
             .instance_id = (registry_id_t[]) { _instance_id }, \
             .path = (registry_id_t[]) { __VA_ARGS__ }, \
@@ -135,34 +135,11 @@ int registry_path_register_schema(const registry_id_t *namespace_id,
  * @brief Sets the value of a parameter that belongs to a configuration group.
  *
  * @param[in] path Path of the parameter to be set
- * @param[in] val New value for the parameter
+ * @param[in] value New value for the parameter
  * @return -EINVAL if schema could not be found, otherwise returns the
  *             value of the set schema function.
  */
-int registry_set_value_by_path(const registry_path_t path, const registry_value_t val);
-
-int registry_set_opaque_by_path(const registry_path_t path, const void *val,
-                                const size_t val_len);
-int registry_set_string_by_path(const registry_path_t path, const char *val);
-int registry_set_bool_by_path(const registry_path_t path, const bool val);
-int registry_set_uint8_by_path(const registry_path_t path, const uint8_t val);
-int registry_set_uint16_by_path(const registry_path_t path, const uint16_t val);
-int registry_set_uint32_by_path(const registry_path_t path, const uint32_t val);
-#if IS_ACTIVE(CONFIG_REGISTRY_USE_UINT64) || IS_ACTIVE(DOXYGEN)
-int registry_set_uint64_by_path(const registry_path_t path, const uint64_t val);
-#endif /* CONFIG_REGISTRY_USE_UINT64 */
-int registry_set_int8_by_path(const registry_path_t path, const int8_t val);
-int registry_set_int16_by_path(const registry_path_t path, const int16_t val);
-int registry_set_int32_by_path(const registry_path_t path, const int32_t val);
-#if IS_ACTIVE(CONFIG_REGISTRY_USE_INT64) || IS_ACTIVE(DOXYGEN)
-int registry_set_int64_by_path(const registry_path_t path, const int64_t val);
-#endif /* CONFIG_REGISTRY_USE_INT64 */
-#if IS_ACTIVE(CONFIG_REGISTRY_USE_FLOAT32) || IS_ACTIVE(DOXYGEN)
-int registry_set_float32_by_path(const registry_path_t path, const float val);
-#endif /* CONFIG_REGISTRY_USE_FLOAT32 */
-#if IS_ACTIVE(CONFIG_REGISTRY_USE_FLOAT64) || IS_ACTIVE(DOXYGEN)
-int registry_set_float64_by_path(const registry_path_t path, const double val);
-#endif /* CONFIG_REGISTRY_USE_FLOAT64 */
+int registry_set_by_path(const registry_path_t *path, const registry_value_t *value);
 
 /**
  * @brief Gets the current value of a parameter that belongs to a configuration
@@ -171,31 +148,7 @@ int registry_set_float64_by_path(const registry_path_t path, const double val);
  * @param[out] value Pointer to a uninitialized @ref registry_value_t struct
  * @return 0 on success, non-zero on failure
  */
-int registry_get_value_by_path(const registry_path_t path, registry_value_t *value);
-
-int registry_get_opaque_by_path(const registry_path_t path, const void **buf,
-                                size_t *buf_len);
-int registry_get_string_by_path(const registry_path_t path, const char **buf,
-                                size_t *buf_len);
-int registry_get_bool_by_path(const registry_path_t path, const bool **buf);
-int registry_get_uint8_by_path(const registry_path_t path, const uint8_t **buf);
-int registry_get_uint16_by_path(const registry_path_t path, const uint16_t **buf);
-int registry_get_uint32_by_path(const registry_path_t path, const uint32_t **buf);
-#if IS_ACTIVE(CONFIG_REGISTRY_USE_UINT64) || IS_ACTIVE(DOXYGEN)
-int registry_get_uint64_by_path(const registry_path_t path, const uint64_t **buf);
-#endif /* CONFIG_REGISTRY_USE_UINT64 */
-int registry_get_int8_by_path(const registry_path_t path, const int8_t **buf);
-int registry_get_int16_by_path(const registry_path_t path, const int16_t **buf);
-int registry_get_int32_by_path(const registry_path_t path, const int32_t **buf);
-#if IS_ACTIVE(CONFIG_REGISTRY_USE_INT64) || IS_ACTIVE(DOXYGEN)
-int registry_get_int64_by_path(const registry_path_t path, const int64_t **buf);
-#endif /* CONFIG_REGISTRY_USE_INT64 */
-#if IS_ACTIVE(CONFIG_REGISTRY_USE_FLOAT32) || IS_ACTIVE(DOXYGEN)
-int registry_get_float32_by_path(const registry_path_t path, const float **buf);
-#endif /* CONFIG_REGISTRY_USE_FLOAT32 */
-#if IS_ACTIVE(CONFIG_REGISTRY_USE_FLOAT64) || IS_ACTIVE(DOXYGEN)
-int registry_get_float64_by_path(const registry_path_t path, const double **buf);
-#endif /* CONFIG_REGISTRY_USE_FLOAT64 */
+int registry_get_by_path(const registry_path_t *path, registry_value_t *value);
 
 /**
  * @brief If a @p path is passed it calls the commit schema for that
@@ -207,7 +160,7 @@ int registry_get_float64_by_path(const registry_path_t path, const double **buf)
  * @return 0 on success, -EINVAL if the group has not implemented the commit
  * function.
  */
-int registry_commit_by_path(const registry_path_t path);
+int registry_commit_by_path(const registry_path_t *path);
 
 /**
  * @brief Load all configuration parameters that are included in the path from the registered storage.
@@ -215,7 +168,7 @@ int registry_commit_by_path(const registry_path_t path);
  * @param[in] path Path of the configuration parameters
  * @return 0 on success, non-zero on failure
  */
-int registry_load_by_path(const registry_path_t path);
+int registry_load_by_path(const registry_path_t *path);
 
 /**
  * @brief Save all configuration parameters of every configuration group to the
@@ -224,7 +177,7 @@ int registry_load_by_path(const registry_path_t path);
  * @param[in] path Path of the configuration parameters
  * @return 0 on success, non-zero on failure
  */
-int registry_save_by_path(const registry_path_t path);
+int registry_save_by_path(const registry_path_t *path);
 
 typedef int registry_path_export_cb_t(const registry_path_t *path,
                                       const registry_export_data_t data,
