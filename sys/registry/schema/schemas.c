@@ -36,7 +36,7 @@ void registry_schemas_init(void)
 
 /* BASE GET FUNCTION */
 
-inline int _registry_schema_get_buf(const registry_schema_data_t *schema,
+inline int _registry_schema_get_buf(const registry_schema_t *schema,
                                     const registry_instance_t *instance, registry_id_t parameter_id,
                                     registry_type_t type, const void **buf, size_t *buf_len)
 {
@@ -55,7 +55,7 @@ inline int _registry_schema_get_buf(const registry_schema_data_t *schema,
 
 /* BASE SET FUNCTION */
 
-inline int _registry_schema_set_buf(const registry_schema_data_t *schema,
+inline int _registry_schema_set_buf(const registry_schema_t *schema,
                                     const registry_instance_t *instance, registry_id_t parameter_id,
                                     registry_type_t type, const void *val, size_t val_len)
 {
@@ -69,3 +69,18 @@ inline int _registry_schema_set_buf(const registry_schema_data_t *schema,
 
     return res;
 }
+
+/* ------------- Registry sys namespace ------------- */
+
+const registry_sys_t registry_sys = {
+    .data = {
+        .id = 0,
+        .name = "sys",
+        .description = "Sys namespace",
+        .items = {
+            &registry_schema_rgb_led,
+        },
+        .items_len = 1,
+    },
+    .rgb_led = &registry_schema_rgb_led,
+};

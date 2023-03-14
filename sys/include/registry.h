@@ -89,12 +89,6 @@ typedef enum {
 
 typedef uint32_t registry_id_t;
 
-typedef const struct {
-    const registry_id_t id;         /**< Integer representing the ID of the configuration namespace */
-    const char * const name;        /**< String describing the configuration namespace */
-    const char * const description; /**< String describing the configuration namespace with more details */
-} registry_namespace_data_t;
-
 /**
  * @brief Basic representation of a registry parameter, containing information about its type and its value.
  */
@@ -108,7 +102,7 @@ typedef const enum {
     REGISTRY_COMMIT_INSTANCE,
     REGISTRY_COMMIT_GROUP,
     REGISTRY_COMMIT_PARAMETER,
-} registry_commit_scope_t;
+} registry_commit_callback_scope_t;
 
 /**
  * @brief Instance of a schema containing its data.
@@ -126,11 +120,22 @@ typedef struct {
      * @param[in] context Context of the instance
      * @return 0 on success, non-zero on failure
      */
-    int (*commit_cb)(const registry_commit_scope_t scope, const registry_id_t *id,
+    int (*commit_cb)(const registry_commit_callback_scope_t scope, const registry_id_t *id,
                      const void *context);
 
     void *context; /**< Optional context used by the instance */
 } registry_instance_t;
+
+typedef const struct _registry_schema_item_t registry_schema_item_t;
+
+struct _registry_schema_item_t {
+    const registry_id_t id;                     /**< Integer representing the path id of the schema item */
+    const char * const name;                    /**< String describing the schema item */
+    const char * const description;             /**< String describing the schema item with more details */
+    const registry_type_t type;                 /**< Type of the schema item (group or parameter) */
+    const registry_schema_item_t * const items; /**< Array representing all the configuration parameters and groups that belong to this group */
+    const size_t items_len;                     /**< Size of items array */
+};
 
 /**
  * @brief Schema for configuration groups. Each configuration group should
@@ -139,10 +144,12 @@ typedef struct {
  * parameters.
  */
 typedef struct {
-    const registry_id_t id;         /**< Integer representing the configuration group */
-    const char * const name;        /**< String describing the configuration group */
-    const char * const description; /**< String describing the configuration group with more details */
-    clist_node_t instances;         /**< Linked list of schema instances @ref registry_instance_t */
+    const registry_id_t id;                     /**< Integer representing the configuration group */
+    const char * const name;                    /**< String describing the configuration group */
+    const char * const description;             /**< String describing the configuration group with more details */
+    clist_node_t instances;                     /**< Linked list of schema instances @ref registry_instance_t */
+    const registry_schema_item_t * const items; /**< Array representing all the configuration parameters and groups that belong to this schema */
+    const size_t items_len;                     /**< Size of items array */
 
     /**
      * @brief Mapping to connect configuration parameter IDs with the address in the storage.
@@ -156,14 +163,23 @@ typedef struct {
                          const registry_instance_t *instance,
                          void **val,
                          size_t *val_len);
-} registry_schema_data_t;
+} registry_schema_t;
 
-typedef struct {
-    const registry_id_t id;         /**< Integer representing the path id of the schema item */
-    const char * const name;        /**< String describing the schema item */
-    const char * const description; /**< String describing the schema item with more details */
-    const registry_type_t type;     /**< Type of the schema item (group or parameter) */
-} registry_schema_item_data_t;
+typedef const struct {
+    clist_node_t node;                      /**< Linked list node */
+    const registry_id_t id;                 /**< Integer representing the ID of the configuration namespace */
+    const char * const name;                /**< String describing the configuration namespace */
+    const char * const description;         /**< String describing the configuration namespace with more details */
+    const registry_schema_t * const items;  /**< Array representing all the configuration schemas that belong to this namespace */
+    const size_t items_len;                 /**< Size of items array */
+} registry_namespace_t;
+
+/**
+ * @brief Adds a new namespace to the registry.
+ *
+ * @param[in] namespace Pointer to the namespace.
+ */
+int registry_register_namespace(const registry_namespace_t *namespace);
 
 /**
  * @brief Adds a new instance to a schema.
@@ -171,22 +187,36 @@ typedef struct {
  * @param[in] schema Pointer to the schema.
  * @param[in] instance Pointer to the new instance.
  */
-int registry_register_schema_instance(const registry_schema_data_t schema,
+int registry_register_schema_instance(const registry_schema_t schema,
                                       const registry_instance_t *instance);
 
-int registry_get(const registry_schema_data_t *schema, const registry_instance_t *instance,
+int registry_get(const registry_schema_t *schema, const registry_instance_t *instance,
                  const registry_id_t parameter_id, registry_value_t *value);
 
-int registry_set(const registry_schema_data_t *schema, const registry_instance_t *instance,
+int registry_set(const registry_schema_t *schema, const registry_instance_t *instance,
                  const registry_id_t parameter_id, const registry_value_t *value);
 
-int registry_commit(const registry_instance_t *instance, const registry_id_t *id);
+typedef const union {
+    registry_namespace_t *namespace;
+    registry_schema_t *schema;
+    registry_instance_t *instance;
+    registry_schema_item_t *schema_item;
+} registry_commit_data_t;
+
+typedef const enum {
+    REGISTRY_COMMIT_INSTANCE,
+    REGISTRY_COMMIT_NAMESPACE,
+    REGISTRY_COMMIT_SCHEMA,
+    REGISTRY_COMMIT_SCHEMA_ITEM,
+} registry_commit_data_type_t;
+
+int registry_commit(const registry_commit_data_t data, const registry_commit_data_type_t data_type);
 
 typedef const union {
-    registry_namespace_data_t *namespace_data;
-    registry_schema_data_t *schema_data;
+    registry_namespace_t *namespace;
+    registry_schema_t *schema;
     registry_instance_t *instance;
-    registry_schema_item_data_t *schema_item_data;
+    registry_schema_item_t *schema_item;
 } registry_export_data_t;
 
 typedef const enum {
@@ -202,7 +232,8 @@ typedef int registry_export_cb_t(const registry_export_data_t data,
                                  const void *context);
 
 int registry_export(const registry_export_cb_t *export_cb, const registry_export_data_t data,
-                    const registry_export_data_type_t data_type, const void *context);
+                    const registry_export_data_type_t data_type, const int recursion_depth,
+                    const void *context);
 
 #ifdef __cplusplus
 }

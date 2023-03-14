@@ -85,13 +85,19 @@ static int _set_red(const registry_instance_t *instance, uint8_t val)
                                     registry_schema_rgb_led.red.data.type, &val, sizeof(uint8_t));
 }
 
-registry_schema_rgb_led_t registry_schema_rgb_led =
-{
+const registry_schema_rgb_led_t registry_schema_rgb_led = {
     .data = {
-        .id = REGISTRY_SCHEMA_RGB_LED,
+        .id = 0,
         .name = "rgb_led",
         .description = "",
         .mapping = mapping,
+        .items = (registry_schema_item_t *[]) {
+            &registry_schema_rgb_led.red,
+            &registry_schema_rgb_led.green,
+            &registry_schema_rgb_led.blue,
+            &registry_schema_rgb_led.brightnesses,
+        },
+        .items_len = 4,
     },
     .red = {
         .data = {
@@ -99,11 +105,11 @@ registry_schema_rgb_led_t registry_schema_rgb_led =
             .name = "red",
             .description = "",
             .type = REGISTRY_TYPE_UINT8,
+            .items = NULL,
+            .items_len = 0,
         },
         .get = _get_red,
         .set = _set_red,
-        .commit = _commit_red,
-        .export = _export_red,
     },
     .green = {
         .data = {
@@ -111,6 +117,8 @@ registry_schema_rgb_led_t registry_schema_rgb_led =
             .name = "green",
             .description = "",
             .type = REGISTRY_TYPE_UINT8,
+            .items = NULL,
+            .items_len = 0,
         },
         .get = _get_red,
     },
@@ -120,6 +128,8 @@ registry_schema_rgb_led_t registry_schema_rgb_led =
             .name = "blue",
             .description = "",
             .type = REGISTRY_TYPE_UINT8,
+            .items = NULL,
+            .items_len = 0,
         },
         .get = _get_red,
     },
@@ -129,6 +139,11 @@ registry_schema_rgb_led_t registry_schema_rgb_led =
             .name = "brightnesses",
             .description = "",
             .type = REGISTRY_TYPE_GROUP,
+            .items = (registry_schema_item_t *[]) {
+                &registry_schema_rgb_led.brightnesses.white,
+                &registry_schema_rgb_led.brightnesses.yellow,
+            },
+            .items_len = 2,
         },
         .white = {
             .data = {
@@ -136,6 +151,8 @@ registry_schema_rgb_led_t registry_schema_rgb_led =
                 .name = "white",
                 .description = "",
                 .type = REGISTRY_TYPE_UINT8,
+                .items = NULL,
+                .items_len = 0,
             },
             .get = _get_red,
         },
@@ -145,46 +162,10 @@ registry_schema_rgb_led_t registry_schema_rgb_led =
                 .name = "yellow",
                 .description = "",
                 .type = REGISTRY_TYPE_UINT8,
+                .items = NULL,
+                .items_len = 0,
             },
             .get = _get_red,
         },
     },
-};
-
-registry_path_schema_t registry_path_schema_rgb_led = {
-    .data = &registry_schema_rgb_led.data,
-    .items = (registry_path_schema_item_t[]) {
-        {
-            .data = &registry_schema_rgb_led.red.data,
-            .items = NULL,
-            .items_len = 0,
-        },
-        {
-            .data = &registry_schema_rgb_led.green.data,
-            .items = NULL,
-            .items_len = 0,
-        },
-        {
-            .data = &registry_schema_rgb_led.blue.data,
-            .items = ((void *)0),
-            .items_len = 0,
-        },
-        {
-            .data = &registry_schema_rgb_led.brightnesses.data,
-            .items = (registry_path_schema_item_t[]) {
-                {
-                    .data = &registry_schema_rgb_led.brightnesses.white.data,
-                    .items = NULL,
-                    .items_len = 0,
-                },
-                {
-                    .data = &registry_schema_rgb_led.brightnesses.yellow.data,
-                    .items = NULL,
-                    .items_len = 0,
-                },
-            },
-            .items_len = 2,
-        },
-    },
-    .items_len = 4,
 };

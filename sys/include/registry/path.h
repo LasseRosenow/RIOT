@@ -36,21 +36,6 @@ typedef struct {
     size_t path_len;
 } registry_path_t;
 
-/* Dynamic registry path items structure */
-typedef const struct _registry_path_schema_item_t registry_path_schema_item_t;
-
-struct _registry_path_schema_item_t {
-    const registry_schema_item_data_t * const data;
-    const registry_path_schema_item_t * const items;
-    const size_t items_len;
-};
-
-typedef const struct {
-    const registry_schema_data_t * const data;
-    const registry_path_schema_item_t * const items;
-    const size_t items_len;
-} registry_path_schema_t;
-
 /**
  * @brief Descriptor used to check duplications in storage facilities
  */
@@ -64,78 +49,78 @@ typedef struct {
                                       sizeof(registry_id_t))
 
 #define _REGISTRY_PATH_0() \
-    (registry_path_t) { \
-        .namespace_id = NULL, \
-        .schema_id = NULL, \
-        .instance_id = NULL, \
-        .path = NULL, \
-        .path_len = 0, \
-    }
+        (registry_path_t) { \
+            .namespace_id = NULL, \
+            .schema_id = NULL, \
+            .instance_id = NULL, \
+            .path = NULL, \
+            .path_len = 0, \
+        }
 
 #define _REGISTRY_PATH_1(_namespace_id) \
-    (registry_path_t) { \
-        .namespace_id = (registry_namespace_id_t[]) { _namespace_id }, \
-        .schema_id = NULL, \
-        .instance_id = NULL, \
-        .path = NULL, \
-        .path_len = 0, \
-    }
+        (registry_path_t) { \
+            .namespace_id = (registry_namespace_id_t[]) { _namespace_id }, \
+            .schema_id = NULL, \
+            .instance_id = NULL, \
+            .path = NULL, \
+            .path_len = 0, \
+        }
 
 #define _REGISTRY_PATH_2(_namespace_id, _schema_id) \
-    (registry_path_t) { \
-        .namespace_id = (registry_namespace_id_t[]) { _namespace_id }, \
-        .schema_id = (registry_id_t[]) { _schema_id }, \
-        .instance_id = NULL, \
-        .path = NULL, \
-        .path_len = 0, \
-    }
+        (registry_path_t) { \
+            .namespace_id = (registry_namespace_id_t[]) { _namespace_id }, \
+            .schema_id = (registry_id_t[]) { _schema_id }, \
+            .instance_id = NULL, \
+            .path = NULL, \
+            .path_len = 0, \
+        }
 
 #define _REGISTRY_PATH_3(_namespace_id, _schema_id, _instance_id) \
-    (registry_path_t) { \
-        .namespace_id = (registry_namespace_id_t[]) { _namespace_id }, \
-        .schema_id = (registry_id_t[]) { _schema_id }, \
-        .instance_id = (registry_id_t[]) { _instance_id }, \
-        .path = NULL, \
-        .path_len = 0, \
-    }
+        (registry_path_t) { \
+            .namespace_id = (registry_namespace_id_t[]) { _namespace_id }, \
+            .schema_id = (registry_id_t[]) { _schema_id }, \
+            .instance_id = (registry_id_t[]) { _instance_id }, \
+            .path = NULL, \
+            .path_len = 0, \
+        }
 
 #define _REGISTRY_PATH_4_AND_MORE(_namespace_id, _schema_id, _instance_id, ...) \
-    (registry_path_t) { \
-        .namespace_id = (registry_namespace_id_t[]) { _namespace_id }, \
-        .schema_id = (registry_id_t[]) { _schema_id }, \
-        .instance_id = (registry_id_t[]) { _instance_id }, \
-        .path = (registry_id_t[]) { __VA_ARGS__ }, \
-        .path_len = _REGISTRY_PATH_NUMARGS(__VA_ARGS__), \
-    }
+        (registry_path_t) { \
+            .namespace_id = (registry_namespace_id_t[]) { _namespace_id }, \
+            .schema_id = (registry_id_t[]) { _schema_id }, \
+            .instance_id = (registry_id_t[]) { _instance_id }, \
+            .path = (registry_id_t[]) { __VA_ARGS__ }, \
+            .path_len = _REGISTRY_PATH_NUMARGS(__VA_ARGS__), \
+        }
 
 #define _REGISTRY_PATH_GET_MACRO(_0, _1, _2, _3, _4, _5, _6, _7, _8, _9, _10, NAME, ...) NAME
 #define REGISTRY_PATH(...) \
-    _REGISTRY_PATH_GET_MACRO(_0, ## __VA_ARGS__, \
-                             _REGISTRY_PATH_4_AND_MORE, \
-                             _REGISTRY_PATH_4_AND_MORE, \
-                             _REGISTRY_PATH_4_AND_MORE, \
-                             _REGISTRY_PATH_4_AND_MORE, \
-                             _REGISTRY_PATH_4_AND_MORE, \
-                             _REGISTRY_PATH_4_AND_MORE, \
-                             _REGISTRY_PATH_4_AND_MORE, \
-                             _REGISTRY_PATH_3, \
-                             _REGISTRY_PATH_2, \
-                             _REGISTRY_PATH_1, \
-                             _REGISTRY_PATH_0) \
-    (__VA_ARGS__)
+        _REGISTRY_PATH_GET_MACRO(_0, ## __VA_ARGS__, \
+                                 _REGISTRY_PATH_4_AND_MORE, \
+                                 _REGISTRY_PATH_4_AND_MORE, \
+                                 _REGISTRY_PATH_4_AND_MORE, \
+                                 _REGISTRY_PATH_4_AND_MORE, \
+                                 _REGISTRY_PATH_4_AND_MORE, \
+                                 _REGISTRY_PATH_4_AND_MORE, \
+                                 _REGISTRY_PATH_4_AND_MORE, \
+                                 _REGISTRY_PATH_3, \
+                                 _REGISTRY_PATH_2, \
+                                 _REGISTRY_PATH_1, \
+                                 _REGISTRY_PATH_0) \
+        (__VA_ARGS__)
 
 #define REGISTRY_PATH_SYS(...) \
-    REGISTRY_PATH(REGISTRY_NAMESPACE_SYS, ## __VA_ARGS__)
+        REGISTRY_PATH(REGISTRY_NAMESPACE_SYS, ## __VA_ARGS__)
 
 #define REGISTRY_PATH_APP(...) \
-    REGISTRY_PATH(REGISTRY_NAMESPACE_APP, ## __VA_ARGS__)
+        REGISTRY_PATH(REGISTRY_NAMESPACE_APP, ## __VA_ARGS__)
 
 /**
  * @brief Registers a new namespace for configuration schemas.
  *
  * @param[in] namespace Pointer to the namespace object.
  */
-int registry_path_register_namespace(const registry_namespace_data_t *namespace_data);
+int registry_path_register_namespace(const registry_namespace_t *namespace);
 
 /**
  * @brief Registers a new schema on a given namespace.
@@ -144,7 +129,7 @@ int registry_path_register_namespace(const registry_namespace_data_t *namespace_
  * @param[in] schema Pointer to the schema structure.
  */
 int registry_path_register_schema(const registry_id_t *namespace_id,
-                                  const registry_schema_data_t *schema_data);
+                                  const registry_schema_t *schema);
 
 /**
  * @brief Sets the value of a parameter that belongs to a configuration group.
@@ -242,8 +227,8 @@ int registry_load_by_path(const registry_path_t path);
 int registry_save_by_path(const registry_path_t path);
 
 typedef int registry_path_export_cb_t(const registry_path_t *path,
-                                      const registry_data_union_t data,
-                                      const registry_data_type_t data_type,
+                                      const registry_export_data_t data,
+                                      const registry_export_data_type_t data_type,
                                       const registry_value_t *value,
                                       const void *context);
 

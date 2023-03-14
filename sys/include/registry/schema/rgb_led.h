@@ -29,12 +29,12 @@ extern "C" {
 /* RGB-LED */
 // #if IS_USED(MODULE_REGISTRY_SCHEMA_RGB_LED) || IS_ACTIVE(DOXYGEN)
 typedef const struct {
-    const registry_schema_data_t data;
+    const registry_schema_t data;
     const registry_parameter_uint8_t red;
     const registry_parameter_uint8_t green;
     const registry_parameter_uint8_t blue;
     const struct {
-        const registry_schema_item_data_t data;
+        const registry_schema_item_t data;
         int (*commit)(void);
         int (*export)(const registry_export_cb_t *export_cb, const void *context);
         const registry_parameter_uint8_t white;
