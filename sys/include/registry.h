@@ -174,6 +174,8 @@ typedef const struct {
     const size_t items_len;                 /**< Size of items array */
 } registry_namespace_t;
 
+extern clist_node_t _registry_namespaces;
+
 /**
  * @brief Adds a new namespace to the registry.
  *

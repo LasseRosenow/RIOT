@@ -35,14 +35,14 @@
 
 /* Implementation of the module */
 
-clist_node_t registry_namespaces;
+clist_node_t _registry_namespaces;
 
 int registry_register_namespace(const registry_namespace_t *namespace)
 {
     assert(namespace != NULL);
 
     /* add namespace to list */
-    clist_rpush((clist_node_t *)&registry_namespaces, (clist_node_t *)&namespace->node);
+    clist_rpush((clist_node_t *)&_registry_namespaces, (clist_node_t *)&namespace->node);
 
     return 0;
 }
