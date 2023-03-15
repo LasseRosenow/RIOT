@@ -30,10 +30,14 @@ extern "C" {
 #include "registry.h"
 
 void _debug_print_value(const registry_value_t *value);
-registry_namespace_t *_namespace_lookup(const registry_namespace_id_t namespace_id);
-registry_schema_t *_schema_lookup(const registry_namespace_t *namespace,
-                                  const int schema_id);
-registry_instance_t *_instance_lookup(const registry_schema_t *schema, const int instance_id);
+
+registry_namespace_t *registry_util_namespace_lookup(const registry_id_t namespace_id);
+
+registry_schema_t *registry_util_schema_lookup(const registry_namespace_t *namespace,
+                                               const int schema_id);
+
+registry_instance_t *registry_util_instance_lookup(const registry_schema_t *schema,
+                                                   const int instance_id);
 
 /**
  * @brief Convenience function to parse a configuration parameter value from

@@ -81,44 +81,42 @@ void _debug_print_value(const registry_value_t *value)
     }
 }
 
-registry_namespace_t *_namespace_lookup(const registry_namespace_id_t namespace_id)
+registry_namespace_t *registry_util_namespace_lookup(const registry_id_t namespace_id)
 {
-    switch (namespace_id) {
-    case REGISTRY_NAMESPACE_SYS:
-        return &registry_namespace_sys;
-    case REGISTRY_NAMESPACE_APP:
-        return &registry_namespace_app;
+    clist_node_t *node = _registry_namespaces.next;
+
+    if (!node) {
+        return -EINVAL;
+    }
+
+    do {
+        node = node->next;
+        registry_namespace_t *namespace = container_of(node, registry_namespace_t, node);
+
+        if (namespace->id == namespace_id) {
+            return namespace;
+        }
+    } while (node != _registry_namespaces.next);
+
+    return NULL;
+}
+
+registry_schema_t *registry_util_schema_lookup(const registry_namespace_t *namespace,
+                                               const int schema_id)
+{
+    for (size_t i = 0; i < namespace->items_len; i++) {
+        registry_schema_t *schema = &namespace->items[i];
+
+        if (schema->id == schema_id) {
+            return schema;
+        }
     }
 
     return NULL;
 }
 
-static int _registry_cmp_schema_id(clist_node_t *current, void *id)
-{
-    assert(current != NULL);
-    registry_schema_t *schema = container_of(current, registry_schema_t, node);
-
-    return !(schema->id - *(int *)id);
-}
-
-registry_schema_t *_schema_lookup(const registry_namespace_t *namespace,
-                                  const int schema_id)
-{
-    clist_node_t *node;
-    registry_schema_t *schema = NULL;
-
-    node =
-        clist_foreach((clist_node_t *)&namespace->schemas, _registry_cmp_schema_id,
-                      (clist_node_t *)&schema_id);
-
-    if (node != NULL) {
-        schema = container_of(node, registry_schema_t, node);
-    }
-
-    return schema;
-}
-
-registry_instance_t *_instance_lookup(const registry_schema_t *schema, const int instance_id)
+registry_instance_t *registry_util_instance_lookup(const registry_schema_t *schema,
+                                                   const int instance_id)
 {
     assert(schema != NULL);
 

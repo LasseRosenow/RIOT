@@ -35,9 +35,9 @@
 
 #include "registry/storage.h"
 
-static int load(const registry_storage_instance_t *instance, const storage_path_t path,
+static int load(const registry_storage_instance_t *instance, const registry_path_t *path,
                 const load_cb_t cb, const void *cb_arg);
-static int save(const registry_storage_instance_t *instance, const storage_path_t path,
+static int save(const registry_storage_instance_t *instance, const registry_path_t *path,
                 const registry_value_t value);
 
 registry_storage_t registry_storage_vfs = {
@@ -54,38 +54,6 @@ static void _string_path_append_item(char *dest, registry_id_t number)
     sprintf(buf, "/%d", number);
 
     strcat(dest, buf);
-}
-
-static int _parse_string_path(char *path, registry_id_t *buf, size_t *buf_len)
-{
-    size_t buf_index = 0;
-    char curr_path_segment[REGISTRY_MAX_DIR_NAME_LEN] = { 0 };
-    size_t curr_path_segment_index = 0;
-
-    size_t path_len = strlen(path);
-
-    size_t i = 0;
-
-    if (path[0] == '/') {
-        i = 1;
-    }
-
-    for (; i <= path_len; i++) {
-        if (path[i] == '/' || i == path_len) {
-            buf[buf_index++] = atoi(curr_path_segment);
-            curr_path_segment_index = 0;
-        }
-        else {
-            if (!isdigit(path[i])) {
-                return -EINVAL;
-            }
-            curr_path_segment[curr_path_segment_index++] = path[i];
-            curr_path_segment[curr_path_segment_index] = '\0';
-        }
-    }
-
-    *buf_len = buf_index;
-    return 0;
 }
 
 static int _format(vfs_mount_t *mount)
@@ -134,7 +102,7 @@ static int _umount(vfs_mount_t *mount)
     return 0;
 }
 
-static int load(const registry_storage_instance_t *instance, const storage_path_t path,
+static int load(const registry_storage_instance_t *instance, const registry_path_t *path,
                 const load_cb_t cb, const void *cb_arg)
 {
     (void)cb;
@@ -146,20 +114,20 @@ static int load(const registry_storage_instance_t *instance, const storage_path_
     _mount(mount);
 
     /* create dir path */
-    char string_path[REGISTRY_MAX_DIR_LEN];
+    char string_path[REGISTRY_PATH_STRING_MAX_LEN];
 
     sprintf(string_path, "%s", mount->mount_point);
 
-    if (path.namespace_id != NULL) {
-        _string_path_append_item(string_path, *path.namespace_id);
+    if (path->namespace_id != NULL) {
+        _string_path_append_item(string_path, *path->namespace_id);
     }
 
-    if (path.schema_id != NULL) {
-        _string_path_append_item(string_path, *path.schema_id);
+    if (path->schema_id != NULL) {
+        _string_path_append_item(string_path, *path->schema_id);
     }
 
-    if (path.instance_id != NULL) {
-        _string_path_append_item(string_path, *path.instance_id);
+    if (path->instance_id != NULL) {
+        _string_path_append_item(string_path, *path->instance_id);
     }
 
     /* read dirs */
@@ -173,8 +141,8 @@ static int load(const registry_storage_instance_t *instance, const storage_path_
         vfs_dirent_t dir_entry;
 
         size_t i = 0;
-        int last_dir_entry_positions[REGISTRY_MAX_DIR_DEPTH] = { -1 };
-        size_t last_dir_string_path_lens[REGISTRY_MAX_DIR_DEPTH] = { 0 };
+        int last_dir_entry_positions[REGISTRY_PATH_MAX_LEN] = { -1 };
+        size_t last_dir_string_path_lens[REGISTRY_PATH_MAX_LEN] = { 0 };
         int res = 0;
         bool exit_folder_iteration = false;
 
@@ -186,7 +154,7 @@ static int load(const registry_storage_instance_t *instance, const storage_path_
 
                 if (dir_entry_position > last_dir_entry_positions[i]) {
                     last_dir_entry_positions[i] = dir_entry_position;
-                    for (size_t j = i + 1; j < REGISTRY_MAX_DIR_DEPTH; j++) {
+                    for (size_t j = i + 1; j < REGISTRY_PATH_MAX_LEN; j++) {
                         last_dir_entry_positions[j] = -1;
                     }
 
@@ -234,41 +202,18 @@ static int load(const registry_storage_instance_t *instance, const storage_path_
                                 vfs_fstat(fd, &_stat);
 
                                 /* try to convert string path to registry int path */
-                                size_t path_items_len = REGISTRY_MAX_DIR_DEPTH + 3;
-                                registry_id_t path_items[path_items_len];
-                                if (_parse_string_path(string_path + strlen(mount->mount_point),
-                                                       path_items,
-                                                       &path_items_len) < 0) {
+                                registry_path_t path;
+                                registry_id_t path_items[REGISTRY_PATH_ITEMS_MAX_LEN];
+                                if (registry_path_util_parse_string_path(string_path +
+                                                                         strlen(mount->mount_point),
+                                                                         &path, path_items) < 0) {
                                     DEBUG(
                                         "[registry storage_vfs] load: Invalid registry path\n");
                                 }
                                 else {
-                                    /* convert int path to storage_path_t */
-                                    storage_path_t path;
-                                    for (size_t i = 0; i < path_items_len; i++) {
-                                        switch (i) {
-                                        case 0: path.namespace_id =
-                                            (registry_namespace_id_t *)&path_items[i];
-                                            break;
-                                        case 1: path.schema_id = &path_items[i]; break;
-                                        case 2: path.instance_id = &path_items[i]; break;
-                                        case 3: path.path = &path_items[i]; path.path_len++; break; // Add path.path to correct position in path_items array
-                                        default: path.path_len++; break;
-                                        }
-                                    }
-
-                                    // TODO improve this
-                                    registry_path_t registry_path = {
-                                        .namespace_id = path.namespace_id,
-                                        .schema_id = path.schema_id,
-                                        .instance_id = path.instance_id,
-                                        .path = path.path,
-                                        .path_len = path.path_len,
-                                    };
-
                                     /* get registry meta data of configuration parameter */
                                     registry_value_t value;
-                                    registry_get_value_by_path(registry_path, &value);
+                                    registry_get_by_path(&path, &value);
 
                                     /* read value from file */
                                     uint8_t new_value_buf[value.buf_len];
@@ -281,7 +226,7 @@ static int load(const registry_storage_instance_t *instance, const storage_path_
                                         value.buf = new_value_buf;
 
                                         /* call callback with value and path */
-                                        cb(path, value, cb_arg);
+                                        cb(&path, value, cb_arg);
                                     }
                                 }
 
@@ -335,7 +280,7 @@ static int load(const registry_storage_instance_t *instance, const storage_path_
     return 0;
 }
 
-static int save(const registry_storage_instance_t *instance, const storage_path_t path,
+static int save(const registry_storage_instance_t *instance, const registry_path_t *path,
                 const registry_value_t value)
 {
     (void)path;
@@ -347,25 +292,25 @@ static int save(const registry_storage_instance_t *instance, const storage_path_
     _mount(mount);
 
     /* create dir path */
-    char string_path[REGISTRY_MAX_DIR_LEN];
+    char string_path[REGISTRY_PATH_STRING_MAX_LEN];
 
     sprintf(string_path, "%s", mount->mount_point);
 
-    _string_path_append_item(string_path, *path.namespace_id);
+    _string_path_append_item(string_path, *path->namespace_id);
     int res = vfs_mkdir(string_path, 0);
 
     if (res < 0 && res != -EEXIST) {
         DEBUG("[registry storage_vfs] save: Can not make dir: %s\n", string_path);
     }
 
-    _string_path_append_item(string_path, *path.schema_id);
+    _string_path_append_item(string_path, *path->schema_id);
     res = vfs_mkdir(string_path, 0);
 
     if (res < 0 && res != -EEXIST) {
         DEBUG("[registry storage_vfs] save: Can not make dir: %s\n", string_path);
     }
 
-    _string_path_append_item(string_path, *path.instance_id);
+    _string_path_append_item(string_path, *path->instance_id);
     res = vfs_mkdir(string_path, 0);
 
     if (res < 0 && res != -EEXIST) {
@@ -373,8 +318,8 @@ static int save(const registry_storage_instance_t *instance, const storage_path_
     }
 
     /* exclude the last element, as it will be the file name and not a folder */
-    for (size_t i = 0; i < path.path_len - 1; i++) {
-        _string_path_append_item(string_path, path.path[i]);
+    for (size_t i = 0; i < path->path_len - 1; i++) {
+        _string_path_append_item(string_path, path->path[i]);
         res = vfs_mkdir(string_path, 0);
         if (res != 0 && res != -EEXIST) {
             DEBUG("[registry storage_vfs] save: Can not create dir: %d\n", res);
@@ -382,7 +327,7 @@ static int save(const registry_storage_instance_t *instance, const storage_path_
     }
 
     /* open file */
-    _string_path_append_item(string_path, path.path[path.path_len - 1]);
+    _string_path_append_item(string_path, path->path[path->path_len - 1]);
 
     int fd = vfs_open(string_path, O_CREAT | O_RDWR, 0);
 

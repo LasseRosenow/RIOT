@@ -123,7 +123,8 @@ static void test_registry_setup(void)
 }
 
 static void test_registry_teardown(void)
-{}
+{
+}
 
 static void tests_registry_register_schema(void)
 {
@@ -428,9 +429,9 @@ static void tests_registry_commit(void)
 
 bool export_success = false;
 
-static int _export_func(const registry_path_t path, const registry_schema_t *schema,
-                        const registry_instance_t *instance, const registry_schema_item_t *meta,
-                        const registry_value_t *value, const void *context)
+static int _export_cb(const registry_path_t path, const registry_schema_t *schema,
+                      const registry_instance_t *instance, const registry_schema_item_t *meta,
+                      const registry_value_t *value, const void *context)
 {
     (void)path;
     (void)schema;
@@ -454,7 +455,7 @@ static void tests_registry_export(void)
     registry_path_t path = REGISTRY_PATH_SYS(REGISTRY_SCHEMA_FULL_EXAMPLE, 0,
                                              REGISTRY_SCHEMA_FULL_EXAMPLE_STRING);
 
-    registry_export(_export_func, path, 0, NULL);
+    registry_export(_export_cb, path, 0, NULL);
 
     TEST_ASSERT_EQUAL_INT(true, export_success);
 }

@@ -94,21 +94,21 @@ static const registry_schema_item_t *_parameter_lookup(const registry_path_t *pa
 int registry_set_by_path(const registry_path_t *path, const registry_value_t *value)
 {
     /* lookup namespace */
-    registry_namespace_t *namespace = _namespace_lookup(*path->namespace_id);
+    registry_namespace_t *namespace = registry_util_namespace_lookup(*path->namespace_id);
 
     if (!namespace) {
         return -EINVAL;
     }
 
     /* lookup schema */
-    registry_schema_t *schema = _schema_lookup(namespace, *path->schema_id);
+    registry_schema_t *schema = registry_util_schema_lookup(namespace, *path->schema_id);
 
     if (!schema) {
         return -EINVAL;
     }
 
     /* lookup instance */
-    registry_instance_t *instance = _instance_lookup(schema, *path->instance_id);
+    registry_instance_t *instance = registry_util_instance_lookup(schema, *path->instance_id);
 
     if (!instance) {
         return -EINVAL;
@@ -127,21 +127,21 @@ int registry_set_by_path(const registry_path_t *path, const registry_value_t *va
 int registry_get_by_path(const registry_path_t *path, registry_value_t *value)
 {
     /* lookup namespace */
-    registry_namespace_t *namespace = _namespace_lookup(*path->namespace_id);
+    registry_namespace_t *namespace = registry_util_namespace_lookup(*path->namespace_id);
 
     if (!namespace) {
         return -EINVAL;
     }
 
     /* lookup schema */
-    registry_schema_t *schema = _schema_lookup(namespace, *path->schema_id);
+    registry_schema_t *schema = registry_util_schema_lookup(namespace, *path->schema_id);
 
     if (!schema) {
         return -EINVAL;
     }
 
     /* lookup instance */
-    registry_instance_t *instance = _instance_lookup(schema, *path->instance_id);
+    registry_instance_t *instance = registry_util_instance_lookup(schema, *path->instance_id);
 
     if (!instance) {
         return -EINVAL;
@@ -162,14 +162,14 @@ static int _registry_commit_schema_by_path(const registry_path_t *path)
     int rc = 0;
 
     /* lookup namespace */
-    registry_namespace_t *namespace = _namespace_lookup(*path->namespace_id);
+    registry_namespace_t *namespace = registry_util_namespace_lookup(*path->namespace_id);
 
     if (!namespace) {
         return -EINVAL;
     }
 
     /* lookup schema */
-    registry_schema_t *schema = _schema_lookup(namespace, *path->schema_id);
+    registry_schema_t *schema = registry_util_schema_lookup(namespace, *path->schema_id);
 
     if (!schema) {
         return -EINVAL;
@@ -178,7 +178,7 @@ static int _registry_commit_schema_by_path(const registry_path_t *path)
     /* schema/instance */
     if (path->instance_id != NULL) {
         /* lookup instance */
-        registry_instance_t *instance = _instance_lookup(schema, *path->instance_id);
+        registry_instance_t *instance = registry_util_instance_lookup(schema, *path->instance_id);
         if (!instance) {
             return -EINVAL;
         }
@@ -195,7 +195,7 @@ static int _registry_commit_schema_by_path(const registry_path_t *path)
     /* only schema */
     else {
         for (size_t i = 0; i < clist_count(&schema->instances); i++) {
-            registry_instance_t *instance = _instance_lookup(schema, i);
+            registry_instance_t *instance = registry_util_instance_lookup(schema, i);
             if (instance->commit_cb) {
                 int _rc =
                     instance->commit_cb(REGISTRY_COMMIT_SCOPE_INSTANCE, NULL, instance->context);
@@ -217,7 +217,7 @@ static int _registry_commit_namespace_by_path(const registry_path_t *path)
     int rc = 0;
 
     /* lookup namespace */
-    registry_namespace_t *namespace = _namespace_lookup(*path->namespace_id);
+    registry_namespace_t *namespace = registry_util_namespace_lookup(*path->namespace_id);
 
     if (!namespace) {
         return -EINVAL;
@@ -271,6 +271,7 @@ int registry_commit_by_path(const registry_path_t *path)
         }
 
         do {
+            node = node->next;
             registry_namespace_t *namespace = container_of(node, registry_namespace_t, node);
 
             if (!namespace) {
@@ -359,7 +360,7 @@ static int _registry_export_instance_by_path(int (*export_cb)(const registry_pat
                                              const registry_path_t *path, const registry_schema_t *schema,
                                              const int recursion_depth, const void *context)
 {
-    registry_instance_t *instance = _instance_lookup(schema, *path->instance_id);
+    registry_instance_t *instance = registry_util_instance_lookup(schema, *path->instance_id);
 
     if (!instance) {
         return -EINVAL;
@@ -417,14 +418,14 @@ static int _registry_export_schema_by_path(int (*export_cb)(const registry_path_
     int rc = 0;
 
     /* lookup namespace */
-    registry_namespace_t *namespace = _namespace_lookup(*path->namespace_id);
+    registry_namespace_t *namespace = registry_util_namespace_lookup(*path->namespace_id);
 
     if (!namespace) {
         return -EINVAL;
     }
 
     /* lookup schema */
-    registry_schema_t *schema = _schema_lookup(namespace, *path->schema_id);
+    registry_schema_t *schema = registry_util_schema_lookup(namespace, *path->schema_id);
 
     if (!schema) {
         return -EINVAL;
@@ -459,7 +460,7 @@ static int _registry_export_schema_by_path(int (*export_cb)(const registry_path_
             registry_id_t instance_id = 0;
 
             do {
-                node = node->next; // TODO This call could be a bug?
+                node = node->next;
                 registry_instance_t *instance = container_of(node, registry_instance_t, node);
 
                 if (!instance) {
@@ -501,7 +502,7 @@ static int _registry_export_namespace_by_path(int (*export_cb)(const registry_pa
     int rc = 0;
 
     /* lookup namespace */
-    registry_namespace_t *namespace = _namespace_lookup(*path->namespace_id);
+    registry_namespace_t *namespace = registry_util_namespace_lookup(*path->namespace_id);
 
     if (!namespace) {
         return -EINVAL;
@@ -587,6 +588,7 @@ int registry_export_by_path(const registry_path_export_cb_t *export_cb, const re
             }
 
             do {
+                node = node->next;
                 registry_namespace_t *namespace = container_of(node, registry_namespace_t, node);
 
                 if (!namespace) {
@@ -661,8 +663,8 @@ int registry_load_by_path(const registry_path_t *path)
     };
 
     do {
-        registry_storage_instance_t *src;
-        src = container_of(node, registry_storage_instance_t, node);
+        node = node->next;
+        registry_storage_instance_t *src = container_of(node, registry_storage_instance_t, node);
         src->itf->load(src, storage_path, _registry_load_by_path_cb, NULL);
     } while (node != _storage_srcs.next);
     // TODO Possible bug? SFs could override with outdated values if SF_DST is not last in SF_SRCs?
@@ -771,4 +773,40 @@ int registry_save_by_path(const registry_path_t *path)
     }
 
     return res;
+}
+
+int registry_path_util_parse_string_path(const char *string_path,
+                                         registry_path_t *registry_path,
+                                         registry_id_t *path_items_buf)
+{
+    char *ptr = string_path;
+    long ret;
+
+    int i = 0;
+
+    registry_path->path_len = 0;
+
+    while (*ptr != '\0') {
+        registry_id_t id = strtol(ptr, &ptr, 10);
+
+        switch (i) {
+        case 0: registry_path->namespace_id = id; break;
+        case 1: registry_path->schema_id = id; break;
+        case 2: registry_path->instance_id = id; break;
+        default:
+            path_items_buf[i] = id;
+            registry_path->path_len++;
+            break;
+        }
+
+        registry_path->path = path_items_buf;
+
+        if (*ptr != '\0') {
+            ptr++;
+        }
+
+        i++;
+    }
+
+    return 0;
 }

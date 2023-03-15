@@ -27,6 +27,27 @@ extern "C" {
 
 #include "registry.h"
 
+/**
+ * @brief Maximum length of a configuration items path.
+ */
+#define REGISTRY_PATH_ITEMS_MAX_LEN 8
+
+/**
+ * @brief Maximum length of a configuration path.
+ *
+ * Configuration items + namespace_id, schema_id and instance_id.
+ */
+#define REGISTRY_PATH_MAX_LEN (REGISTRY_PATH_ITEMS_MAX_LEN + 3)
+
+/**
+ * @brief Maximum length of a configuration path as a string.
+ *
+ * A path is an uint32_t and uint32_t MAX has 10 digits.
+ * We also need to include the seperator. One additional char between each number.
+ */
+#define REGISTRY_PATH_STRING_MAX_LEN   ((10 * REGISTRY_PATH_MAX_LEN) + \
+                                        (REGISTRY_PATH_MAX_LEN - 1))
+
 /* Dynamic registry path */
 typedef struct {
     const registry_id_t *namespace_id;
@@ -179,28 +200,29 @@ int registry_load_by_path(const registry_path_t *path);
  */
 int registry_save_by_path(const registry_path_t *path);
 
-typedef int registry_path_export_cb_t(const registry_path_t *path,
-                                      const registry_export_data_t data,
-                                      const registry_export_data_type_t data_type,
-                                      const registry_value_t *value,
-                                      const void *context);
-
+typedef void (*registry_path_export_cb_t)(const registry_path_t *path,
+                                          const registry_export_data_t data,
+                                          const registry_export_data_type_t data_type,
+                                          const registry_value_t *value,
+                                          const void *context);
 /**
  * @brief Export an specific or all configuration parameters using the
- * @p export_func function. If @p path is NULL then @p export_func is called for
+ * @p export_cb function. If @p path is NULL then @p export_cb is called for
  * every configuration parameter on each configuration group.
  *
- * @param[in] export_func Exporting function call with the @p path and current
+ * @param[in] export_cb Exporting  callback function call with the @p path and current
  * value of a specific or all configuration parameters
  * @param[in] path Path representing the configuration parameter. Can be NULL.
  * @param[in] recursion_depth Defines how deeply nested child groups / parameters will be shown. (0 to show all children, 1 to only show the exact match, 2 - n to show the exact match plus its children ... plus n levels of children )
- * @param[in] context Context that will be passed to @p export_func
+ * @param[in] context Context that will be passed to @p export_cb
  * @return 0 on success, non-zero on failure
  */
-int registry_export_by_path(const registry_path_export_cb_t *export_cb, const registry_path_t *path,
+int registry_export_by_path(const registry_path_export_cb_t export_cb, const registry_path_t *path,
                             const int recursion_depth, const void *context);
 
-
+int registry_path_util_parse_string_path(const char *string_path,
+                                         registry_path_t *registry_path,
+                                         registry_id_t *path_items_buf);
 
 #ifdef __cplusplus
 }

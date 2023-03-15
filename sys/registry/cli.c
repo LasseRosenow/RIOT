@@ -30,6 +30,7 @@
 #include "debug.h"
 #include "registry.h"
 #include "registry/path.h"
+#include "registry/util.h"
 
 #include "registry/cli.h"
 
@@ -42,6 +43,7 @@ static void _print_registry_value(const registry_value_t *value)
 {
     switch (value->type) {
     case REGISTRY_TYPE_NONE: break;
+    case REGISTRY_TYPE_GROUP: break;
     case REGISTRY_TYPE_OPAQUE: {
         printf("opaque (hex): ");
         for (size_t i = 0; i < value->buf_len; i++) {
@@ -77,80 +79,14 @@ static void _print_registry_value(const registry_value_t *value)
     }
 }
 
-static registry_namespace_t *_namespace_lookup(const registry_namespace_id_t namespace_id)
-{
-    switch (namespace_id) {
-    case REGISTRY_NAMESPACE_SYS:
-        return &registry_namespace_sys;
-    case REGISTRY_NAMESPACE_APP:
-        return &registry_namespace_app;
-    }
-
-    return NULL;
-}
-
-
-static int _parse_string_path(const char *string_path, registry_id_t *buf, size_t *buf_len)
-{
-    size_t buf_index = 0;
-    char curr_path_segment[REGISTRY_MAX_DIR_NAME_LEN] = { 0 };
-    size_t curr_path_segment_index = 0;
-
-    size_t path_len = strlen(string_path);
-
-    for (size_t i = 0; i <= path_len; i++) {
-        if (string_path[i] == REGISTRY_CLI_PATH_SEPARATOR || i == path_len) {
-            buf[buf_index++] = atoi(curr_path_segment);
-            curr_path_segment_index = 0;
-        }
-        else {
-            if (!isdigit(string_path[i])) {
-                return -EINVAL;
-            }
-            curr_path_segment[curr_path_segment_index++] = string_path[i];
-            curr_path_segment[curr_path_segment_index] = '\0';
-        }
-    }
-
-    *buf_len = buf_index;
-    return 0;
-}
-
-static int _registry_path_from_string_path(const char *string_path,
-                                           registry_id_t *path_items_buf,
-                                           size_t *path_items_buf_len,
-                                           registry_path_t *registry_path)
-{
-    int res = _parse_string_path(string_path, path_items_buf, path_items_buf_len);
-
-    if (res < 0) {
-        return res;
-    }
-    else {
-        for (size_t i = 0; i < *path_items_buf_len; i++) {
-            switch (i) {
-            case 0: registry_path->namespace_id = (registry_namespace_id_t *)&path_items_buf[i];
-                break;
-            case 1: registry_path->schema_id = &path_items_buf[i]; break;
-            case 2: registry_path->instance_id = &path_items_buf[i]; break;
-            /* Add path.path to correct position in int_path array */
-            case 3: registry_path->path = &path_items_buf[i]; registry_path->path_len++; break;
-            default: registry_path->path_len++; break;
-            }
-        }
-    }
-
-    return 0;
-}
-
-static int _export_func(const registry_path_t path, const registry_schema_t *schema,
-                        const registry_instance_t *instance, const registry_schema_item_t *meta,
-                        const registry_value_t *value, const void *context)
+static int _export_cb(const registry_path_t path, const registry_schema_t *schema,
+                      const registry_instance_t *instance, const registry_schema_item_t *meta,
+                      const registry_value_t *value, const void *context)
 {
     (void)value;
     (void)context;
 
-    registry_namespace_t *namespace = _namespace_lookup(*path.namespace_id);
+    registry_namespace_t *namespace = registry_util_namespace_lookup(*path.namespace_id);
 
     size_t path_len = path.path_len;
 
@@ -194,11 +130,10 @@ static int _export_func(const registry_path_t path, const registry_schema_t *sch
 
 int registry_cli_cmd(int argc, char **argv)
 {
-    size_t path_items_buf_len = REGISTRY_MAX_DIR_DEPTH + 3;
-    registry_id_t path_items_buf[path_items_buf_len];
     // TODO: Why is REGISTRY_PATH() Not working? (It should resolve to _REGISTRY_PATH_0()
     // but somehow its not initializing namespace with NULL?? (makes no sense:( ... )))
     registry_path_t path = _REGISTRY_PATH_0();
+    registry_id_t path_items[REGISTRY_PATH_ITEMS_MAX_LEN];
 
     if (argc == 1) {
         /* show help for main commands */
@@ -206,14 +141,13 @@ int registry_cli_cmd(int argc, char **argv)
     }
 
     if (strcmp(argv[1], "get") == 0) {
-        if (_registry_path_from_string_path(argv[2], path_items_buf, &path_items_buf_len,
-                                            &path) < 0) {
+        if (registry_path_util_parse_string_path(argv[2], &path, path_items) < 0) {
             printf("usage: %s %s <path>\n", argv[0], argv[1]);
             return 1;
         }
 
         registry_value_t value;
-        int res = registry_get_value_by_path(path, &value);
+        int res = registry_get_by_path(&path, &value);
 
         if (res != 0) {
             printf("error: %d\n", res);
@@ -226,8 +160,7 @@ int registry_cli_cmd(int argc, char **argv)
         return 0;
     }
     else if (strcmp(argv[1], "set") == 0) {
-        if (_registry_path_from_string_path(argv[2], path_items_buf, &path_items_buf_len,
-                                            &path) < 0) {
+        if (registry_path_util_parse_string_path(argv[2], &path, path_items) < 0) {
             printf("usage: %s %s <path> <value>\n", argv[0], argv[1]);
             return 1;
         }
@@ -236,8 +169,7 @@ int registry_cli_cmd(int argc, char **argv)
         return 0;
     }
     else if (strcmp(argv[1], "commit") == 0) {
-        if (_registry_path_from_string_path(argv[2], path_items_buf, &path_items_buf_len,
-                                            &path) < 0) {
+        if (registry_path_util_parse_string_path(argv[2], &path, path_items) < 0) {
             printf("usage: %s %s <path>\n", argv[0], argv[1]);
             return 1;
         }
@@ -248,8 +180,7 @@ int registry_cli_cmd(int argc, char **argv)
     else if (strcmp(argv[1], "export") == 0) {
         /* If the path is invalid, it can also just be non existent, so other arguments like -r need to be checked */
         bool invalid_path = false;
-        if (_registry_path_from_string_path(argv[2], path_items_buf, &path_items_buf_len,
-                                            &path) < 0) {
+        if (registry_path_util_parse_string_path(argv[2], &path, path_items) < 0) {
             invalid_path = true;
         }
         if (invalid_path && strcmp(argv[2], "-r") != 0) {
@@ -266,13 +197,12 @@ int registry_cli_cmd(int argc, char **argv)
             recursion_level = atoi(argv[4]);
         }
 
-        registry_export_by_path(_export_func, path, recursion_level, NULL);
+        registry_export_by_path(_export_cb, path, recursion_level, NULL);
         return 0;
     }
     else if (strcmp(argv[1], "load") == 0) {
         if (argc > 2) {
-            if (_registry_path_from_string_path(argv[2], path_items_buf, &path_items_buf_len,
-                                                &path) < 0) {
+            if (registry_path_util_parse_string_path(argv[2], &path, path_items) < 0) {
                 printf("usage: %s %s [path]\n", argv[0], argv[1]);
                 return 1;
             }
@@ -288,8 +218,7 @@ int registry_cli_cmd(int argc, char **argv)
     }
     else if (strcmp(argv[1], "save") == 0) {
         if (argc > 2) {
-            if (_registry_path_from_string_path(argv[2], path_items_buf, &path_items_buf_len,
-                                                &path) < 0) {
+            if (registry_path_util_parse_string_path(argv[2], &path, path_items) < 0) {
                 printf("usage: %s %s [path]\n", argv[0], argv[1]);
                 return 1;
             }

@@ -132,16 +132,6 @@
 //     return 0;
 // }
 
-
-
-int registry_get_uint8_v2(uint8_t **val, size_t *val_len)
-{
-    (void)val;
-    (void)val_len;
-
-    return 0;
-}
-
 int main(void)
 {
     return 0;

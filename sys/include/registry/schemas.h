@@ -25,21 +25,20 @@ extern "C" {
 #endif
 
 #include "registry.h"
-#include "registry/schema/rgb_led.h"
 
 void registry_schemas_init(void);
 
 /* BASE GET FUNCTION */
 
-inline int _registry_schema_get_buf(const registry_schema_t *schema,
-                                    const registry_instance_t *instance, registry_id_t parameter_id,
-                                    registry_type_t type, const void **val, size_t *val_len);
+int _registry_schema_get_buf(const registry_schema_t *schema,
+                             const registry_instance_t *instance, registry_id_t parameter_id,
+                             registry_type_t type, const void **val, size_t *val_len);
 
 /* BASE SET FUNCTION */
 
-inline int _registry_schema_set_buf(const registry_schema_t *schema,
-                                    const registry_instance_t *instance, registry_id_t parameter_id,
-                                    registry_type_t type, const void *val, size_t val_len);
+int _registry_schema_set_buf(const registry_schema_t *schema,
+                             const registry_instance_t *instance, registry_id_t parameter_id,
+                             registry_type_t type, const void *val, size_t val_len);
 
 /* BASE TYPES */
 
@@ -56,15 +55,6 @@ typedef const struct {
     int (*commit)(void);
     int (*export)(const registry_export_cb_t *export_cb, const void *context);
 } registry_parameter_uint8_t;
-
-/* ------------- Registry sys namespace ------------- */
-
-typedef const struct {
-    const registry_namespace_t data;
-    const registry_schema_rgb_led_t * const rgb_led;
-} registry_sys_t;
-
-extern const registry_sys_t registry_sys;
 
 #ifdef __cplusplus
 }

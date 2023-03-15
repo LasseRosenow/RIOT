@@ -27,25 +27,7 @@ extern "C" {
 
 #include <stdint.h>
 #include <stdbool.h>
-#include "kernel_defines.h"
 #include "clist.h"
-
-/**
- * @brief Maximum amount of levels of hierarchy in configurations names.
- */
-#define REGISTRY_MAX_DIR_DEPTH     8
-
-/**
- * @brief Maximum amount of characters per level in configurations names.
- */
-#define REGISTRY_MAX_DIR_NAME_LEN  10 /* a path is an uint32_t and uint32_t MAX has 10 digits. */
-
-/**
- * @brief Maximum length of a configuration name.
- */
-#define REGISTRY_MAX_DIR_LEN      ((REGISTRY_MAX_DIR_NAME_LEN * \
-                                    REGISTRY_MAX_DIR_DEPTH) + \
-                                   (REGISTRY_MAX_DIR_DEPTH - 1))
 
 /**
  * @brief Data types of the registry
@@ -228,12 +210,12 @@ typedef const enum {
     REGISTRY_EXPORT_SCHEMA_ITEM,
 } registry_export_data_type_t;
 
-typedef int registry_export_cb_t(const registry_export_data_t data,
-                                 const registry_export_data_type_t data_type,
-                                 const registry_value_t *value,
-                                 const void *context);
+typedef void (*registry_export_cb_t)(const registry_export_data_t data,
+                                     const registry_export_data_type_t data_type,
+                                     const registry_value_t *value,
+                                     const void *context);
 
-int registry_export(const registry_export_cb_t *export_cb, const registry_export_data_t data,
+int registry_export(const registry_export_cb_t export_cb, const registry_export_data_t data,
                     const registry_export_data_type_t data_type, const int recursion_depth,
                     const void *context);
 

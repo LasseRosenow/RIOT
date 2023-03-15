@@ -161,12 +161,12 @@ REGISTRY_SCHEMA(
 //
 
 /* Export */
-static int test_export_func(const registry_path_t path,
-                            const registry_schema_t *schema,
-                            const registry_instance_t *instance,
-                            const registry_schema_item_t *meta,
-                            const registry_value_t *value,
-                            const void *context)
+static int test_export_cb(const registry_path_t path,
+                          const registry_schema_t *schema,
+                          const registry_instance_t *instance,
+                          const registry_schema_item_t *meta,
+                          const registry_value_t *value,
+                          const void *context)
 {
     (void)path;
     (void)schema;
@@ -356,7 +356,7 @@ static void *thread_test(void *arg)
     } break;
 
     case EXPORT: {
-        registry_export(test_export_func, path, 1, NULL);
+        registry_export(test_export_cb, path, 1, NULL);
     } break;
 
     case SAVE: {
