@@ -1,4 +1,4 @@
-SRC := core.c util.c
+SRC := core.c util.c namespaces.c
 
 SUBMODULES := 1
 
