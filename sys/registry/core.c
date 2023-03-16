@@ -14,7 +14,6 @@
  *
  * @file
  *
- * @author      Leandro Lanzieri <leandro.lanzieri@haw-hamburg.de>
  * @author      Lasse Rosenow <lasse.rosenow@haw-hamburg.de>
  *
  * @}
