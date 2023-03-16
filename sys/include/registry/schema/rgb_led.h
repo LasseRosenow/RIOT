@@ -24,7 +24,7 @@
 extern "C" {
 #endif
 
-#include "registry/schemas.h"
+#include "registry/schema/_util.h"
 
 /* RGB-LED */
 // #if IS_USED(MODULE_REGISTRY_SCHEMA_RGB_LED) || IS_ACTIVE(DOXYGEN)
