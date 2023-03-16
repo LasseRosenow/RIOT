@@ -29,7 +29,7 @@ extern "C" {
 
 typedef const struct {
     const registry_namespace_t data;
-    const registry_schema_rgb_led_t * const rgb_led;
+    const registry_sys_rgb_led_t * const rgb_led;
 } registry_sys_t;
 
 extern const registry_sys_t registry_sys;

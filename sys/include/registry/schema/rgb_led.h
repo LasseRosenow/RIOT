@@ -40,9 +40,9 @@ typedef const struct {
         const registry_parameter_uint8_t white;
         const registry_parameter_uint8_t yellow;
     } brightnesses;
-} registry_schema_rgb_led_t;
+} registry_sys_rgb_led_t;
 
-extern const registry_schema_rgb_led_t registry_schema_rgb_led;
+extern const registry_sys_rgb_led_t registry_sys_rgb_led;
 
 typedef struct {
     clist_node_t node;
@@ -51,7 +51,16 @@ typedef struct {
     uint8_t blue;
     uint8_t white;
     uint8_t yellow;
-} registry_schema_rgb_led_instance_t;
+} registry_sys_rgb_led_instance_t;
+
+typedef const enum {
+    REGISTRY_SYS_RGB_LED_RED,
+    REGISTRY_SYS_RGB_LED_GREEN,
+    REGISTRY_SYS_RGB_LED_BLUE,
+    REGISTRY_SYS_RGB_LED_BRIGHTNESSES,
+    REGISTRY_SYS_RGB_LED_BRIGHTNESSES_WHITE,
+    REGISTRY_SYS_RGB_LED_BRIGHTNESSES_YELLOW,
+} registry_sys_rgb_led_indices_t;
 
 // #endif
 

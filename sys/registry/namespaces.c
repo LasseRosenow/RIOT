@@ -32,9 +32,9 @@ const registry_sys_t registry_sys = {
         .name = "sys",
         .description = "Sys namespace",
         .items = (const registry_schema_t *[]) {
-            &registry_schema_rgb_led.data,
+            &registry_sys_rgb_led.data,
         },
         .items_len = 1,
     },
-    .rgb_led = &registry_schema_rgb_led,
+    .rgb_led = &registry_sys_rgb_led,
 };
