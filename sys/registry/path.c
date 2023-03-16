@@ -185,7 +185,7 @@ static int _registry_commit_schema_by_path(const registry_path_t *path)
             return -EINVAL;
         }
         if (instance->commit_cb) {
-            int _rc = instance->commit_cb(REGISTRY_COMMIT_SCOPE_INSTANCE, NULL, instance->context);
+            int _rc = instance->commit_cb(REGISTRY_COMMIT_INSTANCE, NULL, instance->context);
             if (!_rc) {
                 rc = _rc;
             }
@@ -200,7 +200,7 @@ static int _registry_commit_schema_by_path(const registry_path_t *path)
             const registry_instance_t *instance = registry_util_instance_lookup(schema, i);
             if (instance->commit_cb) {
                 int _rc =
-                    instance->commit_cb(REGISTRY_COMMIT_SCOPE_INSTANCE, NULL, instance->context);
+                    instance->commit_cb(REGISTRY_COMMIT_INSTANCE, NULL, instance->context);
                 if (!_rc) {
                     rc = _rc;
                 }
@@ -326,8 +326,8 @@ static void _registry_export_params_by_path(const registry_path_export_cb_t expo
         /* check if the current schema_item is a group or a parameter */
         if (schema_item->type == REGISTRY_TYPE_GROUP) {
             /* group => search for parameters */
-            registry_export_data_t export_data = { .schema_item = schema_item };
-            export_cb(&new_path, &export_data, REGISTRY_EXPORT_SCHEMA_ITEM, NULL, context);
+            registry_export_cb_data_t export_data = { .group = schema_item };
+            export_cb(&new_path, &export_data, REGISTRY_EXPORT_GROUP, NULL, context);
 
             /* if recursion_depth is not 1 then not only the group itself will be exported, but also its children depending on recursion_depth */
             if (recursion_depth != 1) {
@@ -345,8 +345,8 @@ static void _registry_export_params_by_path(const registry_path_export_cb_t expo
             /* parameter found => export */
             registry_value_t value;
             registry_get_by_path(&new_path, &value);
-            registry_export_data_t export_data = { .schema_item = schema_item };
-            export_cb(&new_path, &export_data, REGISTRY_EXPORT_SCHEMA_ITEM, &value, context);
+            registry_export_cb_data_t export_data = { .parameter = schema_item };
+            export_cb(&new_path, &export_data, REGISTRY_EXPORT_PARAMETER, &value, context);
         }
     }
 }
@@ -363,7 +363,7 @@ static int _registry_export_instance_by_path(const registry_path_export_cb_t exp
     }
 
     /* export instance */
-    registry_export_data_t export_data = { .instance = instance };
+    registry_export_cb_data_t export_data = { .instance = instance };
     export_cb(path, &export_data, REGISTRY_EXPORT_INSTANCE, NULL, context);
 
     /* schema/instance/item => export concrete schema item with data of the given instance */
@@ -424,7 +424,7 @@ static int _registry_export_schema_by_path(const registry_path_export_cb_t expor
     }
 
     /* export schema */
-    registry_export_data_t export_data = { .schema = schema };
+    registry_export_cb_data_t export_data = { .schema = schema };
     export_cb(path, &export_data, REGISTRY_EXPORT_SCHEMA, NULL, context);
 
     /* get instance, if in path */
@@ -498,7 +498,7 @@ static int _registry_export_namespace_by_path(const registry_path_export_cb_t ex
     }
 
     /* export namespace */
-    registry_export_data_t export_data = { .namespace = namespace };
+    registry_export_cb_data_t export_data = { .namespace = namespace };
     export_cb(path, &export_data, REGISTRY_EXPORT_NAMESPACE, NULL, context);
 
     /* get schema, if in path */
@@ -670,8 +670,8 @@ static void _registry_storage_dup_check_cb(const registry_path_t *path,
 }
 
 static int _registry_save_by_path_export_cb(const registry_path_t *path,
-                                            const registry_export_data_t *data,
-                                            const registry_export_data_type_t data_type,
+                                            const registry_export_cb_data_t *data,
+                                            const registry_export_cb_data_type_t data_type,
                                             const registry_value_t *value,
                                             const void *context)
 {

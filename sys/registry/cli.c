@@ -80,8 +80,8 @@ static void _print_registry_value(const registry_value_t *value)
 }
 
 static int _export_cb(const registry_path_t *path,
-                      const registry_export_data_t *data,
-                      const registry_export_data_type_t data_type,
+                      const registry_export_cb_data_t *data,
+                      const registry_export_cb_data_type_t data_type,
                       const registry_value_t *value,
                       const void *context)
 {
@@ -94,8 +94,12 @@ static int _export_cb(const registry_path_t *path,
     size_t path_len = path->path_len;
 
     switch (data_type) {
-    case REGISTRY_EXPORT_SCHEMA_ITEM:
-        printf("%d %s\n", data->schema_item->id, data->schema_item->name);
+    case REGISTRY_EXPORT_PARAMETER:
+        printf("%d %s\n", data->parameter->id, data->parameter->name);
+        __attribute__ ((fallthrough));
+
+    case REGISTRY_EXPORT_GROUP:
+        printf("%d %s\n", data->group->id, data->group->name);
         __attribute__ ((fallthrough));
 
     case REGISTRY_EXPORT_INSTANCE:
@@ -126,8 +130,12 @@ static int _export_cb(const registry_path_t *path,
         printf("%d %s\n", *path->instance_id, data->instance->name);
         break;
 
-    case REGISTRY_EXPORT_SCHEMA_ITEM:
-        printf("%d %s\n", data->schema_item->id, data->schema_item->name);
+    case REGISTRY_EXPORT_GROUP:
+        printf("%d %s\n", data->group->id, data->group->name);
+        break;
+
+    case REGISTRY_EXPORT_PARAMETER:
+        printf("%d %s\n", data->parameter->id, data->parameter->name);
         break;
     }
 
