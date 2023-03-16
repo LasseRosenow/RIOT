@@ -45,6 +45,7 @@ void _debug_print_value(const registry_value_t *value)
     if (ENABLE_DEBUG) {
         switch (value->type) {
         case REGISTRY_TYPE_NONE: break;
+        case REGISTRY_TYPE_GROUP: break;
         case REGISTRY_TYPE_OPAQUE: {
             DEBUG("opaque (hex): ");
             for (size_t i = 0; i < value->buf_len; i++) {
@@ -81,17 +82,17 @@ void _debug_print_value(const registry_value_t *value)
     }
 }
 
-registry_namespace_t *registry_util_namespace_lookup(const registry_id_t namespace_id)
+const registry_namespace_t *registry_util_namespace_lookup(const registry_id_t namespace_id)
 {
     clist_node_t *node = _registry_namespaces.next;
 
     if (!node) {
-        return -EINVAL;
+        return NULL;
     }
 
     do {
         node = node->next;
-        registry_namespace_t *namespace = container_of(node, registry_namespace_t, node);
+        const registry_namespace_t *namespace = container_of(node, registry_namespace_t, node);
 
         if (namespace->id == namespace_id) {
             return namespace;
@@ -101,11 +102,11 @@ registry_namespace_t *registry_util_namespace_lookup(const registry_id_t namespa
     return NULL;
 }
 
-registry_schema_t *registry_util_schema_lookup(const registry_namespace_t *namespace,
-                                               const int schema_id)
+const registry_schema_t *registry_util_schema_lookup(const registry_namespace_t *namespace,
+                                                     const registry_id_t schema_id)
 {
     for (size_t i = 0; i < namespace->items_len; i++) {
-        registry_schema_t *schema = &namespace->items[i];
+        const registry_schema_t *schema = namespace->items[i];
 
         if (schema->id == schema_id) {
             return schema;
@@ -115,18 +116,23 @@ registry_schema_t *registry_util_schema_lookup(const registry_namespace_t *names
     return NULL;
 }
 
-registry_instance_t *registry_util_instance_lookup(const registry_schema_t *schema,
-                                                   const int instance_id)
+const registry_instance_t *registry_util_instance_lookup(const registry_schema_t *schema,
+                                                         const registry_id_t instance_id)
 {
     assert(schema != NULL);
 
     /* find instance with correct instance_id */
     clist_node_t *node = schema->instances.next;
-    int index = 0;
+
+    if (!node) {
+        return NULL;
+    }
+
+    registry_id_t index = 0;
 
     do {
         node = node->next;
-        registry_instance_t *instance = container_of(node, registry_instance_t, node);
+        const registry_instance_t *instance = container_of(node, registry_instance_t, node);
 
         /* check if index equals instance_id */
         if (index == instance_id) {
@@ -143,6 +149,7 @@ static int _get_string_len(const registry_value_t *value)
 {
     switch (value->type) {
     case REGISTRY_TYPE_NONE: return -EINVAL;
+    case REGISTRY_TYPE_GROUP: return -EINVAL;
     case REGISTRY_TYPE_OPAQUE: return -EINVAL;
     case REGISTRY_TYPE_STRING: return strlen((char *)value->buf);
     case REGISTRY_TYPE_BOOL: return snprintf(NULL, 0, "%d", *(bool *)value->buf);

@@ -27,22 +27,15 @@
 
 #include "registry/schemas.h"
 
-void registry_schemas_init(void)
-{
-#if IS_USED(MODULE_REGISTRY_SCHEMA_RGB_LED) || IS_ACTIVE(DOXYGEN)
-    registry_register_schema(REGISTRY_NAMESPACE_SYS, &registry_schema_rgb_led);
-#endif
-}
-
 /* BASE GET FUNCTION */
 
-int _registry_schema_get_buf(const registry_schema_t *schema,
-                             const registry_instance_t *instance, registry_id_t parameter_id,
-                             registry_type_t type, const void **buf, size_t *buf_len)
+int _registry_schema_get_buf(const registry_schema_t *schema, const registry_instance_t *instance,
+                             const registry_schema_item_t *parameter, const void **buf,
+                             size_t *buf_len)
 {
     registry_value_t value;
 
-    int res = registry_get(schema, instance, parameter_id, &value);
+    int res = registry_get(schema, instance, parameter, &value);
 
     *buf = value.buf;
 
@@ -55,9 +48,9 @@ int _registry_schema_get_buf(const registry_schema_t *schema,
 
 /* BASE SET FUNCTION */
 
-int _registry_schema_set_buf(const registry_schema_t *schema,
-                             const registry_instance_t *instance, registry_id_t parameter_id,
-                             registry_type_t type, const void *val, size_t val_len)
+int _registry_schema_set_buf(const registry_schema_t *schema, const registry_instance_t *instance,
+                             const registry_schema_item_t *parameter, const registry_type_t type,
+                             const void *val, size_t val_len)
 {
     const registry_value_t value = {
         .buf = val,
@@ -65,7 +58,7 @@ int _registry_schema_set_buf(const registry_schema_t *schema,
         .type = type,
     };
 
-    int res = registry_set(schema, instance, parameter_id, &value);
+    int res = registry_set(schema, instance, parameter, &value);
 
     return res;
 }

@@ -31,8 +31,8 @@ extern "C" {
  * @brief Prototype of a callback function for the load action of a storage
  * interface
  */
-typedef void (*load_cb_t)(const registry_path_t *path, const registry_value_t val,
-                          const void *cb_arg);
+typedef int (*load_cb_t)(const registry_path_t *path, const registry_value_t *value,
+                         const void *context);
 
 typedef struct _registry_storage_t registry_storage_t;
 

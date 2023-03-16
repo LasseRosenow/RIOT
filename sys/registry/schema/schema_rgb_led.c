@@ -35,54 +35,59 @@
 /* Mapping */
 
 static void mapping(const registry_id_t parameter_id, const registry_instance_t *instance,
-                    void **val,
-                    size_t *val_len)
+                    void **val, size_t *val_len)
 {
-    registry_schema_rgb_led_instance_t *_instance =
-        (registry_schema_rgb_led_instance_t *)instance->data;
+    (void)parameter_id;
+    (void)instance;
+    (void)val;
+    (void)val_len;
+    // TODO
+    // registry_schema_rgb_led_instance_t *_instance =
+    //     (registry_schema_rgb_led_instance_t *)instance->data;
 
-    switch (parameter_id) {
-    case registry_schema_rgb_led.red.data.id:
-        *val = &_instance->red;
-        *val_len = sizeof(_instance->red);
-        break;
+    // switch (parameter_id) {
+    // case registry_schema_rgb_led.red.data.id:
+    //     *val = &_instance->red;
+    //     *val_len = sizeof(_instance->red);
+    //     break;
 
-    case registry_schema_rgb_led.green.data.id:
-        *val = &_instance->green;
-        *val_len = sizeof(_instance->green);
-        break;
+    // case registry_schema_rgb_led.green.data.id:
+    //     *val = &_instance->green;
+    //     *val_len = sizeof(_instance->green);
+    //     break;
 
-    case registry_schema_rgb_led.blue.data.id:
-        *val = &_instance->blue;
-        *val_len = sizeof(_instance->blue);
-        break;
+    // case registry_schema_rgb_led.blue.data.id:
+    //     *val = &_instance->blue;
+    //     *val_len = sizeof(_instance->blue);
+    //     break;
 
-    case registry_schema_rgb_led.brightnesses.white.data.id:
-        *val = &_instance->white;
-        *val_len = sizeof(_instance->white);
-        break;
+    // case registry_schema_rgb_led.brightnesses.white.data.id:
+    //     *val = &_instance->white;
+    //     *val_len = sizeof(_instance->white);
+    //     break;
 
-    case registry_schema_rgb_led.brightnesses.yellow.data.id:
-        *val = &_instance->yellow;
-        *val_len = sizeof(_instance->yellow);
-        break;
-    }
+    // case registry_schema_rgb_led.brightnesses.yellow.data.id:
+    //     *val = &_instance->yellow;
+    //     *val_len = sizeof(_instance->yellow);
+    //     break;
+    // }
 }
 
 /* Schema */
 
-static int _get_red(const registry_instance_t *instance, uint8_t **val)
+static int _get_red(const registry_instance_t *instance, uint8_t **value)
 {
     return _registry_schema_get_buf(&registry_schema_rgb_led.data, instance,
-                                    registry_schema_rgb_led.red.data.id,
-                                    registry_schema_rgb_led.red.data.type, val, NULL);
+                                    &registry_schema_rgb_led.red.data, (const void **)value,
+                                    NULL);
 }
 
-static int _set_red(const registry_instance_t *instance, uint8_t val)
+static int _set_red(const registry_instance_t *instance, uint8_t value)
 {
     return _registry_schema_set_buf(&registry_schema_rgb_led.data, instance,
-                                    registry_schema_rgb_led.red.data.id,
-                                    registry_schema_rgb_led.red.data.type, &val, sizeof(uint8_t));
+                                    &registry_schema_rgb_led.red.data,
+                                    registry_schema_rgb_led.red.data.type, (const void *)&value,
+                                    sizeof(uint8_t));
 }
 
 const registry_schema_rgb_led_t registry_schema_rgb_led = {
@@ -92,10 +97,10 @@ const registry_schema_rgb_led_t registry_schema_rgb_led = {
         .description = "",
         .mapping = mapping,
         .items = (registry_schema_item_t *[]) {
-            &registry_schema_rgb_led.red,
-            &registry_schema_rgb_led.green,
-            &registry_schema_rgb_led.blue,
-            &registry_schema_rgb_led.brightnesses,
+            &registry_schema_rgb_led.red.data,
+            &registry_schema_rgb_led.green.data,
+            &registry_schema_rgb_led.blue.data,
+            &registry_schema_rgb_led.brightnesses.data,
         },
         .items_len = 4,
     },
@@ -140,8 +145,8 @@ const registry_schema_rgb_led_t registry_schema_rgb_led = {
             .description = "",
             .type = REGISTRY_TYPE_GROUP,
             .items = (registry_schema_item_t *[]) {
-                &registry_schema_rgb_led.brightnesses.white,
-                &registry_schema_rgb_led.brightnesses.yellow,
+                &registry_schema_rgb_led.brightnesses.white.data,
+                &registry_schema_rgb_led.brightnesses.yellow.data,
             },
             .items_len = 2,
         },

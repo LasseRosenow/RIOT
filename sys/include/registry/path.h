@@ -200,11 +200,11 @@ int registry_load_by_path(const registry_path_t *path);
  */
 int registry_save_by_path(const registry_path_t *path);
 
-typedef void (*registry_path_export_cb_t)(const registry_path_t *path,
-                                          const registry_export_data_t data,
-                                          const registry_export_data_type_t data_type,
-                                          const registry_value_t *value,
-                                          const void *context);
+typedef int (*registry_path_export_cb_t)(const registry_path_t *path,
+                                         const registry_export_data_t *data,
+                                         const registry_export_data_type_t data_type,
+                                         const registry_value_t *value,
+                                         const void *context);
 /**
  * @brief Export an specific or all configuration parameters using the
  * @p export_cb function. If @p path is NULL then @p export_cb is called for

@@ -79,50 +79,56 @@ static void _print_registry_value(const registry_value_t *value)
     }
 }
 
-static int _export_cb(const registry_path_t path, const registry_schema_t *schema,
-                      const registry_instance_t *instance, const registry_schema_item_t *meta,
-                      const registry_value_t *value, const void *context)
+static int _export_cb(const registry_path_t *path,
+                      const registry_export_data_t *data,
+                      const registry_export_data_type_t data_type,
+                      const registry_value_t *value,
+                      const void *context)
 {
     (void)value;
     (void)context;
 
-    registry_namespace_t *namespace = registry_util_namespace_lookup(*path.namespace_id);
+    /* calculate the indentation based on the the exported data type */
+    /* fallthrough switch is intentional */
+    /* the more nesting we have, the more indentation we need. => highest nesting level first */
+    size_t path_len = path->path_len;
 
-    size_t path_len = path.path_len;
+    switch (data_type) {
+    case REGISTRY_EXPORT_SCHEMA_ITEM:
+        printf("%d %s\n", data->schema_item->id, data->schema_item->name);
+        __attribute__ ((fallthrough));
 
-    if (path.namespace_id != NULL) {
+    case REGISTRY_EXPORT_INSTANCE:
         path_len++;
-    }
+        __attribute__ ((fallthrough));
 
-    if (schema != NULL) {
+    case REGISTRY_EXPORT_SCHEMA:
         path_len++;
-    }
+        __attribute__ ((fallthrough));
 
-    if (instance != NULL) {
+    case REGISTRY_EXPORT_NAMESPACE:
         path_len++;
     }
 
     printf("%*c\b", ((path_len - 1) * 2) + 1, ' ');
 
-    if (meta == NULL) {
-        if (instance == NULL) {
-            if (schema == NULL) {
-                /* Root Group */
-                printf("%d %s\n", *path.namespace_id, namespace->name);
-            }
-            else {
-                /* Schema */
-                printf("%d %s\n", *path.schema_id, schema->name);
-            }
-        }
-        else {
-            /* Instance */
-            printf("%d %s\n", *path.instance_id, instance->name);
-        }
-    }
-    else {
-        /* Param or Group */
-        printf("%d %s\n", meta->id, meta->name);
+    /* print the path element, that is currently being exported */
+    switch (data_type) {
+    case REGISTRY_EXPORT_NAMESPACE:
+        printf("%d %s\n", *path->namespace_id, data->namespace->name);
+        break;
+
+    case REGISTRY_EXPORT_SCHEMA:
+        printf("%d %s\n", *path->schema_id, data->schema->name);
+        break;
+
+    case REGISTRY_EXPORT_INSTANCE:
+        printf("%d %s\n", *path->instance_id, data->instance->name);
+        break;
+
+    case REGISTRY_EXPORT_SCHEMA_ITEM:
+        printf("%d %s\n", data->schema_item->id, data->schema_item->name);
+        break;
     }
 
     return 0;
@@ -165,7 +171,7 @@ int registry_cli_cmd(int argc, char **argv)
             return 1;
         }
 
-        registry_set_string_by_path(path, argv[3]);
+        // TODO registry_set_string_by_path(path, argv[3]);
         return 0;
     }
     else if (strcmp(argv[1], "commit") == 0) {
@@ -174,7 +180,7 @@ int registry_cli_cmd(int argc, char **argv)
             return 1;
         }
 
-        registry_commit_by_path(path);
+        registry_commit_by_path(&path);
         return 0;
     }
     else if (strcmp(argv[1], "export") == 0) {
@@ -197,7 +203,7 @@ int registry_cli_cmd(int argc, char **argv)
             recursion_level = atoi(argv[4]);
         }
 
-        registry_export_by_path(_export_cb, path, recursion_level, NULL);
+        registry_export_by_path(_export_cb, &path, recursion_level, NULL);
         return 0;
     }
     else if (strcmp(argv[1], "load") == 0) {
@@ -207,11 +213,12 @@ int registry_cli_cmd(int argc, char **argv)
                 return 1;
             }
             else {
-                registry_load_by_path(path);
+                registry_load_by_path(&path);
             }
         }
         else {
-            registry_load_by_path(_REGISTRY_PATH_0());
+            registry_path_t new_path = _REGISTRY_PATH_0();
+            registry_load_by_path(&new_path);
         }
 
         return 0;
@@ -223,11 +230,12 @@ int registry_cli_cmd(int argc, char **argv)
                 return 1;
             }
             else {
-                registry_save_by_path(path);
+                registry_save_by_path(&path);
             }
         }
         else {
-            registry_save_by_path(_REGISTRY_PATH_0());
+            registry_path_t new_path = _REGISTRY_PATH_0();
+            registry_save_by_path(&new_path);
         }
 
         return 0;

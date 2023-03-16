@@ -226,7 +226,7 @@ static int load(const registry_storage_instance_t *instance, const registry_path
                                         value.buf = new_value_buf;
 
                                         /* call callback with value and path */
-                                        cb(&path, value, cb_arg);
+                                        cb(&path, &value, cb_arg);
                                     }
                                 }
 

@@ -101,14 +101,27 @@ int registry_set(const registry_schema_t *schema, const registry_instance_t *ins
     return 0;
 }
 
-int registry_commit(const registry_commit_data_t data, const registry_commit_data_type_t data_type)
+int registry_commit(const registry_commit_data_t *data, const registry_commit_data_type_t data_type)
 {
+    (void)data;
+    (void)data_type;
 
+    // TODO
+
+    return 0;
 }
 
-int registry_export(const registry_export_cb_t *export_cb, const registry_export_data_t data,
+int registry_export(const registry_export_cb_t export_cb, const registry_export_data_t data,
                     const registry_export_data_type_t data_type, const int recursion_depth,
                     const void *context)
 {
+    (void)export_cb;
+    (void)data;
+    (void)data_type;
+    (void)recursion_depth;
+    (void)context;
 
+    // TODO
+
+    return 0;
 }
