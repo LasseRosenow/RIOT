@@ -40,46 +40,6 @@
  */
 #define REGISTRY_CLI_PATH_SEPARATOR    '/'
 
-static void _print_registry_value(const registry_value_t *value)
-{
-    switch (value->type) {
-    case REGISTRY_TYPE_NONE: break;
-    case REGISTRY_TYPE_GROUP: break;
-    case REGISTRY_TYPE_OPAQUE: {
-        printf("opaque (hex): ");
-        for (size_t i = 0; i < value->buf_len; i++) {
-            printf("%02x", ((uint8_t *)value->buf)[i]);
-        }
-        break;
-    }
-    case REGISTRY_TYPE_STRING: printf("string: %s", (char *)value->buf); break;
-    case REGISTRY_TYPE_BOOL: printf("bool: %d", *(bool *)value->buf); break;
-
-    case REGISTRY_TYPE_UINT8: printf("uint8: %d", *(uint8_t *)value->buf); break;
-    case REGISTRY_TYPE_UINT16: printf("uint16: %d", *(uint16_t *)value->buf); break;
-    case REGISTRY_TYPE_UINT32: printf("uint32: %d", *(uint32_t *)value->buf); break;
-#if IS_ACTIVE(CONFIG_REGISTRY_USE_UINT64)
-    case REGISTRY_TYPE_UINT64: printf("uint64: %lld", *(uint64_t *)value->buf); break;
-#endif /* CONFIG_REGISTRY_USE_UINT64 */
-
-    case REGISTRY_TYPE_INT8: printf("int8: %d", *(int8_t *)value->buf); break;
-    case REGISTRY_TYPE_INT16: printf("int16: %d", *(int16_t *)value->buf); break;
-    case REGISTRY_TYPE_INT32: printf("int32: %d", *(int32_t *)value->buf); break;
-
-#if IS_ACTIVE(CONFIG_REGISTRY_USE_INT64)
-    case REGISTRY_TYPE_INT64: printf("int64: %lld", *(int64_t *)value->buf); break;
-#endif /* CONFIG_REGISTRY_USE_INT64 */
-
-#if IS_ACTIVE(CONFIG_REGISTRY_USE_FLOAT32)
-    case REGISTRY_TYPE_FLOAT32: printf("f32: %f", *(float *)value->buf); break;
-#endif /* CONFIG_REGISTRY_USE_FLOAT32 */
-
-#if IS_ACTIVE(CONFIG_REGISTRY_USE_FLOAT64)
-    case REGISTRY_TYPE_FLOAT64: printf("f64: %f", *(double *)value->buf); break;
-#endif /* CONFIG_REGISTRY_USE_FLOAT32 */
-    }
-}
-
 static int _export_cb(const registry_path_t *path,
                       const registry_export_cb_data_t *data,
                       const registry_export_cb_data_type_t data_type,
@@ -167,9 +127,15 @@ int registry_cli_cmd(int argc, char **argv)
             return 1;
         }
 
-        _print_registry_value(&value);
-        printf("\n");
+        /* Get the length of the value as a string */
+        size_t str_len = registry_util_convert_value_to_str(&value, NULL, 0);
 
+        /* Convert the value to a string */
+        char str[str_len + 1];
+        registry_util_convert_value_to_str(&value, str, str_len + 1);
+
+        /* Print the string */
+        printf("%s\n", str);
         return 0;
     }
     else if (strcmp(argv[1], "set") == 0) {
@@ -178,7 +144,25 @@ int registry_cli_cmd(int argc, char **argv)
             return 1;
         }
 
-        // TODO registry_set_string_by_path(path, argv[3]);
+        registry_value_t value;
+
+        /* Get value from the registry, to know its correct type and size */
+        int res = registry_get_by_path(&path, &value);
+
+        if (res != 0) {
+            printf("error: %d\n", res);
+            return 1;
+        }
+
+        /* Convert the string into the correct value type */
+        uint8_t new_value_buf[value.buf_len];
+        registry_util_convert_str_to_value(argv[3], new_value_buf, value.buf_len, value.type);
+
+        /* Let the registry_value_t object point to the buffer of the new value */
+        value.buf = new_value_buf;
+
+        /* Set the new value in the registry */
+        registry_set_by_path(&path, &value);
         return 0;
     }
     else if (strcmp(argv[1], "commit") == 0) {

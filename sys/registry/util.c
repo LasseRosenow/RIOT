@@ -255,13 +255,8 @@ int registry_util_convert_value_to_str(const registry_value_t *src, char *dest,
                                        const size_t dest_len)
 {
     assert(src != NULL);
-    assert(dest != NULL);
 
-#if IS_ACTIVE(CONFIG_REGISTRY_USE_UINT64) || IS_ACTIVE(CONFIG_REGISTRY_USE_INT64) || \
-    IS_ACTIVE(CONFIG_REGISTRY_USE_FLOAT32) || IS_ACTIVE(CONFIG_REGISTRY_USE_FLOAT64)
-    size_t len;
-#endif /* CONFIG_REGISTRY_USE_UINT64 || CONFIG_REGISTRY_USE_INT64 ||
-          CONFIG_REGISTRY_USE_FLOAT32 || CONFIG_REGISTRY_USE_FLOAT64 */
+    size_t str_len;
 
     switch (src->type) {
     case REGISTRY_TYPE_NONE:
@@ -270,95 +265,113 @@ int registry_util_convert_value_to_str(const registry_value_t *src, char *dest,
     }
 
     case REGISTRY_TYPE_OPAQUE: {
-        size_t base64_len;
-
-        if (base64_encode(src->buf, src->buf_len, dest, &base64_len) != BASE64_SUCCESS
-            && base64_len <= dest_len) {
-            return -EINVAL;
+        if (base64_encode(src->buf, src->buf_len, dest, &str_len) != BASE64_SUCCESS
+            || str_len > dest_len - 1) {
+            /* If dest is NULL, the length is returned */
+            if (dest != NULL) {
+                return -EINVAL;
+            }
         }
-
-        dest[base64_len] = '\0';
+        else {
+            dest[str_len] = '\0';
+        }
         break;
     }
 
     case REGISTRY_TYPE_STRING: {
         char *str_val = (char *)src->buf;
 
-        if (strlen(str_val) > dest_len) {
-            return -EINVAL;
-        }
+        str_len = strlen(str_val);
 
-        strcpy(dest, str_val);
+        if (str_len > dest_len - 1) {
+            /* If dest is NULL, the length is returned */
+            if (dest != NULL) {
+                return -EINVAL;
+            }
+        }
+        else {
+            strcpy(dest, str_val);
+        }
         break;
     }
 
     case REGISTRY_TYPE_BOOL: {
-        snprintf(dest, dest_len, " %" PRId8, *(bool *)src->buf);
+        str_len = snprintf(dest, dest_len, " %" PRId8, *(bool *)src->buf);
         break;
     }
 
     case REGISTRY_TYPE_UINT8: {
-        snprintf(dest, dest_len, " %" PRIu8, *(uint8_t *)src->buf);
+        str_len = snprintf(dest, dest_len, " %" PRIu8, *(uint8_t *)src->buf);
         break;
     }
 
     case REGISTRY_TYPE_UINT16: {
-        snprintf(dest, dest_len, " %" PRIu16, *(uint16_t *)src->buf);
+        str_len = snprintf(dest, dest_len, " %" PRIu16, *(uint16_t *)src->buf);
         break;
     }
 
     case REGISTRY_TYPE_UINT32: {
-        snprintf(dest, dest_len, " %" PRIu32, *(uint32_t *)src->buf);
+        str_len = snprintf(dest, dest_len, " %" PRIu32, *(uint32_t *)src->buf);
         break;
     }
 
 #if IS_ACTIVE(CONFIG_REGISTRY_USE_UINT64)
     case REGISTRY_TYPE_UINT64: {
-        int64_t val_u64 = *(uint64_t *)src->buf;
-        len = fmt_u64_dec(NULL, val_u64);
-        if (len > dest_len - 1) {
-            return -EINVAL;
+        str_len = fmt_u64_dec(NULL, *(uint64_t *)src->buf);
+        if (str_len > dest_len - 1) {
+            /* If dest is NULL, the length is returned */
+            if (dest != NULL) {
+                return -EINVAL;
+            }
         }
-        fmt_u64_dec(dest, val_u64);
-        dest[len] = '\0';
+        else {
+            fmt_u64_dec(dest, *(uint64_t *)src->buf);
+            dest[str_len] = '\0';
+        }
         break;
     }
 #endif /* CONFIG_REGISTRY_USE_UINT64 */
 
     case REGISTRY_TYPE_INT8: {
-        snprintf(dest, dest_len, " %" PRId8, *(int8_t *)src->buf);
+        str_len = snprintf(dest, dest_len, " %" PRId8, *(int8_t *)src->buf);
         break;
     }
 
     case REGISTRY_TYPE_INT16: {
-        snprintf(dest, dest_len, " %" PRId16, *(int16_t *)src->buf);
+        str_len = snprintf(dest, dest_len, " %" PRId16, *(int16_t *)src->buf);
         break;
     }
 
     case REGISTRY_TYPE_INT32: {
-        snprintf(dest, dest_len, " %" PRId32, *(int32_t *)src->buf);
+        str_len = snprintf(dest, dest_len, " %" PRId32, *(int32_t *)src->buf);
         break;
     }
 
 #if IS_ACTIVE(CONFIG_REGISTRY_USE_INT64)
     case REGISTRY_TYPE_INT64: {
-        int64_t val_i64 = *(int64_t *)src->buf;
-        len = fmt_s64_dec(NULL, val_i64);
-        if (len > dest_len - 1) {
-            return -EINVAL;
+        str_len = fmt_s64_dec(NULL, *(int64_t *)src->buf);
+        if (str_len > dest_len - 1) {
+            /* If dest is NULL, the length is returned */
+            if (dest != NULL) {
+                return -EINVAL;
+            }
         }
-        fmt_s64_dec(dest, val_i64);
-        dest[len] = '\0';
+        else {
+            fmt_s64_dec(dest, *(int64_t *)src->buf);
+            dest[str_len] = '\0';
+        }
         break;
     }
 #endif /* CONFIG_REGISTRY_USE_INT64 */
 
 #if IS_ACTIVE(CONFIG_REGISTRY_USE_FLOAT32)
     case REGISTRY_TYPE_FLOAT32: {
-        sprintf(dest, " %f", *(float *)src->buf);
-        len = strlen(dest);
-        if (len > dest_len - 1) {
-            return -EINVAL;
+        str_len = sprintf(dest, " %f", *(float *)src->buf);
+        if (str_len > dest_len - 1) {
+            /* If dest is NULL, the length is returned */
+            if (dest != NULL) {
+                return -EINVAL;
+            }
         }
         break;
     }
@@ -366,15 +379,17 @@ int registry_util_convert_value_to_str(const registry_value_t *src, char *dest,
 
 #if IS_ACTIVE(CONFIG_REGISTRY_USE_FLOAT64)
     case REGISTRY_TYPE_FLOAT64: {
-        sprintf(dest, " %f", *(double *)src->buf);
-        len = strlen(dest);
-        if (len > dest_len - 1) {
-            return -EINVAL;
+        str_len = sprintf(dest, " %f", *(double *)src->buf);
+        if (str_len > dest_len - 1) {
+            /* If dest is NULL, the length is returned */
+            if (dest != NULL) {
+                return -EINVAL;
+            }
         }
         break;
     }
 #endif /* CONFIG_REGISTRY_USE_FLOAT64 */
     }
 
-    return 0;
+    return str_len;
 }
