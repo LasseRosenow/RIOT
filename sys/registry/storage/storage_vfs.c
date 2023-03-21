@@ -92,7 +92,7 @@ static int _mount(vfs_mount_t *mount)
 
 static int _umount(vfs_mount_t *mount)
 {
-    int res = vfs_umount(mount);
+    int res = vfs_umount(mount, false);
 
     if (res < 0) {
         DEBUG("Error while unmounting %s...\n", mount->mount_point);
