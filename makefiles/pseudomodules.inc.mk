@@ -236,6 +236,30 @@ PSEUDOMODULES += gnrc_sixlowpan_frag_sfr_stats
 ## @{
 ##
 PSEUDOMODULES += gnrc_sixlowpan_frag_sfr_congure
+## @defgroup net_gnrc_sixlowpan_frag_sfr_congure_abe gnrc_sixlowpan_frag_sfr_congure_abe: TCP Reno with ABE
+## @brief  Congestion control for SFR using the [TCP Reno congestion control algorithm with ABE](@ref sys_congure_abe)
+##
+## Provides an Alternative Backoff with Explicit Content Notification (ABE) to TCP-Reno-based congestion
+## control
+## @{
+PSEUDOMODULES += gnrc_sixlowpan_frag_sfr_congure_abe
+## @}
+## @defgroup net_gnrc_sixlowpan_frag_sfr_congure_reno gnrc_sixlowpan_frag_sfr_congure_reno: TCP Reno
+## @brief  Congestion control for SFR using the [TCP Reno congestion control algorithm](@ref sys_congure_reno)
+## @{
+PSEUDOMODULES += gnrc_sixlowpan_frag_sfr_congure_reno
+## @}
+## @defgroup net_gnrc_sixlowpan_frag_sfr_congure_quic gnrc_sixlowpan_frag_sfr_congure_quic: QUIC CC
+## @brief  Congestion control for SFR using the [congestion control algorithm of QUIC](@ref sys_congure_quic)
+## @{
+PSEUDOMODULES += gnrc_sixlowpan_frag_sfr_congure_quic
+## @}
+## @defgroup net_gnrc_sixlowpan_frag_sfr_congure_sfr gnrc_sixlowpan_frag_sfr_congure_sfr: Appendix C
+## @brief  Basic congestion control for 6LoWPAN SFR as proposed in Appendix C of RFC 8931
+## @see    [RFC 8931, Appendix C](https://tools.ietf.org/html/rfc8931#section-appendix.c)
+## @{
+PSEUDOMODULES += gnrc_sixlowpan_frag_sfr_congure_sfr
+## @}
 ## @}
 PSEUDOMODULES += gnrc_sixlowpan_iphc_nhc
 PSEUDOMODULES += gnrc_sixlowpan_nd_border_router

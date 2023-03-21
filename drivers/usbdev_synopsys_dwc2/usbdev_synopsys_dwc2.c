@@ -211,7 +211,15 @@ static size_t _max_endpoints(const dwc2_usb_otg_fshs_config_t *config)
 
 static bool _uses_dma(const dwc2_usb_otg_fshs_config_t *config)
 {
-#if defined(DWC2_USB_OTG_HS_ENABLED) && STM32_USB_OTG_HS_USE_DMA
+/* DMA mode is disabled for now due to several problems:
+ * - The STALL bit of the OUT control endpoint does not seem to be cleared
+ *   automatically on the next SETUP received. At least the USB OTG HS core
+ *   does not generate an interrupt on the next SETUP received. This happens,
+ *   for example, when CDC ACM is used and the host sends the SET_LINE_CODING
+ *   request. In this case the enumeration of further interfaces, for example
+ *   CDC ECM is stopped.
+ * - The Enumeration fails for CDC ECM interface which uses URB support. */
+#if 0 /* defined(DWC2_USB_OTG_HS_ENABLED) && STM32_USB_OTG_HS_USE_DMA */
     return config->type == DWC2_USB_OTG_HS;
 #else
     (void)config;
@@ -330,9 +338,10 @@ static uint32_t _ep0_size(size_t size)
 }
 
 /**
- * @brief Disables an IN type endpoint
+ * @brief Disables transfers on an IN type endpoint.
  *
- * Endpoint is only deactivated if it was activated
+ * Endpoint is only deactivated if it was activated.
+ * The endpoint will still respond to traffic, but any transfers will be aborted
  */
 static void _ep_in_disable(const dwc2_usb_otg_fshs_config_t *conf, size_t num)
 {
@@ -352,9 +361,10 @@ static void _ep_in_disable(const dwc2_usb_otg_fshs_config_t *conf, size_t num)
 }
 
 /**
- * @brief Disables an OUT type endpoint
+ * @brief Disables transfers on an OUT type endpoint.
  *
  * Endpoint is only deactivated if it was activated
+ * The endpoint will still respond to traffic, but any transfers will be aborted
  */
 static void _ep_out_disable(const dwc2_usb_otg_fshs_config_t *conf, size_t num)
 {
@@ -449,7 +459,7 @@ static void _set_address(dwc2_usb_otg_fshs_t *usbdev, uint8_t address)
 static usbdev_ep_t *_get_ep(dwc2_usb_otg_fshs_t *usbdev, unsigned num,
                             usb_ep_dir_t dir)
 {
-    if (num >= DWC2_USB_OTG_FS_NUM_EP) {
+    if (num >= _max_endpoints(usbdev->config)) {
         return NULL;
     }
     return dir == USB_EP_DIR_IN ? &usbdev->in[num] : &usbdev->out[num].ep;
@@ -530,7 +540,7 @@ static usbdev_ep_t *_usbdev_new_ep(usbdev_t *dev, usb_ep_type_t type,
     }
     else {
         /* Find the first unassigned ep with matching direction */
-        for (unsigned idx = 1; idx < DWC2_USB_OTG_FS_NUM_EP && !ep; idx++) {
+        for (unsigned idx = 1; idx < _max_endpoints(usbdev->config) && !ep; idx++) {
             usbdev_ep_t *candidate_ep = _get_ep(usbdev, idx, dir);
             if (candidate_ep->type == USB_EP_TYPE_NONE) {
                 ep = candidate_ep;
@@ -586,6 +596,8 @@ static void _sleep_periph(const dwc2_usb_otg_fshs_config_t *conf)
     /* switch USB core clock source either to LFXO or LFRCO */
     CMU_ClockSelectSet(cmuClock_USB, CLOCK_LFA);
     pm_unblock(EFM32_PM_MODE_EM2);
+#elif defined(MCU_ESP32)
+    pm_unblock(ESP_PM_LIGHT_SLEEP);
 #endif
 }
 
@@ -603,6 +615,8 @@ static void _wake_periph(const dwc2_usb_otg_fshs_config_t *conf)
 #else
 #error "EFM32 family not yet supported"
 #endif
+#elif defined(MCU_ESP32)
+    pm_block(ESP_PM_LIGHT_SLEEP);
 #endif
     *_pcgcctl_reg(conf) &= ~USB_OTG_PCGCCTL_STOPCLK;
     _flush_rx_fifo(conf);
@@ -681,6 +695,9 @@ static void _usbdev_init(usbdev_t *dev)
     _enable_gpio(conf);
 
 #elif defined(MCU_ESP32)
+
+    pm_block(ESP_PM_DEEP_SLEEP);
+    pm_block(ESP_PM_LIGHT_SLEEP);
 
     usb_phy_handle_t phy_hdl;               /* only needed temporarily */
 
@@ -1148,23 +1165,56 @@ static int _usbdev_ep_get(usbdev_ep_t *ep, usbopt_ep_t opt,
     return res;
 }
 
+static void _usbdev_ep0_stall(usbdev_t *usbdev)
+{
+    dwc2_usb_otg_fshs_t *st_usbdev = (dwc2_usb_otg_fshs_t *)usbdev;
+    const dwc2_usb_otg_fshs_config_t *conf = st_usbdev->config;
+    /* Stall both directions, cleared automatically on SETUP received */
+    _in_regs(conf, 0)->DIEPCTL |= USB_OTG_DIEPCTL_STALL;
+    _out_regs(conf, 0)->DOEPCTL |= USB_OTG_DOEPCTL_STALL;
+}
+
 static void _ep_set_stall(usbdev_ep_t *ep, bool enable)
 {
+    (void)enable;
+
+    assert(ep->num != 0);
     dwc2_usb_otg_fshs_t *usbdev = (dwc2_usb_otg_fshs_t *)ep->dev;
     const dwc2_usb_otg_fshs_config_t *conf = usbdev->config;
 
-    (void)enable;
-
-    if (ep->dir == USB_EP_DIR_IN) {
-        /* Disable first */
-        _ep_in_disable(conf, ep->num);
-        _in_regs(conf, ep->num)->DIEPCTL |= USB_OTG_DIEPCTL_STALL;
+    if (enable) {
+        if (ep->dir == USB_EP_DIR_IN) {
+            /* Disable first */
+            _ep_in_disable(conf, ep->num);
+            _in_regs(conf, ep->num)->DIEPCTL |= USB_OTG_DIEPCTL_STALL;
+        }
+        else {
+            /* Disable first */
+            _ep_out_disable(conf, ep->num);
+            _out_regs(conf, ep->num)->DOEPCTL |= USB_OTG_DOEPCTL_STALL;
+        }
     }
     else {
-        /* Disable first */
-        _ep_out_disable(conf, ep->num);
-        _out_regs(conf, ep->num)->DOEPCTL |= USB_OTG_DOEPCTL_STALL;
+        if (ep->dir == USB_EP_DIR_IN) {
+            /* Clear stall and set to DATA0 */
+            uint32_t diepctl = _in_regs(conf, ep->num)->DIEPCTL;
+            diepctl &= ~(USB_OTG_DIEPCTL_STALL);
+            diepctl |= USB_OTG_DIEPCTL_SD0PID_SEVNFRM;
+            _in_regs(conf, ep->num)->DIEPCTL = diepctl;
+        }
+        else {
+            /* Clear stall and set to DATA0 */
+            uint32_t doepctl = _out_regs(conf, ep->num)->DOEPCTL;
+            doepctl &= ~(USB_OTG_DIEPCTL_STALL);
+            doepctl |= USB_OTG_DIEPCTL_SD0PID_SEVNFRM;
+            _out_regs(conf, ep->num)->DOEPCTL = doepctl;
+        }
     }
+}
+
+static void _usbdev_ep_stall(usbdev_ep_t *ep, bool enable)
+{
+    _ep_set_stall(ep, enable);
 }
 
 static int _usbdev_ep_set(usbdev_ep_t *ep, usbopt_ep_t opt,
@@ -1492,7 +1542,9 @@ const usbdev_driver_t driver = {
     .get = _usbdev_get,
     .set = _usbdev_set,
     .esr = _usbdev_esr,
+    .ep0_stall = _usbdev_ep0_stall,
     .ep_init = _usbdev_ep_init,
+    .ep_stall = _usbdev_ep_stall,
     .ep_get = _usbdev_ep_get,
     .ep_set = _usbdev_ep_set,
     .ep_esr = _usbdev_ep_esr,

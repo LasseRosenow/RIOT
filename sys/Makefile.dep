@@ -225,12 +225,7 @@ endif
 
 ifneq (,$(filter trickle,$(USEMODULE)))
   USEMODULE += random
-  ifeq (,$(filter ztimer_msec,$(USEMODULE)))
-    USEMODULE += xtimer
-    ifneq (,$(filter ztimer_xtimer_compat,$(USEMODULE)))
-      USEMODULE += ztimer_msec
-    endif
-  endif
+  USEMODULE += ztimer_msec
 endif
 
 ifneq (,$(filter eui_provider,$(USEMODULE)))
@@ -810,7 +805,7 @@ endif
 
 ifneq (,$(filter cord_ep_standalone,$(USEMODULE)))
   USEMODULE += cord_ep
-  USEMODULE += xtimer
+  USEMODULE += ztimer_msec
 endif
 
 ifneq (,$(filter cord_lc,$(USEMODULE)))
@@ -855,6 +850,12 @@ endif
 
 ifneq (,$(filter ut_process,$(USEMODULE)))
   USEMODULE += fmt
+endif
+
+ifneq (,$(filter usbus_msc,$(USEMODULE)))
+  USEMODULE += usbus
+  USEMODULE += mtd
+  USEMODULE += mtd_write_page
 endif
 
 ifneq (,$(filter uuid,$(USEMODULE)))
