@@ -28,7 +28,7 @@
 #include "board.h"
 #include "mtd.h"
 #include "registry.h"
-#include "registry/schemas.h"
+#include "registry/schema.h"
 #include "registry/storage.h"
 #include "fs/littlefs2_fs.h"
 
@@ -108,7 +108,6 @@ static void test_registry_setup(void)
 {
     /* init registry */
     registry_init();
-    registry_schemas_init();
 
     /* add schema instances */
     registry_register_schema_instance(REGISTRY_NAMESPACE_SYS, REGISTRY_SCHEMA_FULL_EXAMPLE,

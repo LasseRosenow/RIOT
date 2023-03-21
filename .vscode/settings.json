@@ -8,10 +8,13 @@
         "cli.h": "c",
         "path.h": "c",
         "stdio.h": "c",
-        "schemas.h": "c",
         "storage.h": "c",
         "clist.h": "c",
         "namespaces.h": "c",
-        "debug.h": "c"
+        "debug.h": "c",
+        "_util.h": "c",
+        "util.h": "c",
+        "schema.h": "c",
+        "modules.h": "c"
     },
 }

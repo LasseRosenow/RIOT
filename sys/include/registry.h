@@ -27,6 +27,7 @@ extern "C" {
 #include <stdint.h>
 #include <stdbool.h>
 #include "clist.h"
+#include "modules.h"
 
 /**
  * @brief Data types of the registry

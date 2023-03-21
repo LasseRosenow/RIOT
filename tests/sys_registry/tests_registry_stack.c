@@ -30,7 +30,7 @@
 #include "fs/littlefs2_fs.h"
 #include "vfs.h"
 #include "registry.h"
-#include "registry/schemas.h"
+#include "registry/schema.h"
 #include "registry/storage.h"
 
 #include "tests_registry.h"
@@ -234,7 +234,6 @@ static void setup(void)
 {
     /* init registry */
     registry_init();
-    registry_schemas_init();
 
     /* Add stack test app schema */
     registry_register_schema(REGISTRY_NAMESPACE_APP, &registry_app_schema_stack_test);

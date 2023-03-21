@@ -28,7 +28,7 @@
 #include "debug.h"
 #include "kernel_defines.h"
 #include "registry.h"
-#include "registry/schemas.h"
+#include "registry/schema.h"
 #include "registry/path.h"
 #include "registry/schema/rgb_led.h"
 
@@ -72,17 +72,17 @@ static void mapping(const registry_id_t parameter_id, const registry_instance_t 
 
 static int _get_red(const registry_instance_t *instance, uint8_t **value)
 {
-    return _registry_schema_get_buf(&registry_sys_rgb_led.data, instance,
-                                    &registry_sys_rgb_led.red.data, (const void **)value,
-                                    NULL);
+    return _registry_schema_util_get_buf(&registry_sys_rgb_led.data, instance,
+                                         &registry_sys_rgb_led.red.data, (const void **)value,
+                                         NULL);
 }
 
 static int _set_red(const registry_instance_t *instance, uint8_t value)
 {
-    return _registry_schema_set_buf(&registry_sys_rgb_led.data, instance,
-                                    &registry_sys_rgb_led.red.data,
-                                    registry_sys_rgb_led.red.data.type, (const void *)&value,
-                                    sizeof(uint8_t));
+    return _registry_schema_util_set_buf(&registry_sys_rgb_led.data, instance,
+                                         &registry_sys_rgb_led.red.data,
+                                         registry_sys_rgb_led.red.data.type, (const void *)&value,
+                                         sizeof(uint8_t));
 }
 
 const registry_sys_rgb_led_t registry_sys_rgb_led = {

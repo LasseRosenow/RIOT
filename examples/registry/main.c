@@ -27,7 +27,7 @@
 #include "mtd.h"
 #include "registry.h"
 #include "registry/cli.h"
-#include "registry/schemas.h"
+#include "registry/schema.h"
 #include "registry/storage.h"
 
 // #define SHELL_QUEUE_SIZE (8)
@@ -111,7 +111,6 @@
 // int main(void)
 // {
 //     /* init schemas */
-//     registry_schemas_init();
 //     registry_register_schema_instance(REGISTRY_NAMESPACE_SYS, registry_schema_rgb_led.id,
 //                                       &rgb_led_instance_0);
 //     registry_register_schema_instance(REGISTRY_NAMESPACE_SYS, registry_schema_rgb_led.id,

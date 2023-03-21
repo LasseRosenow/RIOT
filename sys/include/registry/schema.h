@@ -7,9 +7,9 @@
  */
 
 /**
- * @defgroup    sys_registry_schemas RIOT Registry Schemas
+ * @defgroup    sys_registry_schema RIOT Registry Schema
  * @ingroup     sys
- * @brief       RIOT Registry Schemas module providing common sys schemas for the RIOT Registry sys module
+ * @brief       RIOT Registry Schema module providing common sys configuration schemas for the RIOT Registry sys module
  * @{
  *
  * @file
@@ -17,8 +17,8 @@
  * @author      Lasse Rosenow <lasse.rosenow@haw-hamburg.de>
  */
 
-#ifndef REGISTRY_SCHEMAS_H
-#define REGISTRY_SCHEMAS_H
+#ifndef REGISTRY_SCHEMA_H
+#define REGISTRY_SCHEMA_H
 
 #ifdef __cplusplus
 extern "C" {
@@ -40,5 +40,5 @@ extern const registry_sys_t registry_sys;
 }
 #endif
 
-#endif /* REGISTRY_SCHEMAS_H */
+#endif /* REGISTRY_SCHEMA_H */
 /** @} */

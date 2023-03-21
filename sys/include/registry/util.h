@@ -20,8 +20,8 @@
  * @}
  */
 
-#ifndef REGISTRY_REGISTRY_UTIL_H
-#define REGISTRY_REGISTRY_UTIL_H
+#ifndef REGISTRY_UTIL_H
+#define REGISTRY_UTIL_H
 
 #ifdef __cplusplus
 extern "C" {
@@ -111,4 +111,4 @@ char *registry_convert_bytes_to_str(const void *src, const size_t src_len, char 
 #endif
 
 /** @} */
-#endif /* REGISTRY_REGISTRY_UTIL_H */
+#endif /* REGISTRY_UTIL_H */

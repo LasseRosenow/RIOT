@@ -5,8 +5,7 @@ USEMODULE += littlefs2
 USEMODULE += mtd
 USEMODULE += vfs
 
-USEMODULE += registry
-USEMODULE += registry_schemas
+USEMODULE += registry_schema_rgb_led
 USEMODULE += registry_storage_vfs
 
 include $(RIOTBASE)/Makefile.include

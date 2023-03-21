@@ -9,7 +9,7 @@
 /**
  * @defgroup    sys_registry_schema_util RIOT Registry Schema utilities
  * @ingroup     sys
- * @brief       RIOT Registry Schema Util module providing utility functions for configuration schemas
+ * @brief       RIOT Registry Schema Util module providing utility functions
  * @{
  *
  * @file
@@ -19,8 +19,8 @@
  * @}
  */
 
-#ifndef REGISTRY_REGISTRY_UTIL_H
-#define REGISTRY_REGISTRY_UTIL_H
+#ifndef REGISTRY_SCHEMA_UTIL_H
+#define REGISTRY_SCHEMA_UTIL_H
 
 #ifdef __cplusplus
 extern "C" {
@@ -30,13 +30,13 @@ extern "C" {
 
 /* BASE GET FUNCTION */
 
-int _registry_schema_get_buf(const registry_schema_t *schema, const registry_instance_t *instance,
+int _registry_schema_util_get_buf(const registry_schema_t *schema, const registry_instance_t *instance,
                              const registry_schema_item_t *parameter, const void **buf,
                              size_t *buf_len);
 
 /* BASE SET FUNCTION */
 
-int _registry_schema_set_buf(const registry_schema_t *schema, const registry_instance_t *instance,
+int _registry_schema_util_set_buf(const registry_schema_t *schema, const registry_instance_t *instance,
                              const registry_schema_item_t *parameter, const registry_type_t type,
                              const void *val, size_t val_len);
 
@@ -61,4 +61,4 @@ typedef const struct {
 #endif
 
 /** @} */
-#endif /* REGISTRY_REGISTRY_UTIL_H */
+#endif /* REGISTRY_SCHEMA_UTIL_H */

@@ -1,8 +1,8 @@
-MODULE := registry_schemas
+MODULE := registry_schema
 
 BASE_MODULE := registry
 
-SRC := schemas.c
+SRC := schema.c util.c
 
 SUBMODULES := 1
 
