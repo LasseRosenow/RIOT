@@ -60,6 +60,7 @@ static storage_storage_t storage[STORE_CAPACITY];
 
 /* Storage interface descriptor to be registered in the RIOT Registry */
 registry_storage_t registry_storage_heap = {
+    .type = REGISTRY_STORAGE_TYPE_PATH,
     .load = load,
     .save = save,
 };

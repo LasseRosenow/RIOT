@@ -42,6 +42,7 @@ static int save(const registry_storage_instance_t *instance, const registry_path
                 const registry_value_t value);
 
 registry_storage_t registry_storage_vfs = {
+    .type = REGISTRY_STORAGE_TYPE_PATH,
     .load = load,
     .save = save,
 };

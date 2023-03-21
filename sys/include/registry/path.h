@@ -177,23 +177,6 @@ int registry_set_by_path(const registry_path_t *path, const registry_value_t *va
  */
 int registry_commit_by_path(const registry_path_t *path);
 
-/**
- * @brief Load all configuration parameters that are included in the path from the registered storage.
- *
- * @param[in] path Path of the configuration parameters
- * @return 0 on success, non-zero on failure
- */
-int registry_load_by_path(const registry_path_t *path);
-
-/**
- * @brief Save all configuration parameters of every configuration group to the
- * registered storage.
- *
- * @param[in] path Path of the configuration parameters
- * @return 0 on success, non-zero on failure
- */
-int registry_save_by_path(const registry_path_t *path);
-
 typedef int (*registry_path_export_cb_t)(const registry_path_t *path,
                                          const registry_export_cb_data_t *data,
                                          const registry_export_cb_data_type_t data_type,
