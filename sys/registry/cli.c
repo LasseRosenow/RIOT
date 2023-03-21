@@ -145,9 +145,7 @@ static int _export_cb(const registry_path_t *path,
 
 int registry_cli_cmd(int argc, char **argv)
 {
-    // TODO: Why is REGISTRY_PATH() Not working? (It should resolve to _REGISTRY_PATH_0()
-    // but somehow its not initializing namespace with NULL?? (makes no sense:( ... )))
-    registry_path_t path = _REGISTRY_PATH_0();
+    registry_path_t path = REGISTRY_PATH();
     registry_id_t path_items[REGISTRY_PATH_ITEMS_MAX_LEN];
 
     if (argc == 1) {
@@ -226,7 +224,7 @@ int registry_cli_cmd(int argc, char **argv)
             }
         }
         else {
-            registry_path_t new_path = _REGISTRY_PATH_0();
+            registry_path_t new_path = REGISTRY_PATH();
             registry_load_by_path(&new_path);
         }
 
@@ -243,7 +241,7 @@ int registry_cli_cmd(int argc, char **argv)
             }
         }
         else {
-            registry_path_t new_path = _REGISTRY_PATH_0();
+            registry_path_t new_path = REGISTRY_PATH();
             registry_save_by_path(&new_path);
         }
 
