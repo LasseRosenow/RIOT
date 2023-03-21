@@ -14,8 +14,8 @@ USEMODULE += littlefs2
 USEMODULE += mtd
 
 USEMODULE +=  registry_cli
-USEMODULE +=  registry_schema_rgb_led
-USEMODULE +=  registry_storage_vfs
+USEMODULE +=  registry_schema
+USEMODULE +=  registry_storage
 
 # Comment this out to disable code in RIOT that does safety checking
 # which is not needed in a production environment but helps in the

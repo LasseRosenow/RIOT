@@ -1,12 +1,16 @@
-SRC := core.c util.c
+SRC := registry.c util.c
 
 SUBMODULES := 1
 
-ifneq (,$(filter registry_storage_%,$(USEMODULE)))
+ifneq (,$(filter registry_path%,$(USEMODULE)))
+  DIRS += path
+endif
+
+ifneq (,$(filter registry_storage%,$(USEMODULE)))
   DIRS += storage
 endif
 
-ifneq (,$(filter registry_schema_%,$(USEMODULE)))
+ifneq (,$(filter registry_schema%,$(USEMODULE)))
   DIRS += schema
 endif
 

@@ -29,8 +29,9 @@
 #define ENABLE_DEBUG (0)
 #include "debug.h"
 #include "registry.h"
-#include "registry/path.h"
 #include "registry/util.h"
+#include "registry/path.h"
+#include "registry/path/util.h"
 
 #include "registry/cli.h"
 

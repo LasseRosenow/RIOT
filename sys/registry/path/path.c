@@ -22,14 +22,12 @@
 
 #include <stdio.h>
 #include <stdlib.h>
-#include <string.h>
 #include <errno.h>
 #include <assert.h>
 
 #define ENABLE_DEBUG (0)
 #include "debug.h"
 #include "kernel_defines.h"
-#include "clist.h"
 #include "registry.h"
 #include "registry/util.h"
 #include "registry/storage.h"
@@ -739,39 +737,4 @@ int registry_save_by_path(const registry_path_t *path)
     }
 
     return res;
-}
-
-int registry_path_util_parse_string_path(const char *string_path,
-                                         registry_path_t *registry_path,
-                                         registry_id_t *path_items_buf)
-{
-    char *ptr = (char *)string_path;
-
-    int i = 0;
-
-    registry_path->path_len = 0;
-
-    while (*ptr != '\0') {
-        registry_id_t id = strtol(ptr, &ptr, 10);
-
-        switch (i) {
-        case 0: *(registry_id_t *)registry_path->namespace_id = id; break;
-        case 1: *(registry_id_t *)registry_path->schema_id = id; break;
-        case 2: *(registry_id_t *)registry_path->instance_id = id; break;
-        default:
-            path_items_buf[i] = id;
-            registry_path->path_len++;
-            break;
-        }
-
-        registry_path->path = path_items_buf;
-
-        if (*ptr != '\0') {
-            ptr++;
-        }
-
-        i++;
-    }
-
-    return 0;
 }

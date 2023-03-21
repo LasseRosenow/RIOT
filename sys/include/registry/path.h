@@ -130,12 +130,6 @@ typedef struct {
                                  _REGISTRY_PATH_0) \
         (__VA_ARGS__)
 
-#define REGISTRY_PATH_SYS(...) \
-        REGISTRY_PATH(REGISTRY_NAMESPACE_SYS, ## __VA_ARGS__)
-
-#define REGISTRY_PATH_APP(...) \
-        REGISTRY_PATH(REGISTRY_NAMESPACE_APP, ## __VA_ARGS__)
-
 /**
  * @brief Registers a new namespace for configuration schemas.
  *
@@ -222,10 +216,6 @@ typedef int (*registry_path_export_cb_t)(const registry_path_t *path,
  */
 int registry_export_by_path(const registry_path_export_cb_t export_cb, const registry_path_t *path,
                             const int recursion_depth, const void *context);
-
-int registry_path_util_parse_string_path(const char *string_path,
-                                         registry_path_t *registry_path,
-                                         registry_id_t *path_items_buf);
 
 #ifdef __cplusplus
 }
