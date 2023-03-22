@@ -16,3 +16,28 @@
 ## Known issues
 
 - Commit by path cannot only commit a certain parameter. It can only commit a whole instance.
+
+## Michel
+
+- Mutex
+  - Mutex in export um instancen? oder einfach abhängig vom namespace, damit atomar immer die werte garantiert werden können, die zusammengehören
+  - Mutex bei zugriff auf schema instance auch im modul z.B.
+  - entweder durch so ein globales registry_lock() registry_release()
+  - oder commit_cb generell automatisch ein lock. eig. gute idee
+
+- IDs aus Registry Core entfernen
+  - z.B. ein switch case generieren, welches einem für einen pfad den jeweiligen pointer gibt.
+  - metadaten wie "name" und "description" aus registry core entfernen vielleicht. entweder durch define, oder durch extra modul ... (dafür braucht man dann halt wieder so n switch oder so), dafür kann man dann auch so sachen machen wie: "Gebe mir pointer von parameter mit name x.
+
+- Statisches zugriffsstruct und das schema trennen und nicht so vermischt haben.
+  - statisches zugriffs struct soll lieber optionaler typisierter zugriff sein. macht registry core noch schlanker. die pointer bekommt man ja sowieso durch die variable names
+
+- Storage
+  - Den pointer basierten storage nur so machen, dass er "alles auf einmal liest", dafür extrem wenig speichert, aber auch probleme mit neuer compilation hat, da er nichtmal merkt, dass er kaputt ist.
+  - Pfad basiertes intefrace so lassen und auch direktes laden erlauben
+
+- Initial values
+  - dafür sorgen, dass klar ist, dass schema instances von modules initialisiert werden müssen
+  - dafür sorgen dass klar ist, dass module die initialwerte erst annehmen, wenn sie dafür aufgefordert werden, um falsches nutzen von initialwerten zu verhindern, falls neue ausm speicher geladen werden können.
+  - dafür z.B. sagen, dass module die daten erst benutzen, nachdem einmal commit_cb ausgeführt wurde.
+  - registry_init() führt dann z.B. einmal commit_cb auf instance ebene aus oder es muss halt manuell gemacht werden who knows egal.

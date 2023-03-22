@@ -34,28 +34,13 @@ extern "C" {
 typedef int (*load_by_path_cb_t)(const registry_path_t *path, const registry_value_t *value,
                                  const void *context);
 
-typedef const union {
-    const registry_namespace_t *namespace;
-    const registry_schema_t *schema;
-    const registry_instance_t *instance;
-    const registry_schema_item_t *group;
-    const registry_schema_item_t *parameter;
-} registry_load_cb_context_t;
-
-typedef const enum {
-    REGISTRY_COMMIT_INSTANCE,
-    REGISTRY_COMMIT_GROUP,
-    REGISTRY_COMMIT_PARAMETER,
-} registry_load_cb_scope_t;
 /**
  * @brief Prototype of a callback function for the load action of a storage
  * interface
  */
-typedef int (*load_cb_t)(const registry_schema_item_t *parameter,
-                         const registry_value_t **value_ptr,
+typedef int (*load_cb_t)(const registry_value_t **value_ptr,
                          const registry_value_t *value,
-                         const registry_load_cb_scope_t scope,
-                         const registry_load_cb_context_t *context);
+                         const size_t value_len);
 
 typedef struct _registry_storage_t registry_storage_t;
 
@@ -85,16 +70,12 @@ struct _registry_storage_t {
             /**
              * @brief Loads all saved parameters and calls the @p cb callback function.
              *
-             * @param[in] instance Storage descriptor
-             * @param[in] path Path of the parameter
-             * @param[in] cb Callback function to call for every saved parameter
-             * @param[in] context Context passed to @p cb function
+             * @param[in] storage Storage descriptor
+             * @param[in] load_cb Callback function to call for every saved parameter
              * @return 0 on success, non-zero on failure
              */
-            int (*load)(const registry_storage_instance_t *instance,
-                        const load_cb_t cb,
-                        const registry_load_cb_scope_t scope,
-                        const registry_load_cb_context_t *context);
+            int (*load)(const registry_storage_instance_t *storage,
+                        const load_cb_t load_cb);
 
             /**
              * @brief If implemented, it is used for any preparation the storage may
@@ -103,7 +84,7 @@ struct _registry_storage_t {
              * @param[in] instance Storage descriptor
              * @return 0 on success, non-zero on failure
              */
-            int (*save_start)(const registry_storage_instance_t *instance);
+            int (*save_start)(const registry_storage_instance_t *storage);
 
             /**
              * @brief Saves a parameter into storage.
@@ -113,9 +94,9 @@ struct _registry_storage_t {
              * @param[in] value Struct representing the value of the parameter
              * @return 0 on success, non-zero on failure
              */
-            int (*save)(const registry_storage_instance_t *instance,
-                        const registry_schema_item_t *parameter,
-                        const registry_value_t *value);
+            int (*save)(const registry_storage_instance_t *storage,
+                        const registry_value_t *value,
+                        const size_t value_len);
 
             /**
              * @brief If implemented, it is used for any tear-down the storage may need
@@ -124,7 +105,7 @@ struct _registry_storage_t {
              * @param[in] instance Storage descriptor
              * @return 0 on success, non-zero on failure
              */
-            int (*save_end)(const registry_storage_instance_t *instance);
+            int (*save_end)(const registry_storage_instance_t *storage);
         } default;
         const struct {
             /**
@@ -133,11 +114,10 @@ struct _registry_storage_t {
              * @param[in] instance Storage descriptor
              * @param[in] path Path of the parameter
              * @param[in] cb Callback function to call for every saved parameter
-             * @param[in] context Context passed to @p cb function
              * @return 0 on success, non-zero on failure
              */
-            int (*load)(const registry_storage_instance_t *instance, const registry_path_t *path,
-                        const load_cb_t cb, const void *context);
+            int (*load)(const registry_storage_instance_t *storage, const registry_path_t *path,
+                        const load_cb_t load_cb);
 
             /**
              * @brief If implemented, it is used for any preparation the storage may
@@ -146,7 +126,7 @@ struct _registry_storage_t {
              * @param[in] instance Storage descriptor
              * @return 0 on success, non-zero on failure
              */
-            int (*save_start)(const registry_storage_instance_t *instance);
+            int (*save_start)(const registry_storage_instance_t *storage);
 
             /**
              * @brief Saves a parameter into storage.
@@ -156,7 +136,7 @@ struct _registry_storage_t {
              * @param[in] value Struct representing the value of the parameter
              * @return 0 on success, non-zero on failure
              */
-            int (*save)(const registry_storage_instance_t *instance, const registry_path_t *path,
+            int (*save)(const registry_storage_instance_t *storage, const registry_path_t *path,
                         const registry_value_t *value);
 
             /**
@@ -166,7 +146,7 @@ struct _registry_storage_t {
              * @param[in] instance Storage descriptor
              * @return 0 on success, non-zero on failure
              */
-            int (*save_end)(const registry_storage_instance_t *instance);
+            int (*save_end)(const registry_storage_instance_t *storage);
         } path;
     } operations;
 };
@@ -202,18 +182,6 @@ void registry_register_storage_dst(const registry_storage_instance_t *dst);
  * @return 0 on success, non-zero on failure
  */
 int registry_load();
-
-int registry_load_namespace(const registry_namespace_t *namespace);
-
-int registry_load_schema(const registry_schema_t *schema);
-
-int registry_load_instance(const registry_schema_t *schema, const registry_instance_t *instance);
-
-int registry_load_group(const registry_schema_t *schema, const registry_instance_t *instance,
-                        const registry_schema_item_t *group);
-
-int registry_load_parameter(const registry_schema_t *schema, const registry_instance_t *instance,
-                            const registry_schema_item_t *parameter);
 
 /**
  * @brief Save all configuration parameters to the

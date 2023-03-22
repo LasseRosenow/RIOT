@@ -42,3 +42,18 @@ const registry_sys_t registry_sys = {
     },
     .rgb_led = &registry_sys_rgb_led,
 };
+
+registry_namespace_t registry_namespace_sys = {
+    .id = 0,
+    .name = "sys",
+    .description = "Sys namespace",
+    .items = (const registry_schema_t *[]) {
+        &registry_sys_rgb_led.data,
+    },
+    .items_len = 1,
+};
+
+const registry_sys_t registry_sys = {
+    .data = &registry_namespace_sys,
+    .rgb_led = &registry_sys_rgb_led,
+};
