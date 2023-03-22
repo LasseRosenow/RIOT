@@ -30,30 +30,17 @@
 
 /* Sys namespace */
 
-const registry_sys_t registry_sys = {
-    .data = {
-        .id = 0,
-        .name = "sys",
-        .description = "Sys namespace",
-        .items = (const registry_schema_t *[]) {
-            &registry_sys_rgb_led.data,
-        },
-        .items_len = 1,
-    },
-    .rgb_led = &registry_sys_rgb_led,
-};
-
-registry_namespace_t registry_namespace_sys = {
+const registry_namespace_t registry_sys = {
     .id = 0,
     .name = "sys",
     .description = "Sys namespace",
     .items = (const registry_schema_t *[]) {
-        &registry_sys_rgb_led.data,
+        &registry_sys_rgb_led,
     },
     .items_len = 1,
 };
 
-const registry_sys_t registry_sys = {
-    .data = &registry_namespace_sys,
-    .rgb_led = &registry_sys_rgb_led,
+const registry_typed_sys_t registry_typed_sys = {
+    .data = &registry_sys,
+    .rgb_led = &registry_typed_sys_rgb_led,
 };

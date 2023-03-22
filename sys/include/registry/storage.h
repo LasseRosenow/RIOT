@@ -66,7 +66,7 @@ struct _registry_storage_t {
     const registry_storage_type_t type; /**< type of the storage */
 
     const union {
-        const struct {
+        struct {
             /**
              * @brief Loads all saved parameters and calls the @p cb callback function.
              *
@@ -106,8 +106,8 @@ struct _registry_storage_t {
              * @return 0 on success, non-zero on failure
              */
             int (*save_end)(const registry_storage_instance_t *storage);
-        } default;
-        const struct {
+        } pointer;
+        struct {
             /**
              * @brief Loads all saved parameters and calls the @p cb callback function.
              *
@@ -117,7 +117,7 @@ struct _registry_storage_t {
              * @return 0 on success, non-zero on failure
              */
             int (*load)(const registry_storage_instance_t *storage, const registry_path_t *path,
-                        const load_cb_t load_cb);
+                        const load_by_path_cb_t load_cb);
 
             /**
              * @brief If implemented, it is used for any preparation the storage may
@@ -181,7 +181,7 @@ void registry_register_storage_dst(const registry_storage_instance_t *dst);
  *
  * @return 0 on success, non-zero on failure
  */
-int registry_load();
+int registry_load(void);
 
 /**
  * @brief Save all configuration parameters to the
@@ -189,7 +189,7 @@ int registry_load();
  *
  * @return 0 on success, non-zero on failure
  */
-int registry_save();
+int registry_save(void);
 
 int registry_save_namespace(const registry_namespace_t *namespace);
 

@@ -19,12 +19,16 @@
  * @}
  */
 
+#include <stdio.h>
+#include <stdlib.h>
+#include <errno.h>
 #include <assert.h>
 
 #define ENABLE_DEBUG (0)
 #include "debug.h"
 
 #include "registry/storage.h"
+#include "registry/util.h"
 
 const registry_storage_instance_t *_storage_dst;
 clist_node_t _storage_srcs;
@@ -39,6 +43,33 @@ void registry_register_storage_dst(const registry_storage_instance_t *dst)
 {
     assert(dst != NULL);
     _storage_dst = dst;
+}
+
+static void _debug_print_path(const registry_path_t *path)
+{
+    if (ENABLE_DEBUG) {
+        DEBUG("%d", *path->namespace_id);
+
+        if (path->schema_id != NULL) {
+            DEBUG("/%d", *path->schema_id);
+
+            if (path->instance_id != NULL) {
+                DEBUG("/%d", *path->instance_id);
+
+                if (path->path_len > 0) {
+                    DEBUG("/");
+
+                    for (size_t i = 0; i < path->path_len; i++) {
+                        DEBUG("%d", path->path[i]);
+
+                        if (i < path->path_len - 1) {
+                            DEBUG("/");
+                        }
+                    }
+                }
+            }
+        }
+    }
 }
 
 /* registry_load */
@@ -70,7 +101,7 @@ int registry_load_by_path(const registry_path_t *path)
     do {
         node = node->next;
         registry_storage_instance_t *src = container_of(node, registry_storage_instance_t, node);
-        src->itf->load(src, path, _registry_load_by_path_cb, NULL);
+        src->itf->operations.path.load(src, path, _registry_load_by_path_cb);
     } while (node != _storage_srcs.next);
     // TODO Possible bug? SFs could override with outdated values if SF_DST is not last in SF_SRCs?
 
@@ -83,7 +114,7 @@ static void _registry_storage_dup_check_cb(const registry_path_t *path,
                                            const void *context)
 {
     assert(context != NULL);
-    registry_dup_check_arg_t *dup_arg = (registry_dup_check_arg_t *)cb_arg;
+    registry_dup_check_arg_t *dup_arg = (registry_dup_check_arg_t *)context;
 
     if (path->namespace_id != dup_arg->path->namespace_id ||
         path->schema_id != dup_arg->path->schema_id ||
@@ -147,7 +178,7 @@ static int _registry_save_by_path_export_cb(const registry_path_t *path,
 
     /* only parameters need to be exported to storage, not namespaces, schemas or groups*/
     if (value != NULL) {
-        return dst->itf->save(dst, path, *value);
+        return dst->itf->operations.path.save(dst, path, value);
     }
 
     return 0;
@@ -161,14 +192,14 @@ int registry_save_by_path(const registry_path_t *path)
         return -ENOENT;
     }
 
-    if (_storage_dst->itf->save_start) {
-        _storage_dst->itf->save_start(_storage_dst);
+    if (_storage_dst->itf->operations.path.save_start) {
+        _storage_dst->itf->operations.path.save_start(_storage_dst);
     }
 
     res = registry_export_by_path(_registry_save_by_path_export_cb, path, 0, NULL);
 
-    if (_storage_dst->itf->save_end) {
-        _storage_dst->itf->save_end(_storage_dst);
+    if (_storage_dst->itf->operations.path.save_end) {
+        _storage_dst->itf->operations.path.save_end(_storage_dst);
     }
 
     return res;

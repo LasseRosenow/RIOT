@@ -20,46 +20,15 @@
  * @}
  */
 
-#include <stdio.h>
-#include <stdlib.h>
 #include <errno.h>
 #include <assert.h>
 
 #define ENABLE_DEBUG (0)
 #include "debug.h"
-#include "kernel_defines.h"
 #include "registry.h"
 #include "registry/util.h"
-#include "registry/storage.h"
 
 #include "registry/path.h"
-
-static void _debug_print_path(const registry_path_t *path)
-{
-    if (ENABLE_DEBUG) {
-        DEBUG("%d", *path->namespace_id);
-
-        if (path->schema_id != NULL) {
-            DEBUG("/%d", *path->schema_id);
-
-            if (path->instance_id != NULL) {
-                DEBUG("/%d", *path->instance_id);
-
-                if (path->path_len > 0) {
-                    DEBUG("/");
-
-                    for (size_t i = 0; i < path->path_len; i++) {
-                        DEBUG("%d", path->path[i]);
-
-                        if (i < path->path_len - 1) {
-                            DEBUG("/");
-                        }
-                    }
-                }
-            }
-        }
-    }
-}
 
 static const registry_schema_item_t *_parameter_lookup(const registry_path_t *path,
                                                        const registry_schema_t *schema)

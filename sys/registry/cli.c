@@ -32,6 +32,7 @@
 #include "registry/util.h"
 #include "registry/path.h"
 #include "registry/path/util.h"
+#include "registry/storage.h"
 
 #include "registry/cli.h"
 

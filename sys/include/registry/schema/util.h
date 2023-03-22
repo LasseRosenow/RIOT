@@ -30,15 +30,18 @@ extern "C" {
 
 /* BASE GET FUNCTION */
 
-int _registry_schema_util_get_buf(const registry_schema_t *schema, const registry_instance_t *instance,
-                             const registry_schema_item_t *parameter, const void **buf,
-                             size_t *buf_len);
+int _registry_schema_util_get_buf(const registry_schema_t *schema,
+                                  const registry_instance_t *instance,
+                                  const registry_schema_item_t *parameter, const void **buf,
+                                  size_t *buf_len);
 
 /* BASE SET FUNCTION */
 
-int _registry_schema_util_set_buf(const registry_schema_t *schema, const registry_instance_t *instance,
-                             const registry_schema_item_t *parameter, const registry_type_t type,
-                             const void *val, size_t val_len);
+int _registry_schema_util_set_buf(const registry_schema_t *schema,
+                                  const registry_instance_t *instance,
+                                  const registry_schema_item_t *parameter,
+                                  const registry_type_t type,
+                                  const void *val, size_t val_len);
 
 /* BASE TYPES */
 
@@ -49,7 +52,7 @@ int _registry_schema_util_set_buf(const registry_schema_t *schema, const registr
 /* BASE PARAMETER TYPES */
 
 typedef const struct {
-    const registry_schema_item_t data;
+    const registry_schema_item_t * const data;
     int (*get)(const registry_instance_t *instance, uint8_t **val);
     int (*set)(const registry_instance_t *instance, const uint8_t val);
     int (*commit)(void);
