@@ -6,8 +6,8 @@ ifneq (,$(filter registry_storage%,$(USEMODULE)))
   include $(RIOTBASE)/sys/registry/storage/Makefile.dep
 endif
 
-ifneq (,$(filter registry_schema%,$(USEMODULE)))
-  include $(RIOTBASE)/sys/registry/schema/Makefile.dep
+ifneq (,$(filter registry_sys_namespace%,$(USEMODULE)))
+  include $(RIOTBASE)/sys/registry/sys_namespace/Makefile.dep
 endif
 
 ifneq (,$(filter registry_%,$(USEMODULE)))

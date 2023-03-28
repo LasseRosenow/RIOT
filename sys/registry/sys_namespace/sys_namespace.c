@@ -25,13 +25,12 @@
 #include "debug.h"
 #include "registry.h"
 
-#include "registry/schema.h"
-#include "registry/schema/util.h"
+#include "registry/sys_namespace.h"
+#include "registry/sys_namespace/util.h"
 
 /* Sys namespace */
 
 const registry_namespace_t registry_sys = {
-    .id = 0,
     .name = "sys",
     .description = "Sys namespace",
     .items = (const registry_schema_t *[]) {

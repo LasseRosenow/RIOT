@@ -27,7 +27,7 @@
 #include "mtd.h"
 #include "registry.h"
 #include "registry/cli.h"
-#include "registry/schema.h"
+#include "registry/sys_namespace.h"
 #include "registry/storage.h"
 
 // #define SHELL_QUEUE_SIZE (8)

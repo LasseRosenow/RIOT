@@ -7,7 +7,7 @@
  */
 
 /**
- * @defgroup    sys_registry_sys_rgb_led RIOT Registry Schema: RGB_LED
+ * @defgroup    sys_registry_namespace_sys_rgb_led RIOT Registry Schema: RGB_LED
  * @ingroup     sys
  * @brief       RIOT Registry RGB_LED Schema representing the basic structure of an RGB LED
  * @{
@@ -28,9 +28,10 @@
 #include "debug.h"
 #include "kernel_defines.h"
 #include "registry.h"
-#include "registry/schema.h"
 #include "registry/path.h"
-#include "registry/schema/rgb_led.h"
+#include "registry/namespace_sys.h"
+
+#include "registry/namespace_sys/rgb_led.h"
 
 /* Mapping */
 

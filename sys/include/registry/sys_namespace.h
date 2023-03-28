@@ -7,9 +7,9 @@
  */
 
 /**
- * @defgroup    sys_registry_schema RIOT Registry Schema
+ * @defgroup    sys_registry_sys_namespace RIOT Registry Sys Namespace
  * @ingroup     sys
- * @brief       RIOT Registry Schema module providing common sys configuration schemas for the RIOT Registry sys module
+ * @brief       RIOT Registry Sys Namespace module providing common sys configuration schemas for the RIOT Registry sys module
  * @{
  *
  * @file
@@ -17,17 +17,19 @@
  * @author      Lasse Rosenow <lasse.rosenow@haw-hamburg.de>
  */
 
-#ifndef REGISTRY_SCHEMA_H
-#define REGISTRY_SCHEMA_H
+#ifndef REGISTRY_SYS_NAMESPACE_H
+#define REGISTRY_SYS_NAMESPACE_H
 
 #ifdef __cplusplus
 extern "C" {
 #endif
 
 #include "registry.h"
-#include "registry/schema/rgb_led.h"
+#include "registry/sys_namespace/rgb_led.h"
 
 /* Sys namespace */
+
+extern const registry_namespace_t registry_sys;
 
 typedef const struct {
     const registry_namespace_t * const data;
@@ -40,5 +42,5 @@ extern const registry_typed_sys_t registry_typed_sys;
 }
 #endif
 
-#endif /* REGISTRY_SCHEMA_H */
+#endif /* REGISTRY_SYS_NAMESPACE_H */
 /** @} */

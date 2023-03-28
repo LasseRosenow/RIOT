@@ -1,4 +1,0 @@
-# Enable "registry_schema" module for all schemas
-ifneq (,$(filter registry_schema_%,$(USEMODULE)))
-  USEMODULE += registry_schema
-endif

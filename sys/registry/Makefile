@@ -10,8 +10,8 @@ ifneq (,$(filter registry_storage%,$(USEMODULE)))
   DIRS += storage
 endif
 
-ifneq (,$(filter registry_schema%,$(USEMODULE)))
-  DIRS += schema
+ifneq (,$(filter registry_sys_namespace%,$(USEMODULE)))
+  DIRS += sys_namespace
 endif
 
 include $(RIOTBASE)/Makefile.base

@@ -15,6 +15,8 @@
         "_util.h": "c",
         "util.h": "c",
         "schema.h": "c",
-        "modules.h": "c"
+        "modules.h": "c",
+        "sys_namespace.h": "c",
+        "thread.h": "c"
     },
 }

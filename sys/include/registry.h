@@ -29,6 +29,8 @@ extern "C" {
 #include "clist.h"
 #include "modules.h"
 
+typedef uint32_t registry_id_t;
+
 /**
  * @brief Data types of the registry
  *
@@ -68,8 +70,6 @@ typedef enum {
     REGISTRY_TYPE_FLOAT64,     /**< 64-bits float */
 #endif /* CONFIG_REGISTRY_USE_FLOAT64 */
 } registry_type_t;
-
-typedef uint32_t registry_id_t;
 
 /**
  * @brief Basic representation of a configuration parameter value.
@@ -123,7 +123,6 @@ struct _registry_schema_item_t {
  * @brief Schema containing available configuration parameters.
  */
 typedef struct {
-    const registry_id_t id;                         /**< Integer representing the configuration group */
     const char * const name;                        /**< String describing the configuration group */
     const char * const description;                 /**< String describing the configuration group with more details */
     clist_node_t instances;                         /**< Linked list of schema instances @ref registry_instance_t */
@@ -146,7 +145,6 @@ typedef struct {
 
 typedef struct {
     clist_node_t node;                      /**< Linked list node */
-    const registry_id_t id;                 /**< Integer representing the ID of the configuration namespace */
     const char * const name;                /**< String describing the configuration namespace */
     const char * const description;         /**< String describing the configuration namespace with more details */
     const registry_schema_t ** const items; /**< Array of pointers to all the configuration schemas that belong to this namespace */

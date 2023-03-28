@@ -28,7 +28,7 @@
 #include "board.h"
 #include "mtd.h"
 #include "registry.h"
-#include "registry/schema.h"
+#include "registry/sys_namespace.h"
 #include "registry/storage.h"
 #include "fs/littlefs2_fs.h"
 

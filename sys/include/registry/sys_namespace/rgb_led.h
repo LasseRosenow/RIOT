@@ -7,7 +7,7 @@
  */
 
 /**
- * @defgroup    sys_registry_schema_rgb_led RIOT Registry Schema: RGB_LED
+ * @defgroup    sys_registry_sys_namespace_rgb_led RIOT Registry Schema: RGB_LED
  * @ingroup     sys
  * @brief       RIOT Registry RGB_LED Schema representing the basic structure of an RGB LED
  * @{
@@ -17,17 +17,17 @@
  * @author      Lasse Rosenow <lasse.rosenow@haw-hamburg.de>
  */
 
-#ifndef REGISTRY_SCHEMA_RGB_LED_H
-#define REGISTRY_SCHEMA_RGB_LED_H
+#ifndef REGISTRY_SYS_NAMESPACE_RGB_LED_H
+#define REGISTRY_SYS_NAMESPACE_RGB_LED_H
 
 #ifdef __cplusplus
 extern "C" {
 #endif
 
-#include "registry/schema/util.h"
+#include "registry/sys_namespace/util.h"
 
 /* RGB-LED */
-// #if IS_USED(MODULE_REGISTRY_SCHEMA_RGB_LED) || IS_ACTIVE(DOXYGEN)
+// #if IS_USED(MODULE_REGISTRY_SYS_NAMESPACE_RGB_LED) || IS_ACTIVE(DOXYGEN)
 
 extern const registry_schema_t registry_sys_rgb_led;
 
@@ -71,5 +71,5 @@ typedef const enum {
 }
 #endif
 
-#endif /* REGISTRY_SCHEMA_RGB_LED_H */
+#endif /* REGISTRY_SYS_NAMESPACE_RGB_LED_H */
 /** @} */
