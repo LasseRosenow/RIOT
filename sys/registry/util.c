@@ -90,13 +90,17 @@ const registry_namespace_t *registry_util_namespace_lookup(const registry_id_t n
         return NULL;
     }
 
+    registry_id_t index = 0;
+
     do {
         node = node->next;
         const registry_namespace_t *namespace = container_of(node, registry_namespace_t, node);
 
-        if (namespace->id == namespace_id) {
+        if (index == namespace_id) {
             return namespace;
         }
+
+        index++;
     } while (node != _registry_namespaces.next);
 
     return NULL;

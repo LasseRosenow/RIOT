@@ -239,6 +239,8 @@ int registry_commit_by_path(const registry_path_t *path)
             return -EINVAL;
         }
 
+        registry_id_t index = 0;
+
         do {
             node = node->next;
             registry_namespace_t *namespace = container_of(node, registry_namespace_t, node);
@@ -249,7 +251,7 @@ int registry_commit_by_path(const registry_path_t *path)
 
             /* create new path that includes the new namespace_id */
             registry_path_t new_path = {
-                .namespace_id = &namespace->id,
+                .namespace_id = &index,
                 .schema_id = NULL,
                 .instance_id = NULL,
                 .path = NULL,
@@ -261,6 +263,8 @@ int registry_commit_by_path(const registry_path_t *path)
             if (!_rc) {
                 rc = _rc;
             }
+
+            index++;
         } while (node != _registry_namespaces.next);
     }
 
@@ -544,6 +548,8 @@ int registry_export_by_path(const registry_path_export_cb_t export_cb, const reg
                 return -EINVAL;
             }
 
+            registry_id_t index = 0;
+
             do {
                 node = node->next;
                 registry_namespace_t *namespace = container_of(node, registry_namespace_t, node);
@@ -554,7 +560,7 @@ int registry_export_by_path(const registry_path_export_cb_t export_cb, const reg
 
                 /* create new path that includes the new namespace_id */
                 registry_path_t new_path = {
-                    .namespace_id = &namespace->id,
+                    .namespace_id = &index,
                     .schema_id = NULL,
                     .instance_id = NULL,
                     .path = NULL,
@@ -568,6 +574,8 @@ int registry_export_by_path(const registry_path_export_cb_t export_cb, const reg
                 if (!_rc) {
                     rc = _rc;
                 }
+
+                index++;
             } while (node != _registry_namespaces.next);
         }
     }

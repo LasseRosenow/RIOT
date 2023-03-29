@@ -91,7 +91,9 @@ typedef const enum {
  */
 typedef struct {
     clist_node_t node;          /**< Linked list node */
+#if IS_ACTIVE(CONFIG_REGISTRY_ENABLE_META_NAME) || IS_ACTIVE(DOXYGEN)
     const char * const name;    /**< String describing the instance */
+#endif /* CONFIG_REGISTRY_ENABLE_META_NAME */
     const void * const data;    /**< Struct containing all configuration parameters of the schema */
 
     /**
@@ -111,9 +113,15 @@ typedef struct {
 typedef const struct _registry_schema_item_t registry_schema_item_t;
 
 struct _registry_schema_item_t {
+#if IS_USED(MODULE_REGISTRY_PATH) || IS_ACTIVE(DOXYGEN)
     const registry_id_t id;                         /**< Integer representing the path id of the schema item */
+#endif /* MODULE_REGISTRY_PATH */
+#if IS_ACTIVE(CONFIG_REGISTRY_ENABLE_META_NAME) || IS_ACTIVE(DOXYGEN)
     const char * const name;                        /**< String describing the schema item */
+#endif /* CONFIG_REGISTRY_ENABLE_META_NAME */
+#if IS_ACTIVE(CONFIG_REGISTRY_ENABLE_META_DESCRIPTION) || IS_ACTIVE(DOXYGEN)
     const char * const description;                 /**< String describing the schema item with more details */
+#endif /* CONFIG_REGISTRY_ENABLE_META_DESCRIPTION */
     const registry_type_t type;                     /**< Type of the schema item (group or parameter) */
     const registry_schema_item_t ** const items;    /**< Array of pointers to all the configuration parameters and groups that belong to this group */
     const size_t items_len;                         /**< Size of items array */
@@ -123,8 +131,15 @@ struct _registry_schema_item_t {
  * @brief Schema containing available configuration parameters.
  */
 typedef struct {
-    const char * const name;                        /**< String describing the configuration group */
-    const char * const description;                 /**< String describing the configuration group with more details */
+#if IS_USED(MODULE_REGISTRY_PATH) || IS_ACTIVE(DOXYGEN)
+    const registry_id_t id;                         /**< Integer representing the path id of the schema */
+#endif /* MODULE_REGISTRY_PATH */
+#if IS_ACTIVE(CONFIG_REGISTRY_ENABLE_META_NAME) || IS_ACTIVE(DOXYGEN)
+    const char * const name;                        /**< String describing the schema */
+#endif /* CONFIG_REGISTRY_ENABLE_META_NAME */
+#if IS_ACTIVE(CONFIG_REGISTRY_ENABLE_META_DESCRIPTION) || IS_ACTIVE(DOXYGEN)
+    const char * const description;                 /**< String describing the schema with more details */
+#endif /* CONFIG_REGISTRY_ENABLE_META_DESCRIPTION */
     clist_node_t instances;                         /**< Linked list of schema instances @ref registry_instance_t */
     const registry_schema_item_t ** const items;    /**< Array of pointers to all the configuration parameters and groups that belong to this schema */
     const size_t items_len;                         /**< Size of items array */
