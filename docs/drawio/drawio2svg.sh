@@ -1,1 +1,0 @@
-drawio --export --format svg --width 400 --recursive --crop --embed-svg-images --output generated/ sources/
