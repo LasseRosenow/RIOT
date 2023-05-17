@@ -41,3 +41,9 @@
   - dafür sorgen dass klar ist, dass module die initialwerte erst annehmen, wenn sie dafür aufgefordert werden, um falsches nutzen von initialwerten zu verhindern, falls neue ausm speicher geladen werden können.
   - dafür z.B. sagen, dass module die daten erst benutzen, nachdem einmal commit_cb ausgeführt wurde.
   - registry_init() führt dann z.B. einmal commit_cb auf instance ebene aus oder es muss halt manuell gemacht werden who knows egal.
+
+DAS BASIS EXPORT/COMMIT IST NUR AUF INSTANCE LEVEL!!!
+
+- wenn ein driver der meinung ist, dass das auf parameter level sinnvoll ist, kann er checks in der commit_cb method implementieren dafür
+- maybe last_change timestamp für params einführen, damit der driver einfach sehen kann, was sich seit dem letzten commit verändert hat?
+- der recursive kram wandert zurück zu path oder so I guess
