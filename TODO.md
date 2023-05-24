@@ -47,3 +47,12 @@ DAS BASIS EXPORT/COMMIT IST NUR AUF INSTANCE LEVEL!!!
 - wenn ein driver der meinung ist, dass das auf parameter level sinnvoll ist, kann er checks in der commit_cb method implementieren dafür
 - maybe last_change timestamp für params einführen, damit der driver einfach sehen kann, was sich seit dem letzten commit verändert hat?
 - der recursive kram wandert zurück zu path oder so I guess
+
+## Kevin Feedback
+
+- Python code generator in RIOT/dist/tools registry_gen or something
+  - and create makefile target?, that calls that script
+- name field must be unique but also within the full path perspective and not schema wide
+- maybe just add min-value, max-value and allowed values etc. should be so easy isn't it?
+  - But with flag to disable for weak processors etc.
+- think about implementing a backwards commit to read for example sensor data

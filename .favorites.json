@@ -65,5 +65,13 @@
         "workspaceRoot": "/home/lasse/Schreibtisch/RIOT/riot-registry/RIOT",
         "workspacePath": "docs",
         "id": "x6QLhOE0qAtfzZbT"
+    },
+    {
+        "type": "Directory",
+        "name": "/home/lasse/Schreibtisch/RIOT/riot-registry/RIOT/dist/tools/registry_gen",
+        "parent_id": null,
+        "workspaceRoot": "/home/lasse/Schreibtisch/RIOT/riot-registry/RIOT",
+        "workspacePath": "dist/tools/registry_gen",
+        "id": "bCHZWrUJds0XDSNk"
     }
 ]
