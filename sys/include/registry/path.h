@@ -28,16 +28,11 @@ extern "C" {
 #include "registry.h"
 
 /**
- * @brief Maximum length of a configuration items path.
- */
-#define REGISTRY_PATH_ITEMS_MAX_LEN 8
-
-/**
  * @brief Maximum length of a configuration path.
  *
- * Configuration items + namespace_id, schema_id and instance_id.
+ * Path: namespace_id / schema_id / instance_id / resource_id
  */
-#define REGISTRY_PATH_MAX_LEN (REGISTRY_PATH_ITEMS_MAX_LEN + 3)
+#define REGISTRY_PATH_LEN 4
 
 /**
  * @brief Maximum length of a configuration path as a string.
@@ -45,16 +40,15 @@ extern "C" {
  * A path is an uint32_t and uint32_t MAX has 10 digits.
  * We also need to include the seperator. One additional char between each number.
  */
-#define REGISTRY_PATH_STRING_MAX_LEN   ((10 * REGISTRY_PATH_MAX_LEN) + \
-                                        (REGISTRY_PATH_MAX_LEN - 1))
+#define REGISTRY_PATH_STRING_MAX_LEN   ((10 * REGISTRY_PATH_LEN) + \
+                                        (REGISTRY_PATH_LEN - 1))
 
 /* Dynamic registry path */
 typedef struct {
     const registry_id_t *namespace_id;
     const registry_id_t *schema_id;
     const registry_id_t *instance_id;
-    const registry_id_t *path;
-    size_t path_len;
+    const registry_id_t *resource_id;
 } registry_path_t;
 
 /**
@@ -74,8 +68,7 @@ typedef struct {
             .namespace_id = NULL, \
             .schema_id = NULL, \
             .instance_id = NULL, \
-            .path = NULL, \
-            .path_len = 0, \
+            .resource_id = NULL, \
         }
 
 #define _REGISTRY_PATH_1(_namespace_id) \
@@ -83,8 +76,7 @@ typedef struct {
             .namespace_id = (registry_id_t[]) { _namespace_id }, \
             .schema_id = NULL, \
             .instance_id = NULL, \
-            .path = NULL, \
-            .path_len = 0, \
+            .resource_id = NULL, \
         }
 
 #define _REGISTRY_PATH_2(_namespace_id, _schema_id) \
@@ -92,8 +84,7 @@ typedef struct {
             .namespace_id = (registry_id_t[]) { _namespace_id }, \
             .schema_id = (registry_id_t[]) { _schema_id }, \
             .instance_id = NULL, \
-            .path = NULL, \
-            .path_len = 0, \
+            .resource_id = NULL, \
         }
 
 #define _REGISTRY_PATH_3(_namespace_id, _schema_id, _instance_id) \
@@ -101,29 +92,21 @@ typedef struct {
             .namespace_id = (registry_id_t[]) { _namespace_id }, \
             .schema_id = (registry_id_t[]) { _schema_id }, \
             .instance_id = (registry_id_t[]) { _instance_id }, \
-            .path = NULL, \
-            .path_len = 0, \
+            .resource_id = NULL, \
         }
 
-#define _REGISTRY_PATH_4_AND_MORE(_namespace_id, _schema_id, _instance_id, ...) \
+#define _REGISTRY_PATH_4(_namespace_id, _schema_id, _instance_id, _resource_id) \
         (registry_path_t) { \
             .namespace_id = (registry_id_t[]) { _namespace_id }, \
             .schema_id = (registry_id_t[]) { _schema_id }, \
             .instance_id = (registry_id_t[]) { _instance_id }, \
-            .path = (registry_id_t[]) { __VA_ARGS__ }, \
-            .path_len = _REGISTRY_PATH_NUMARGS(__VA_ARGS__), \
+            .resource_id = (registry_id_t[]) { _resource_id }, \
         }
 
-#define _REGISTRY_PATH_GET_MACRO(_0, _1, _2, _3, _4, _5, _6, _7, _8, _9, _10, NAME, ...) NAME
+#define _REGISTRY_PATH_GET_MACRO(_0, _1, _2, _3, _4, NAME, ...) NAME
 #define REGISTRY_PATH(...) \
         _REGISTRY_PATH_GET_MACRO(_0, ## __VA_ARGS__, \
-                                 _REGISTRY_PATH_4_AND_MORE, \
-                                 _REGISTRY_PATH_4_AND_MORE, \
-                                 _REGISTRY_PATH_4_AND_MORE, \
-                                 _REGISTRY_PATH_4_AND_MORE, \
-                                 _REGISTRY_PATH_4_AND_MORE, \
-                                 _REGISTRY_PATH_4_AND_MORE, \
-                                 _REGISTRY_PATH_4_AND_MORE, \
+                                 _REGISTRY_PATH_4, \
                                  _REGISTRY_PATH_3, \
                                  _REGISTRY_PATH_2, \
                                  _REGISTRY_PATH_1, \

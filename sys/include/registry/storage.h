@@ -198,10 +198,10 @@ int registry_save_schema(const registry_schema_t *schema);
 int registry_save_instance(const registry_schema_t *schema, const registry_instance_t *instance);
 
 int registry_save_group(const registry_schema_t *schema, const registry_instance_t *instance,
-                        const registry_schema_item_t *group);
+                        const registry_resource_t *group);
 
 int registry_save_parameter(const registry_schema_t *schema, const registry_instance_t *instance,
-                            const registry_schema_item_t *parameter);
+                            const registry_resource_t *parameter);
 
 /**
  * @brief Load all configuration parameters that are included in the path from the registered storage.

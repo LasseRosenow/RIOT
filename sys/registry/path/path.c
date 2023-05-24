@@ -27,32 +27,22 @@
 #include "debug.h"
 #include "registry.h"
 #include "registry/util.h"
+#include "registry/error.h"
 
 #include "registry/path.h"
 
-static const registry_schema_item_t *_parameter_lookup(const registry_path_t *path,
-                                                       const registry_schema_t *schema)
+static const registry_resource_t *_resource_lookup(const registry_path_t *path,
+                                                   const registry_schema_t *schema)
 {
-    const registry_schema_item_t *schema_item;
-    const registry_schema_item_t **schema_items = schema->items;
-    size_t schema_items_len = schema->items_len;
+    const registry_resource_t *schema_resource;
+    const registry_resource_t **schema_resources = schema->resources;
+    size_t schema_resources_len = schema->resources_len;
 
-    for (size_t path_index = 0; path_index < path->path_len; path_index++) {
-        for (size_t i = 0; i < schema_items_len; i++) {
-            schema_item = schema_items[i];
+    for (size_t i = 0; i < schema_resources_len; i++) {
+        schema_resource = schema_resources[i];
 
-            if (schema_item->id == path->path[path_index]) {
-                if (schema_item->type == REGISTRY_TYPE_GROUP) {
-                    /* if this is not the last path segment and its a group => update schemas and schemas_len values */
-                    schema_items = schema_item->items;
-                    schema_items_len = schema_item->items_len;
-                    break;
-                }
-                else if (path_index == path->path_len - 1) {
-                    /* if this is the last path segment and it is a parameter => return the parameter */
-                    return schema_item;
-                }
-            }
+        if (schema_resource->id == *path->resource_id) {
+            return schema_resource;
         }
     }
 
@@ -83,10 +73,13 @@ int registry_set_by_path(const registry_path_t *path, const registry_value_t *va
     }
 
     /* lookup parameter meta data */
-    const registry_schema_item_t *parameter = _parameter_lookup(path, schema);
+    const registry_resource_t *parameter = _resource_lookup(path, schema);
 
     if (!parameter) {
         return -EINVAL;
+    }
+    else if (parameter->type == REGISTRY_TYPE_GROUP) {
+        return -REGISTRY_ERROR_RESOURCE_TYPE_GROUP;
     }
 
     return registry_set(schema, instance, parameter, value);
@@ -116,10 +109,13 @@ int registry_get_by_path(const registry_path_t *path, registry_value_t *value)
     }
 
     /* lookup parameter meta data */
-    const registry_schema_item_t *parameter = _parameter_lookup(path, schema);
+    const registry_resource_t *parameter = _resource_lookup(path, schema);
 
     if (!parameter) {
         return -EINVAL;
+    }
+    else if (parameter->type == REGISTRY_TYPE_GROUP) {
+        return -REGISTRY_ERROR_RESOURCE_TYPE_GROUP;
     }
 
     return registry_get(schema, instance, parameter, value);
@@ -201,14 +197,13 @@ static int _registry_commit_namespace_by_path(const registry_path_t *path)
     }
     /* no schema => call all */
     else {
-        for (size_t i = 0; i < namespace->items_len; i++) {
-            const registry_schema_t *schema = namespace->items[i];
+        for (size_t i = 0; i < namespace->schemas_len; i++) {
+            const registry_schema_t *schema = namespace->schemas[i];
             registry_path_t new_path = {
                 .namespace_id = path->namespace_id,
                 .schema_id = &schema->id,
                 .instance_id = NULL,
-                .path = NULL,
-                .path_len = 0,
+                .resource_id = NULL,
             };
 
             int _rc =
@@ -254,8 +249,7 @@ int registry_commit_by_path(const registry_path_t *path)
                 .namespace_id = &index,
                 .schema_id = NULL,
                 .instance_id = NULL,
-                .path = NULL,
-                .path_len = 0,
+                .resource_id = NULL,
             };
 
             int _rc = _registry_commit_namespace_by_path(&new_path);
@@ -272,53 +266,24 @@ int registry_commit_by_path(const registry_path_t *path)
 }
 
 static void _registry_export_params_by_path(const registry_path_export_cb_t export_cb,
-                                            const registry_path_t *current_path,
-                                            const registry_schema_item_t **schema_items,
-                                            const size_t schema_items_len,
-                                            const int recursion_depth, const void *context)
+                                            const registry_path_t *path,
+                                            const registry_schema_t *schema,
+                                            const void *context)
 {
-    for (size_t i = 0; i < schema_items_len; i++) {
-        const registry_schema_item_t *schema_item = schema_items[i];
+    const registry_resource_t *schema_resource = _resource_lookup(path, schema);
 
-        /* create new path including the current schema_item */
-        registry_id_t _new_path_path[current_path->path_len + 1];
-        for (size_t j = 0; j < current_path->path_len; j++) {
-            _new_path_path[j] = current_path->path[j];
-        }
-        _new_path_path[ARRAY_SIZE(_new_path_path) - 1] = schema_item->id;
-        registry_path_t new_path = {
-            .namespace_id = current_path->namespace_id,
-            .schema_id = current_path->schema_id,
-            .instance_id = current_path->instance_id,
-            .path = _new_path_path,
-            .path_len = ARRAY_SIZE(_new_path_path),
-        };
-
-        /* check if the current schema_item is a group or a parameter */
-        if (schema_item->type == REGISTRY_TYPE_GROUP) {
-            /* group => search for parameters */
-            registry_export_cb_data_t export_data = { .group = schema_item };
-            export_cb(&new_path, &export_data, REGISTRY_EXPORT_GROUP, NULL, context);
-
-            /* if recursion_depth is not 1 then not only the group itself will be exported, but also its children depending on recursion_depth */
-            if (recursion_depth != 1) {
-                int new_recursion_depth = 0;     // create a new variable, because recursion_depth would otherwise be decreased in each cycle of the for loop
-                if (recursion_depth != 0) {
-                    new_recursion_depth = recursion_depth - 1;
-                }
-
-                _registry_export_params_by_path(export_cb, &new_path, schema_item->items,
-                                                schema_item->items_len,
-                                                new_recursion_depth, context);
-            }
-        }
-        else {
-            /* parameter found => export */
-            registry_value_t value;
-            registry_get_by_path(&new_path, &value);
-            registry_export_cb_data_t export_data = { .parameter = schema_item };
-            export_cb(&new_path, &export_data, REGISTRY_EXPORT_PARAMETER, &value, context);
-        }
+    /* check if the current schema_resource is a group or a parameter */
+    if (schema_resource->type == REGISTRY_TYPE_GROUP) {
+        /* group => search for parameters */
+        registry_export_cb_data_t export_data = { .group = schema_resource };
+        export_cb(path, &export_data, REGISTRY_EXPORT_GROUP, NULL, context);
+    }
+    else {
+        /* parameter found => export */
+        registry_value_t value;
+        registry_get_by_path(path, &value);
+        registry_export_cb_data_t export_data = { .parameter = schema_resource };
+        export_cb(path, &export_data, REGISTRY_EXPORT_PARAMETER, &value, context);
     }
 }
 
@@ -338,27 +303,11 @@ static int _registry_export_instance_by_path(const registry_path_export_cb_t exp
     export_cb(path, &export_data, REGISTRY_EXPORT_INSTANCE, NULL, context);
 
     /* schema/instance/item => export concrete schema item with data of the given instance */
-    if (path->path_len > 0) {
-        const registry_schema_item_t *schema_item = _parameter_lookup(path, schema);
-
-        /* create a new path which does not include the last value, because _registry_export_params_by_path will add it inside */
-        registry_id_t _new_path_path[path->path_len - 1];
-        for (size_t j = 0; j < path->path_len; j++) {
-            _new_path_path[j] = path->path[j];
-        }
-        registry_path_t new_path = {
-            .namespace_id = path->namespace_id,
-            .schema_id = path->schema_id,
-            .instance_id = path->instance_id,
-            .path = _new_path_path,
-            .path_len = ARRAY_SIZE(_new_path_path),
-        };
-
-        _registry_export_params_by_path(export_cb, &new_path, &schema_item, 1, recursion_depth,
-                                        context);
+    if (path->resource_id != NULL) {
+        _registry_export_params_by_path(export_cb, path, schema, context);
     }
     /* schema/instance => export the schema instance meta data (name) and its parameters recursively depending on recursion_depth */
-    else if (path->path_len == 0) {
+    else {
         /* export instance parameters (recursion_depth == 1 means only the exact path, which would only be a specific instance in this case) */
         if (recursion_depth != 1) {
             int new_recursion_depth = 0;
@@ -366,8 +315,7 @@ static int _registry_export_instance_by_path(const registry_path_export_cb_t exp
                 new_recursion_depth = recursion_depth - 1;
             }
 
-            _registry_export_params_by_path(export_cb, path, schema->items,
-                                            schema->items_len, new_recursion_depth, context);
+            _registry_export_params_by_path(export_cb, path, schema, context);
         }
     }
 
@@ -436,8 +384,7 @@ static int _registry_export_schema_by_path(const registry_path_export_cb_t expor
                     .namespace_id = path->namespace_id,
                     .schema_id = path->schema_id,
                     .instance_id = &instance_id,
-                    .path = NULL,
-                    .path_len = 0,
+                    .resource_id = NULL,
                 };
 
                 int _rc = _registry_export_instance_by_path(export_cb, &new_path, schema,
@@ -490,16 +437,15 @@ static int _registry_export_namespace_by_path(const registry_path_export_cb_t ex
                 new_recursion_depth = recursion_depth - 1;
             }
 
-            for (size_t i = 0; i < namespace->items_len; i++) {
-                const registry_schema_t *schema = namespace->items[i];
+            for (size_t i = 0; i < namespace->schemas_len; i++) {
+                const registry_schema_t *schema = namespace->schemas[i];
 
                 /* create new path that includes the new schema_id */
                 registry_path_t new_path = {
                     .namespace_id = path->namespace_id,
                     .schema_id = &schema->id,
                     .instance_id = NULL,
-                    .path = NULL,
-                    .path_len = 0,
+                    .resource_id = NULL,
                 };
 
                 int _rc = _registry_export_schema_by_path(export_cb, &new_path,
@@ -523,9 +469,7 @@ int registry_export_by_path(const registry_path_export_cb_t export_cb, const reg
     int rc = 0;
 
     DEBUG("[registry export] exporting all in ");
-    for (size_t i = 0; i < path->path_len; i++) {
-        DEBUG("/%d", path->path[i]);
-    }
+    // TODO DEBUG PRINT PATH FUNCTION
     DEBUG("\n");
 
     /* get namespace if in path */
@@ -563,8 +507,7 @@ int registry_export_by_path(const registry_path_export_cb_t export_cb, const reg
                     .namespace_id = &index,
                     .schema_id = NULL,
                     .instance_id = NULL,
-                    .path = NULL,
-                    .path_len = 0,
+                    .resource_id = NULL,
                 };
 
                 int _rc = _registry_export_namespace_by_path(export_cb, &new_path,

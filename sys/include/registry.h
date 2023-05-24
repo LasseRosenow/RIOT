@@ -110,9 +110,9 @@ typedef struct {
     void *context; /**< Optional context used by the instance */
 } registry_instance_t;
 
-typedef const struct _registry_schema_item_t registry_schema_item_t;
+typedef const struct _registry_resource_t registry_resource_t;
 
-struct _registry_schema_item_t {
+struct _registry_resource_t {
 #if IS_USED(MODULE_REGISTRY_PATH) || IS_ACTIVE(DOXYGEN)
     const registry_id_t id;                         /**< Integer representing the path id of the schema item */
 #endif /* MODULE_REGISTRY_PATH */
@@ -123,8 +123,8 @@ struct _registry_schema_item_t {
     const char * const description;                 /**< String describing the schema item with more details */
 #endif /* CONFIG_REGISTRY_ENABLE_META_DESCRIPTION */
     const registry_type_t type;                     /**< Type of the schema item (group or parameter) */
-    const registry_schema_item_t ** const items;    /**< Array of pointers to all the configuration parameters and groups that belong to this group */
-    const size_t items_len;                         /**< Size of items array */
+    const registry_resource_t ** const resources;   /**< Array of pointers to all the configuration parameters and groups that belong to this group */
+    const size_t resources_len;                     /**< Size of resources array */
 };
 
 /**
@@ -141,8 +141,8 @@ typedef struct {
     const char * const description;                 /**< String describing the schema with more details */
 #endif /* CONFIG_REGISTRY_ENABLE_META_DESCRIPTION */
     clist_node_t instances;                         /**< Linked list of schema instances @ref registry_instance_t */
-    const registry_schema_item_t ** const items;    /**< Array of pointers to all the configuration parameters and groups that belong to this schema */
-    const size_t items_len;                         /**< Size of items array */
+    const registry_resource_t ** const resources;   /**< Array of pointers to all the configuration parameters and groups that belong to this schema */
+    const size_t resources_len;                     /**< Size of resources array */
 
     /**
      * @brief Mapping to connect configuration parameter IDs with the address in the storage.
@@ -159,11 +159,11 @@ typedef struct {
 } registry_schema_t;
 
 typedef struct {
-    clist_node_t node;                      /**< Linked list node */
-    const char * const name;                /**< String describing the configuration namespace */
-    const char * const description;         /**< String describing the configuration namespace with more details */
-    const registry_schema_t ** const items; /**< Array of pointers to all the configuration schemas that belong to this namespace */
-    const size_t items_len;                 /**< Size of items array */
+    clist_node_t node;                          /**< Linked list node */
+    const char * const name;                    /**< String describing the configuration namespace */
+    const char * const description;             /**< String describing the configuration namespace with more details */
+    const registry_schema_t ** const schemas;   /**< Array of pointers to all the configuration schemas that belong to this namespace */
+    const size_t schemas_len;                   /**< Size of schemas array */
 } registry_namespace_t;
 
 extern clist_node_t _registry_namespaces;
@@ -195,7 +195,7 @@ int registry_register_schema_instance(const registry_schema_t *schema,
  * @return 0 on success, non-zero on failure
  */
 int registry_get(const registry_schema_t *schema, const registry_instance_t *instance,
-                 const registry_schema_item_t *parameter, registry_value_t *value);
+                 const registry_resource_t *parameter, registry_value_t *value);
 
 /**
  * @brief Sets the value of a configuration parameter that belongs to an instance
@@ -208,7 +208,7 @@ int registry_get(const registry_schema_t *schema, const registry_instance_t *ins
  * @return 0 on success, non-zero on failure
  */
 int registry_set(const registry_schema_t *schema, const registry_instance_t *instance,
-                 const registry_schema_item_t *parameter, const registry_value_t *value);
+                 const registry_resource_t *parameter, const registry_value_t *value);
 
 /**
  * @brief Commits every configuration parameter.
@@ -242,7 +242,7 @@ int registry_commit_instance(const registry_instance_t *instance);
  * @param[in] instance Pointer to the configuration schema instance of the configuration group.
  * @param[in] group Pointer to the configuration group.
  */
-int registry_commit_group(const registry_instance_t *instance, const registry_schema_item_t *group);
+int registry_commit_group(const registry_instance_t *instance, const registry_resource_t *group);
 
 /**
  * @brief Commits the given configuration parameter.
@@ -251,14 +251,14 @@ int registry_commit_group(const registry_instance_t *instance, const registry_sc
  * @param[in] parameter Pointer to the configuration parameter.
  */
 int registry_commit_parameter(const registry_instance_t *instance,
-                              const registry_schema_item_t *parameter);
+                              const registry_resource_t *parameter);
 
 typedef const union {
     const registry_namespace_t *namespace;
     const registry_schema_t *schema;
     const registry_instance_t *instance;
-    const registry_schema_item_t *group;
-    const registry_schema_item_t *parameter;
+    const registry_resource_t *group;
+    const registry_resource_t *parameter;
 } registry_export_cb_data_t;
 
 typedef const enum {
@@ -342,7 +342,7 @@ int registry_export_instance(const registry_schema_t *schema, const registry_ins
  * to show the exact match plus its children ... plus n levels of children)
  * @param[in] context Context that will be passed to @p export_cb
  */
-int registry_export_group(const registry_schema_item_t *group, const registry_export_cb_t export_cb,
+int registry_export_group(const registry_resource_t *group, const registry_export_cb_t export_cb,
                           const int recursion_depth, const void *context);
 
 /**
@@ -353,7 +353,7 @@ int registry_export_group(const registry_schema_item_t *group, const registry_ex
  * value of a specific or all configuration parameters
  * @param[in] context Context that will be passed to @p export_cb
  */
-int registry_export_parameter(const registry_schema_item_t *parameter,
+int registry_export_parameter(const registry_resource_t *parameter,
                               const registry_export_cb_t export_cb, const void *context);
 
 #ifdef __cplusplus

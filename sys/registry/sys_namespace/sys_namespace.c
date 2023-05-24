@@ -33,10 +33,10 @@
 const registry_namespace_t registry_sys = {
     .name = "sys",
     .description = "Sys namespace",
-    .items = (const registry_schema_t *[]) {
+    .schemas = (const registry_schema_t *[]) {
         &registry_sys_rgb_led,
     },
-    .items_len = 1,
+    .schemas_len = 1,
 };
 
 const registry_typed_sys_t registry_typed_sys = {

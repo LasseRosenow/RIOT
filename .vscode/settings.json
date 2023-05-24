@@ -17,6 +17,20 @@
         "schema.h": "c",
         "modules.h": "c",
         "sys_namespace.h": "c",
-        "thread.h": "c"
+        "thread.h": "c",
+        "chrono": "c",
+        "typeinfo": "c",
+        "bit": "cpp",
+        "charconv": "cpp",
+        "compare": "cpp",
+        "cstddef": "cpp",
+        "list": "cpp",
+        "string": "cpp",
+        "optional": "cpp",
+        "format": "cpp",
+        "limits": "cpp",
+        "memory": "cpp",
+        "new": "cpp",
+        "functional": "cpp"
     },
 }

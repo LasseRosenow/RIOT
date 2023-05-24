@@ -37,7 +37,7 @@ typedef const struct {
     const registry_parameter_uint8_t green;
     const registry_parameter_uint8_t blue;
     const struct {
-        const registry_schema_item_t * const data;
+        const registry_resource_t * const data;
         int (*commit)(void);
         int (*export)(const registry_export_cb_t *export_cb, const void *context);
         const registry_parameter_uint8_t white;

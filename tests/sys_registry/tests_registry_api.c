@@ -429,7 +429,7 @@ static void tests_registry_commit(void)
 bool export_success = false;
 
 static int _export_cb(const registry_path_t path, const registry_schema_t *schema,
-                      const registry_instance_t *instance, const registry_schema_item_t *meta,
+                      const registry_instance_t *instance, const registry_resource_t *meta,
                       const registry_value_t *value, const void *context)
 {
     (void)path;

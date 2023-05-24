@@ -28,7 +28,7 @@ extern "C" {
 
 int _registry_sys_namespace_util_get_buf(const registry_schema_t *schema,
                                          const registry_instance_t *instance,
-                                         const registry_schema_item_t *parameter, const void **buf,
+                                         const registry_resource_t *parameter, const void **buf,
                                          size_t *buf_len)
 {
     registry_value_t value;
@@ -46,7 +46,7 @@ int _registry_sys_namespace_util_get_buf(const registry_schema_t *schema,
 
 int _registry_sys_namespace_util_set_buf(const registry_schema_t *schema,
                                          const registry_instance_t *instance,
-                                         const registry_schema_item_t *parameter,
+                                         const registry_resource_t *parameter,
                                          const registry_type_t type,
                                          const void *val, size_t val_len)
 {

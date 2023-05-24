@@ -32,14 +32,14 @@ extern "C" {
 
 int _registry_sys_namespace_util_get_buf(const registry_schema_t *schema,
                                          const registry_instance_t *instance,
-                                         const registry_schema_item_t *parameter, const void **buf,
+                                         const registry_resource_t *parameter, const void **buf,
                                          size_t *buf_len);
 
 /* BASE SET FUNCTION */
 
 int _registry_sys_namespace_util_set_buf(const registry_schema_t *schema,
                                          const registry_instance_t *instance,
-                                         const registry_schema_item_t *parameter,
+                                         const registry_resource_t *parameter,
                                          const registry_type_t type,
                                          const void *val, size_t val_len);
 
@@ -52,7 +52,7 @@ int _registry_sys_namespace_util_set_buf(const registry_schema_t *schema,
 /* BASE PARAMETER TYPES */
 
 typedef const struct {
-    const registry_schema_item_t * const data;
+    const registry_resource_t * const data;
     int (*get)(const registry_instance_t *instance, uint8_t **val);
     int (*set)(const registry_instance_t *instance, const uint8_t val);
     int (*commit)(void);

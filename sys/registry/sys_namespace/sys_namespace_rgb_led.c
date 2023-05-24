@@ -86,61 +86,61 @@ static int _set_red(const registry_instance_t *instance, uint8_t value)
                                          sizeof(uint8_t));
 }
 
-const registry_schema_item_t registry_sys_rgb_led_red = {
+const registry_resource_t registry_sys_rgb_led_red = {
     .id = 0,
     .name = "red",
     .description = "",
     .type = REGISTRY_TYPE_UINT8,
-    .items = NULL,
-    .items_len = 0,
+    .resources = NULL,
+    .resources_len = 0,
 };
 
-const registry_schema_item_t registry_sys_rgb_led_green = {
+const registry_resource_t registry_sys_rgb_led_green = {
     .id = 1,
     .name = "green",
     .description = "",
     .type = REGISTRY_TYPE_UINT8,
-    .items = NULL,
-    .items_len = 0,
+    .resources = NULL,
+    .resources_len = 0,
 };
 
-const registry_schema_item_t registry_sys_rgb_led_blue = {
+const registry_resource_t registry_sys_rgb_led_blue = {
     .id = 2,
     .name = "blue",
     .description = "",
     .type = REGISTRY_TYPE_UINT8,
-    .items = NULL,
-    .items_len = 0,
+    .resources = NULL,
+    .resources_len = 0,
 };
 
-const registry_schema_item_t registry_sys_rgb_led_brightnesses_white = {
+const registry_resource_t registry_sys_rgb_led_brightnesses_white = {
     .id = 4,
     .name = "white",
     .description = "",
     .type = REGISTRY_TYPE_UINT8,
-    .items = NULL,
-    .items_len = 0,
+    .resources = NULL,
+    .resources_len = 0,
 };
 
-const registry_schema_item_t registry_sys_rgb_led_brightnesses_yellow = {
+const registry_resource_t registry_sys_rgb_led_brightnesses_yellow = {
     .id = 5,
     .name = "yellow",
     .description = "",
     .type = REGISTRY_TYPE_UINT8,
-    .items = NULL,
-    .items_len = 0,
+    .resources = NULL,
+    .resources_len = 0,
 };
 
-const registry_schema_item_t registry_sys_rgb_led_brightnesses = {
+const registry_resource_t registry_sys_rgb_led_brightnesses = {
     .id = 3,
     .name = "brightnesses",
     .description = "",
     .type = REGISTRY_TYPE_GROUP,
-    .items = (registry_schema_item_t *[]) {
+    .resources = (registry_resource_t *[]) {
         &registry_sys_rgb_led_brightnesses_white,
         &registry_sys_rgb_led_brightnesses_yellow,
     },
-    .items_len = 2,
+    .resources_len = 2,
 };
 
 const registry_schema_t registry_sys_rgb_led = {
@@ -148,13 +148,13 @@ const registry_schema_t registry_sys_rgb_led = {
     .name = "rgb_led",
     .description = "",
     .mapping = mapping,
-    .items = (registry_schema_item_t *[]) {
+    .resources = (registry_resource_t *[]) {
         &registry_sys_rgb_led_red,
         &registry_sys_rgb_led_green,
         &registry_sys_rgb_led_blue,
         &registry_sys_rgb_led_brightnesses,
     },
-    .items_len = 4,
+    .resources_len = 4,
 };
 
 const registry_typed_sys_rgb_led_t registry_typed_sys_rgb_led = {
