@@ -2,8 +2,3 @@
 ifneq (,$(filter registry_storage_%,$(USEMODULE)))
   USEMODULE += registry_storage
 endif
-
-# Enable "registry_path" module for vfs storage module
-ifneq (,$(filter registry_storage_vfs,$(USEMODULE)))
-  USEMODULE += registry_path
-endif

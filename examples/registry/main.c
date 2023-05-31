@@ -30,13 +30,13 @@
 #include "registry/namespace_sys/rgb_led.h"
 #include "registry/path/storage.h"
 
-#define SHELL_QUEUE_SIZE (8)
-static msg_t _shell_queue[SHELL_QUEUE_SIZE];
+// #define SHELL_QUEUE_SIZE (8)
+// static msg_t _shell_queue[SHELL_QUEUE_SIZE];
 
-static const shell_command_t shell_commands[] = {
-    { "registry", "Registry cli", registry_cli_cmd },
-    { NULL, NULL, NULL }
-};
+// static const shell_command_t shell_commands[] = {
+//     { "registry", "Registry cli", registry_cli_cmd },
+//     { NULL, NULL, NULL }
+// };
 
 int rgb_led_instance_0_commit_cb(const registry_commit_cb_scope_t scope, const registry_id_t *id,
                                  const void *context)
@@ -124,9 +124,9 @@ int main(void)
     registry_register_path_storage_dst(&vfs_instance_2);
 
     /* init CLI */
-    msg_init_queue(_shell_queue, SHELL_QUEUE_SIZE);
-    char line_buf[SHELL_DEFAULT_BUFSIZE];
+    // msg_init_queue(_shell_queue, SHELL_QUEUE_SIZE);
+    // char line_buf[SHELL_DEFAULT_BUFSIZE];
 
-    shell_run(shell_commands, line_buf, SHELL_DEFAULT_BUFSIZE);
+    // shell_run(shell_commands, line_buf, SHELL_DEFAULT_BUFSIZE);
     return 0;
 }

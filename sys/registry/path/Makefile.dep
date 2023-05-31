@@ -1,0 +1,9 @@
+# Enable "registry_path" module for all path storages
+ifneq (,$(filter registry_path_%,$(USEMODULE)))
+  USEMODULE += registry_path
+endif
+
+# Enable "registry_path_storage" module for all path storages
+ifneq (,$(filter registry_path_storage_%,$(USEMODULE)))
+  USEMODULE += registry_path_storage
+endif

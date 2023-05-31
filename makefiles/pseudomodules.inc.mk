@@ -393,8 +393,9 @@ PSEUDOMODULES += fortuna_reseed
 PSEUDOMODULES += random_cmd
 ## @}
 PSEUDOMODULES += registry_%
-NO_PSEUDOMODULES += registry_schema
+NO_PSEUDOMODULES += registry_namespace_sys
 NO_PSEUDOMODULES += registry_storage
+NO_PSEUDOMODULES += registry_path
 
 PSEUDOMODULES += riotboot_%
 PSEUDOMODULES += rtt_cmd
