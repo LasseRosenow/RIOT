@@ -27,14 +27,11 @@
 #include "registry/path/util.h"
 
 int registry_path_util_parse_string_path(const char *string_path,
-                                         registry_path_t *registry_path,
-                                         registry_id_t *path_items_buf)
+                                         registry_path_t *registry_path)
 {
     char *ptr = (char *)string_path;
 
     int i = 0;
-
-    registry_path->path_len = 0;
 
     while (*ptr != '\0') {
         registry_id_t id = strtol(ptr, &ptr, 10);
@@ -43,13 +40,8 @@ int registry_path_util_parse_string_path(const char *string_path,
         case 0: *(registry_id_t *)registry_path->namespace_id = id; break;
         case 1: *(registry_id_t *)registry_path->schema_id = id; break;
         case 2: *(registry_id_t *)registry_path->instance_id = id; break;
-        default:
-            path_items_buf[i] = id;
-            registry_path->path_len++;
-            break;
+        case 3: *(registry_id_t *)registry_path->resource_id = id; break;
         }
-
-        registry_path->path = path_items_buf;
 
         if (*ptr != '\0') {
             ptr++;

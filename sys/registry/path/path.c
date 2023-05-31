@@ -310,11 +310,6 @@ static int _registry_export_instance_by_path(const registry_path_export_cb_t exp
     else {
         /* export instance parameters (recursion_depth == 1 means only the exact path, which would only be a specific instance in this case) */
         if (recursion_depth != 1) {
-            int new_recursion_depth = 0;
-            if (recursion_depth != 0) {
-                new_recursion_depth = recursion_depth - 1;
-            }
-
             _registry_export_params_by_path(export_cb, path, schema, context);
         }
     }

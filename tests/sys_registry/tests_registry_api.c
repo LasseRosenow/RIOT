@@ -467,11 +467,11 @@ static void tests_registry_save_load(void)
 
     registry_set_uint8(path, old_value);
 
-    registry_save(REGISTRY_PATH());
+    registry_save();
 
     registry_set_uint8(path, 10);
 
-    registry_load(REGISTRY_PATH());
+    registry_load();
 
     const uint8_t *new_value;
 

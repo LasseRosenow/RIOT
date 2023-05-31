@@ -30,177 +30,170 @@
 #include "registry/storage.h"
 #include "registry/util.h"
 
-const registry_storage_instance_t *_storage_dst;
-clist_node_t _storage_srcs;
+// TODO implement this file
+// const registry_storage_instance_t *_storage_dst;
+// clist_node_t _storage_srcs;
 
-void registry_register_storage_src(const registry_storage_instance_t *src)
-{
-    assert(src != NULL);
-    clist_rpush((clist_node_t *)&_storage_srcs, (clist_node_t *)&(src->node));
-}
+// void registry_register_storage_src(const registry_storage_instance_t *src)
+// {
+//     assert(src != NULL);
+//     clist_rpush((clist_node_t *)&_storage_srcs, (clist_node_t *)&(src->node));
+// }
 
-void registry_register_storage_dst(const registry_storage_instance_t *dst)
-{
-    assert(dst != NULL);
-    _storage_dst = dst;
-}
+// void registry_register_storage_dst(const registry_storage_instance_t *dst)
+// {
+//     assert(dst != NULL);
+//     _storage_dst = dst;
+// }
 
-static void _debug_print_path(const registry_path_t *path)
-{
-    if (ENABLE_DEBUG) {
-        DEBUG("%d", *path->namespace_id);
+// static void _debug_print_path(const registry_path_t *path)
+// {
+//     if (ENABLE_DEBUG) {
+//         DEBUG("%d", *path->namespace_id);
 
-        if (path->schema_id != NULL) {
-            DEBUG("/%d", *path->schema_id);
+//         if (path->schema_id != NULL) {
+//             DEBUG("/%d", *path->schema_id);
 
-            if (path->instance_id != NULL) {
-                DEBUG("/%d", *path->instance_id);
+//             if (path->instance_id != NULL) {
+//                 DEBUG("/%d", *path->instance_id);
 
-                if (path->path_len > 0) {
-                    DEBUG("/");
+//                 if (path->resource_id != NULL) {
+//                     DEBUG("/%d", *path->resource_id);
+//                 }
+//             }
+//         }
+//     }
+// }
 
-                    for (size_t i = 0; i < path->path_len; i++) {
-                        DEBUG("%d", path->path[i]);
+// /* registry_load */
+// static int _registry_load_by_path_cb(const registry_path_t *path,
+//                                      const registry_value_t *value,
+//                                      const void *context)
+// {
+//     (void)context;
 
-                        if (i < path->path_len - 1) {
-                            DEBUG("/");
-                        }
-                    }
-                }
-            }
-        }
-    }
-}
+//     if (ENABLE_DEBUG) {
+//         DEBUG("[registry_storage] Loading: ");
+//         _debug_print_path(path);
+//         DEBUG(" = ");
+//         _debug_print_value(value);
+//         DEBUG("\n");
+//     }
 
-/* registry_load */
-static int _registry_load_by_path_cb(const registry_path_t *path,
-                                     const registry_value_t *value,
-                                     const void *context)
-{
-    (void)context;
+//     return registry_set_by_path(path, value);
+// }
 
-    if (ENABLE_DEBUG) {
-        DEBUG("[registry_storage] Loading: ");
-        _debug_print_path(path);
-        DEBUG(" = ");
-        _debug_print_value(value);
-        DEBUG("\n");
-    }
+// int registry_load_by_path(const registry_path_t *path)
+// {
+//     clist_node_t *node = _storage_srcs.next;
 
-    return registry_set_by_path(path, value);
-}
+//     if (!node) {
+//         return -ENOENT;
+//     }
 
-int registry_load_by_path(const registry_path_t *path)
-{
-    clist_node_t *node = _storage_srcs.next;
+//     do {
+//         node = node->next;
+//         registry_storage_instance_t *src = container_of(node, registry_storage_instance_t, node);
+//         src->itf->operations.path.load(src, path, _registry_load_by_path_cb);
+//     } while (node != _storage_srcs.next);
+//     // TODO Possible bug? SFs could override with outdated values if SF_DST is not last in SF_SRCs?
 
-    if (!node) {
-        return -ENOENT;
-    }
+//     return 0;
+// }
 
-    do {
-        node = node->next;
-        registry_storage_instance_t *src = container_of(node, registry_storage_instance_t, node);
-        src->itf->operations.path.load(src, path, _registry_load_by_path_cb);
-    } while (node != _storage_srcs.next);
-    // TODO Possible bug? SFs could override with outdated values if SF_DST is not last in SF_SRCs?
+// /* registry_save */
+// static void _registry_storage_dup_check_cb(const registry_path_t *path,
+//                                            const registry_value_t *val,
+//                                            const void *context)
+// {
+//     assert(context != NULL);
+//     registry_dup_check_arg_t *dup_arg = (registry_dup_check_arg_t *)context;
 
-    return 0;
-}
+//     if (path->namespace_id != dup_arg->path->namespace_id ||
+//         path->schema_id != dup_arg->path->schema_id ||
+//         path->instance_id != dup_arg->path->instance_id) {
+//         return;
+//     }
 
-/* registry_save */
-static void _registry_storage_dup_check_cb(const registry_path_t *path,
-                                           const registry_value_t *val,
-                                           const void *context)
-{
-    assert(context != NULL);
-    registry_dup_check_arg_t *dup_arg = (registry_dup_check_arg_t *)context;
+//     for (size_t i = 0; i < path->path_len; i++) {
+//         if (path->path[i] != dup_arg->path->path[i]) {
+//             return;
+//         }
+//     }
 
-    if (path->namespace_id != dup_arg->path->namespace_id ||
-        path->schema_id != dup_arg->path->schema_id ||
-        path->instance_id != dup_arg->path->instance_id) {
-        return;
-    }
+//     if (memcmp(val->buf, dup_arg->val->buf, val->buf_len) == 0) {
+//         dup_arg->is_dup = true;
+//     }
+// }
 
-    for (size_t i = 0; i < path->path_len; i++) {
-        if (path->path[i] != dup_arg->path->path[i]) {
-            return;
-        }
-    }
+// static int _registry_save_by_path_export_cb(const registry_path_t *path,
+//                                             const registry_export_cb_data_t *data,
+//                                             const registry_export_cb_data_type_t data_type,
+//                                             const registry_value_t *value,
+//                                             const void *context)
+// {
+//     (void)context;
+//     (void)data;
+//     (void)data_type;
+//     (void)_registry_storage_dup_check_cb;
 
-    if (memcmp(val->buf, dup_arg->val->buf, val->buf_len) == 0) {
-        dup_arg->is_dup = true;
-    }
-}
+//     /* The registry also exports just the namespace or just a schema, but the storage is only interested in paths with values */
+//     if (value == NULL) {
+//         return 0;
+//     }
 
-static int _registry_save_by_path_export_cb(const registry_path_t *path,
-                                            const registry_export_cb_data_t *data,
-                                            const registry_export_cb_data_type_t data_type,
-                                            const registry_value_t *value,
-                                            const void *context)
-{
-    (void)context;
-    (void)data;
-    (void)data_type;
-    (void)_registry_storage_dup_check_cb;
+//     const registry_storage_instance_t *dst = _storage_dst;
 
-    /* The registry also exports just the namespace or just a schema, but the storage is only interested in paths with values */
-    if (value == NULL) {
-        return 0;
-    }
+//     if (ENABLE_DEBUG) {
+//         DEBUG("[registry_storage] Saving: ");
+//         _debug_print_path(path);
+//         DEBUG(" = ");
+//         _debug_print_value(value);
+//         DEBUG("\n");
+//     }
 
-    const registry_storage_instance_t *dst = _storage_dst;
+//     if (!dst) {
+//         return -ENOENT;
+//     }
 
-    if (ENABLE_DEBUG) {
-        DEBUG("[registry_storage] Saving: ");
-        _debug_print_path(path);
-        DEBUG(" = ");
-        _debug_print_value(value);
-        DEBUG("\n");
-    }
+//     // TODO use registry_load_one() to remove overhead
+//     // registry_dup_check_arg_t dup = {
+//     //     .path = path,
+//     //     .val = *value,
+//     //     .is_dup = false,
+//     // };
 
-    if (!dst) {
-        return -ENOENT;
-    }
+//     // _storage_dst->itf->load(_storage_dst, _registry_storage_dup_check_cb, &dup);
 
-    // TODO use registry_load_one() to remove overhead
-    // registry_dup_check_arg_t dup = {
-    //     .path = path,
-    //     .val = *value,
-    //     .is_dup = false,
-    // };
+//     // if (dup.is_dup) {
+//     //     return -EEXIST;
+//     // }
 
-    // _storage_dst->itf->load(_storage_dst, _registry_storage_dup_check_cb, &dup);
+//     /* only parameters need to be exported to storage, not namespaces, schemas or groups*/
+//     if (value != NULL) {
+//         return dst->itf->operations.path.save(dst, path, value);
+//     }
 
-    // if (dup.is_dup) {
-    //     return -EEXIST;
-    // }
+//     return 0;
+// }
 
-    /* only parameters need to be exported to storage, not namespaces, schemas or groups*/
-    if (value != NULL) {
-        return dst->itf->operations.path.save(dst, path, value);
-    }
+// int registry_save_by_path(const registry_path_t *path)
+// {
+//     int res;
 
-    return 0;
-}
+//     if (!_storage_dst) {
+//         return -ENOENT;
+//     }
 
-int registry_save_by_path(const registry_path_t *path)
-{
-    int res;
+//     if (_storage_dst->itf->operations.path.save_start) {
+//         _storage_dst->itf->operations.path.save_start(_storage_dst);
+//     }
 
-    if (!_storage_dst) {
-        return -ENOENT;
-    }
+//     res = registry_export_by_path(_registry_save_by_path_export_cb, path, 0, NULL);
 
-    if (_storage_dst->itf->operations.path.save_start) {
-        _storage_dst->itf->operations.path.save_start(_storage_dst);
-    }
+//     if (_storage_dst->itf->operations.path.save_end) {
+//         _storage_dst->itf->operations.path.save_end(_storage_dst);
+//     }
 
-    res = registry_export_by_path(_registry_save_by_path_export_cb, path, 0, NULL);
-
-    if (_storage_dst->itf->operations.path.save_end) {
-        _storage_dst->itf->operations.path.save_end(_storage_dst);
-    }
-
-    return res;
-}
+//     return res;
+// }

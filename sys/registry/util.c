@@ -109,8 +109,8 @@ const registry_namespace_t *registry_util_namespace_lookup(const registry_id_t n
 const registry_schema_t *registry_util_schema_lookup(const registry_namespace_t *namespace,
                                                      const registry_id_t schema_id)
 {
-    for (size_t i = 0; i < namespace->items_len; i++) {
-        const registry_schema_t *schema = namespace->items[i];
+    for (size_t i = 0; i < namespace->schemas_len; i++) {
+        const registry_schema_t *schema = namespace->schemas[i];
 
         if (schema->id == schema_id) {
             return schema;

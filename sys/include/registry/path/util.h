@@ -30,8 +30,7 @@ extern "C" {
 #include "registry/path.h"
 
 int registry_path_util_parse_string_path(const char *string_path,
-                                         registry_path_t *registry_path,
-                                         registry_id_t *path_items_buf);
+                                         registry_path_t *registry_path);
 
 #ifdef __cplusplus
 }

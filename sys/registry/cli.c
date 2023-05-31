@@ -32,7 +32,7 @@
 #include "registry/util.h"
 #include "registry/path.h"
 #include "registry/path/util.h"
-#include "registry/storage.h"
+#include "registry/path/storage.h"
 
 #include "registry/cli.h"
 
@@ -53,7 +53,7 @@ static int _export_cb(const registry_path_t *path,
     /* calculate the indentation based on the the exported data type */
     /* fallthrough switch is intentional */
     /* the more nesting we have, the more indentation we need. => highest nesting level first */
-    size_t path_len = path->path_len;
+    size_t path_len = 0;
 
     switch (data_type) {
     case REGISTRY_EXPORT_PARAMETER:
@@ -106,8 +106,7 @@ static int _export_cb(const registry_path_t *path,
 
 int registry_cli_cmd(int argc, char **argv)
 {
-    registry_path_t path = REGISTRY_PATH();
-    registry_id_t path_items[REGISTRY_PATH_ITEMS_MAX_LEN];
+    registry_path_t path;
 
     if (argc == 1) {
         /* show help for main commands */
@@ -115,7 +114,7 @@ int registry_cli_cmd(int argc, char **argv)
     }
 
     if (strcmp(argv[1], "get") == 0) {
-        if (registry_path_util_parse_string_path(argv[2], &path, path_items) < 0) {
+        if (registry_path_util_parse_string_path(argv[2], &path) < 0) {
             printf("usage: %s %s <path>\n", argv[0], argv[1]);
             return 1;
         }
@@ -140,7 +139,7 @@ int registry_cli_cmd(int argc, char **argv)
         return 0;
     }
     else if (strcmp(argv[1], "set") == 0) {
-        if (registry_path_util_parse_string_path(argv[2], &path, path_items) < 0) {
+        if (registry_path_util_parse_string_path(argv[2], &path) < 0) {
             printf("usage: %s %s <path> <value>\n", argv[0], argv[1]);
             return 1;
         }
@@ -167,7 +166,7 @@ int registry_cli_cmd(int argc, char **argv)
         return 0;
     }
     else if (strcmp(argv[1], "commit") == 0) {
-        if (registry_path_util_parse_string_path(argv[2], &path, path_items) < 0) {
+        if (registry_path_util_parse_string_path(argv[2], &path) < 0) {
             printf("usage: %s %s <path>\n", argv[0], argv[1]);
             return 1;
         }
@@ -178,7 +177,7 @@ int registry_cli_cmd(int argc, char **argv)
     else if (strcmp(argv[1], "export") == 0) {
         /* If the path is invalid, it can also just be non existent, so other arguments like -r need to be checked */
         bool invalid_path = false;
-        if (registry_path_util_parse_string_path(argv[2], &path, path_items) < 0) {
+        if (registry_path_util_parse_string_path(argv[2], &path) < 0) {
             invalid_path = true;
         }
         if (invalid_path && strcmp(argv[2], "-r") != 0) {
@@ -200,7 +199,7 @@ int registry_cli_cmd(int argc, char **argv)
     }
     else if (strcmp(argv[1], "load") == 0) {
         if (argc > 2) {
-            if (registry_path_util_parse_string_path(argv[2], &path, path_items) < 0) {
+            if (registry_path_util_parse_string_path(argv[2], &path) < 0) {
                 printf("usage: %s %s [path]\n", argv[0], argv[1]);
                 return 1;
             }
@@ -217,7 +216,7 @@ int registry_cli_cmd(int argc, char **argv)
     }
     else if (strcmp(argv[1], "save") == 0) {
         if (argc > 2) {
-            if (registry_path_util_parse_string_path(argv[2], &path, path_items) < 0) {
+            if (registry_path_util_parse_string_path(argv[2], &path) < 0) {
                 printf("usage: %s %s [path]\n", argv[0], argv[1]);
                 return 1;
             }

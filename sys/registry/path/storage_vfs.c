@@ -7,9 +7,9 @@
  */
 
 /**
- * @defgroup    sys_registry_storage_vfs RIOT Registry Storage Facilities: VFS
+ * @defgroup    sys_registry_path_storage_vfs RIOT Registry Path Storage: VFS
  * @ingroup     sys
- * @brief       RIOT Registry VFS Storage allows using the RIOT VFS module as a RIOT Registry data storage.
+ * @brief       RIOT Registry Path Storage VFS, allows using the RIOT VFS module as a RIOT Registry data storage.
  * @{
  *
  * @file
@@ -34,15 +34,14 @@
 #include "registry/path.h"
 #include "registry/path/util.h"
 
-#include "registry/storage.h"
+#include "registry/path/storage.h"
 
-static int load(const registry_storage_instance_t *instance, const registry_path_t *path,
-                const load_cb_t cb, const void *cb_arg);
-static int save(const registry_storage_instance_t *instance, const registry_path_t *path,
+static int load(const registry_path_storage_instance_t *instance, const registry_path_t *path,
+                const load_by_path_cb_t cb, const void *cb_arg);
+static int save(const registry_path_storage_instance_t *instance, const registry_path_t *path,
                 const registry_value_t value);
 
-registry_storage_t registry_storage_vfs = {
-    .type = REGISTRY_STORAGE_TYPE_PATH,
+registry_path_storage_t registry_path_storage_vfs = {
     .load = load,
     .save = save,
 };
@@ -104,8 +103,8 @@ static int _umount(vfs_mount_t *mount)
     return 0;
 }
 
-static int load(const registry_storage_instance_t *instance, const registry_path_t *path,
-                const load_cb_t cb, const void *cb_arg)
+static int load(const registry_path_storage_instance_t *instance, const registry_path_t *path,
+                const load_by_path_cb_t cb, const void *cb_arg)
 {
     (void)cb;
     (void)cb_arg;
@@ -205,10 +204,9 @@ static int load(const registry_storage_instance_t *instance, const registry_path
 
                                 /* try to convert string path to registry int path */
                                 registry_path_t path;
-                                registry_id_t path_items[REGISTRY_PATH_ITEMS_MAX_LEN];
                                 if (registry_path_util_parse_string_path(string_path +
                                                                          strlen(mount->mount_point),
-                                                                         &path, path_items) < 0) {
+                                                                         &path) < 0) {
                                     DEBUG(
                                         "[registry storage_vfs] load: Invalid registry path\n");
                                 }
@@ -282,7 +280,7 @@ static int load(const registry_storage_instance_t *instance, const registry_path
     return 0;
 }
 
-static int save(const registry_storage_instance_t *instance, const registry_path_t *path,
+static int save(const registry_path_storage_instance_t *instance, const registry_path_t *path,
                 const registry_value_t value)
 {
     (void)path;
@@ -319,17 +317,8 @@ static int save(const registry_storage_instance_t *instance, const registry_path
         DEBUG("[registry storage_vfs] save: Can not make dir: %s\n", string_path);
     }
 
-    /* exclude the last element, as it will be the file name and not a folder */
-    for (size_t i = 0; i < path->path_len - 1; i++) {
-        _string_path_append_item(string_path, path->path[i]);
-        res = vfs_mkdir(string_path, 0);
-        if (res != 0 && res != -EEXIST) {
-            DEBUG("[registry storage_vfs] save: Can not create dir: %d\n", res);
-        }
-    }
-
     /* open file */
-    _string_path_append_item(string_path, path->path[path->path_len - 1]);
+    _string_path_append_item(string_path, *path->resource_id);
 
     int fd = vfs_open(string_path, O_CREAT | O_RDWR, 0);
 
