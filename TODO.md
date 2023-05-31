@@ -56,3 +56,19 @@ DAS BASIS EXPORT/COMMIT IST NUR AUF INSTANCE LEVEL!!!
 - maybe just add min-value, max-value and allowed values etc. should be so easy isn't it?
   - But with flag to disable for weak processors etc.
 - think about implementing a backwards commit to read for example sensor data
+
+## Storage rework again
+
+- Die Zugriffs-API und die Store-API müssen nicht zwangsläufig zusammengeklebt sein?
+- Man möchte vielleicht via path zugreifen, aber speicher sparen, also mit pointer speichern
+- Man möchte vielleicht via pointer zugreifen, aber systemupdates überleben, also mit path speichern
+- wenn registry_storage und registry_path an sind => registry_path_storage api anmachen?
+- cli nutzt optional die registry_path_storage api, aber wie es am ende gespeichert wird, ist ihr egal
+- die apis müssen mit beiden speichermethoden klarkommen
+
+- neue struktur z.B
+  - core
+    - storage (registry.h und IS_USED(REGISTRY_STORAGE))
+  - path
+    - path_storage (registry_path.h und IS_USED(REGISTRY_STORAGE))
+  - keine ahnung iwo müssen noch die impls hin, also VFS, VFS_PATH usw.
