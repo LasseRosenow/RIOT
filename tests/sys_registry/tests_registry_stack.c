@@ -30,7 +30,7 @@
 #include "fs/littlefs2_fs.h"
 #include "vfs.h"
 #include "registry.h"
-#include "registry/sys_namespace.h"
+#include "registry/namespace_sys.h"
 #include "registry/storage.h"
 
 #include "tests_registry.h"

@@ -1,4 +1,0 @@
-# Enable "registry_sys_namespace" module for all schemas
-ifneq (,$(filter registry_sys_namespace_%,$(USEMODULE)))
-  USEMODULE += registry_sys_namespace
-endif

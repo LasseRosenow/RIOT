@@ -16,7 +16,6 @@
         "util.h": "c",
         "schema.h": "c",
         "modules.h": "c",
-        "sys_namespace.h": "c",
         "thread.h": "c",
         "chrono": "c",
         "typeinfo": "c",
@@ -31,6 +30,7 @@
         "limits": "cpp",
         "memory": "cpp",
         "new": "cpp",
-        "functional": "cpp"
+        "functional": "cpp",
+        "namespace_sys.h": "c"
     },
 }

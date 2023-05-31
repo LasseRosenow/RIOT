@@ -1,8 +1,8 @@
-MODULE := registry_sys_namespace
+MODULE := registry_namespace_sys
 
 BASE_MODULE := registry
 
-SRC := sys_namespace.c util.c
+SRC := namespace_sys.c util.c
 
 SUBMODULES := 1
 

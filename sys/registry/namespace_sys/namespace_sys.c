@@ -25,8 +25,8 @@
 #include "debug.h"
 #include "registry.h"
 
-#include "registry/sys_namespace.h"
-#include "registry/sys_namespace/util.h"
+#include "registry/namespace_sys.h"
+#include "registry/namespace_sys/util.h"
 
 /* Sys namespace */
 
@@ -37,9 +37,4 @@ const registry_namespace_t registry_sys = {
         &registry_sys_rgb_led,
     },
     .schemas_len = 1,
-};
-
-const registry_typed_sys_t registry_typed_sys = {
-    .data = &registry_sys,
-    .rgb_led = &registry_typed_sys_rgb_led,
 };

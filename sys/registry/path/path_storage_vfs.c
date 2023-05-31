@@ -36,10 +36,10 @@
 
 #include "registry/path/storage.h"
 
-static int load(const registry_path_storage_instance_t *instance, const registry_path_t *path,
-                const load_by_path_cb_t cb, const void *cb_arg);
-static int save(const registry_path_storage_instance_t *instance, const registry_path_t *path,
-                const registry_value_t value);
+static int load(const registry_path_storage_instance_t *storage, const registry_path_t *path,
+                const load_by_path_cb_t load_cb);
+static int save(const registry_path_storage_instance_t *storage, const registry_path_t *path,
+                const registry_value_t *value);
 
 registry_path_storage_t registry_path_storage_vfs = {
     .load = load,
@@ -103,13 +103,10 @@ static int _umount(vfs_mount_t *mount)
     return 0;
 }
 
-static int load(const registry_path_storage_instance_t *instance, const registry_path_t *path,
-                const load_by_path_cb_t cb, const void *cb_arg)
+static int load(const registry_path_storage_instance_t *storage, const registry_path_t *path,
+                const load_by_path_cb_t load_cb)
 {
-    (void)cb;
-    (void)cb_arg;
-
-    vfs_mount_t *mount = instance->data;
+    vfs_mount_t *mount = storage->data;
 
     /* mount */
     _mount(mount);
@@ -226,7 +223,8 @@ static int load(const registry_path_storage_instance_t *instance, const registry
                                         value.buf = new_value_buf;
 
                                         /* call callback with value and path */
-                                        cb(&path, &value, cb_arg);
+                                        // TODO Why is this null? Do we even need this parameter?
+                                        load_cb(&path, &value, NULL);
                                     }
                                 }
 
@@ -280,13 +278,10 @@ static int load(const registry_path_storage_instance_t *instance, const registry
     return 0;
 }
 
-static int save(const registry_path_storage_instance_t *instance, const registry_path_t *path,
-                const registry_value_t value)
+static int save(const registry_path_storage_instance_t *storage, const registry_path_t *path,
+                const registry_value_t *value)
 {
-    (void)path;
-    (void)value;
-
-    vfs_mount_t *mount = instance->data;
+    vfs_mount_t *mount = storage->data;
 
     /* mount */
     _mount(mount);
@@ -326,7 +321,7 @@ static int save(const registry_path_storage_instance_t *instance, const registry
         DEBUG("[registry storage_vfs] save: Can not open file: %d\n", fd);
     }
 
-    if (vfs_write(fd, value.buf, value.buf_len) < 0) {
+    if (vfs_write(fd, value->buf, value->buf_len) < 0) {
         DEBUG("[registry storage_vfs] save: Can not write to file: %d\n", fd);
     }
 

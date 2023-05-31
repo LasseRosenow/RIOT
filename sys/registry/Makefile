@@ -10,8 +10,8 @@ ifneq (,$(filter registry_storage%,$(USEMODULE)))
   DIRS += storage
 endif
 
-ifneq (,$(filter registry_sys_namespace%,$(USEMODULE)))
-  DIRS += sys_namespace
+ifneq (,$(filter registry_namespace_sys%,$(USEMODULE)))
+  DIRS += namespace_sys
 endif
 
 ifneq (,$(filter registry_cli%,$(USEMODULE)))

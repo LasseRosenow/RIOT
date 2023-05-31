@@ -7,7 +7,7 @@
  */
 
 /**
- * @defgroup    sys_registry_sys_namespace_util RIOT Registry Sys Namespace utilities
+ * @defgroup    sys_registry_namespace_sys_util RIOT Registry Sys Namespace utilities
  * @ingroup     sys
  * @brief       RIOT Registry Sys Namespace Util module providing utility functions
  * @{
@@ -17,16 +17,16 @@
  * @author      Lasse Rosenow <lasse.rosenow@haw-hamburg.de>
  */
 
-#ifndef REGISTRY_SYS_NAMESPACE_RGB_LED_H
-#define REGISTRY_SYS_NAMESPACE_RGB_LED_H
+#ifndef REGISTRY_NAMESPACE_SYS_RGB_LED_H
+#define REGISTRY_NAMESPACE_SYS_RGB_LED_H
 
 #ifdef __cplusplus
 extern "C" {
 #endif
 
-#include "registry/sys_namespace/util.h"
+#include "registry/namespace_sys/util.h"
 
-int _registry_sys_namespace_util_get_buf(const registry_schema_t *schema,
+int _registry_namespace_sys_util_get_buf(const registry_schema_t *schema,
                                          const registry_instance_t *instance,
                                          const registry_resource_t *parameter, const void **buf,
                                          size_t *buf_len)
@@ -44,7 +44,7 @@ int _registry_sys_namespace_util_get_buf(const registry_schema_t *schema,
     return res;
 }
 
-int _registry_sys_namespace_util_set_buf(const registry_schema_t *schema,
+int _registry_namespace_sys_util_set_buf(const registry_schema_t *schema,
                                          const registry_instance_t *instance,
                                          const registry_resource_t *parameter,
                                          const registry_type_t type,
@@ -65,5 +65,5 @@ int _registry_sys_namespace_util_set_buf(const registry_schema_t *schema,
 }
 #endif
 
-#endif /* REGISTRY_SYS_NAMESPACE_RGB_LED_H */
+#endif /* REGISTRY_NAMESPACE_SYS_RGB_LED_H */
 /** @} */

@@ -7,7 +7,7 @@
  */
 
 /**
- * @defgroup    sys_registry_sys_namespace_util RIOT Registry Sys Namespace utilities
+ * @defgroup    sys_registry_namespace_sys_util RIOT Registry Sys Namespace utilities
  * @ingroup     sys
  * @brief       RIOT Registry Sys Namespace Util module providing utility functions
  * @{
@@ -19,8 +19,8 @@
  * @}
  */
 
-#ifndef REGISTRY_SYS_NAMESPACE_UTIL_H
-#define REGISTRY_SYS_NAMESPACE_UTIL_H
+#ifndef REGISTRY_NAMESPACE_SYS_UTIL_H
+#define REGISTRY_NAMESPACE_SYS_UTIL_H
 
 #ifdef __cplusplus
 extern "C" {
@@ -30,14 +30,14 @@ extern "C" {
 
 /* BASE GET FUNCTION */
 
-int _registry_sys_namespace_util_get_buf(const registry_schema_t *schema,
+int _registry_namespace_sys_util_get_buf(const registry_schema_t *schema,
                                          const registry_instance_t *instance,
                                          const registry_resource_t *parameter, const void **buf,
                                          size_t *buf_len);
 
 /* BASE SET FUNCTION */
 
-int _registry_sys_namespace_util_set_buf(const registry_schema_t *schema,
+int _registry_namespace_sys_util_set_buf(const registry_schema_t *schema,
                                          const registry_instance_t *instance,
                                          const registry_resource_t *parameter,
                                          const registry_type_t type,
@@ -64,4 +64,4 @@ typedef const struct {
 #endif
 
 /** @} */
-#endif /* REGISTRY_SYS_NAMESPACE_UTIL_H */
+#endif /* REGISTRY_NAMESPACE_SYS_UTIL_H */
