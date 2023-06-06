@@ -7,9 +7,9 @@
  */
 
 /**
- * @defgroup    sys_registry_storage_heap RIOT Registry Path Storage: Heap
+ * @defgroup    sys_registry_storage_heap RIOT Registry Storage: Heap
  * @ingroup     sys
- * @brief       RIOT Registry Path Storage Heap, only uses the heap for testing.
+ * @brief       RIOT Registry Storage Heap, only uses the heap for testing.
  * @{
  *
  * @file
@@ -30,7 +30,6 @@
 #include "kernel_defines.h"
 
 #include "registry/storage.h"
-#include "registry/path.h"
 
 #define STORE_CAPACITY 100
 
@@ -41,16 +40,11 @@ static int save(const registry_storage_instance_t *storage,
                 const registry_resource_t *parameter,
                 const registry_value_t *value);
 
-/*
-   This conceptual example shows the implementation of a storage.
-   The storage device is a storage array (represented by the
-   `storage_storage_t` struct).
- */
 typedef struct {
-    registry_id_t namespace_id;
-    registry_id_t schema_id;
-    registry_id_t instance_id;
-    registry_id_t resource_id;
+    registry_namespace_t *namespace;
+    registry_schema_t *schema;
+    registry_instance_t *instance;
+    registry_resource_t *parameter;
     void *buf;
     size_t buf_len;
 } heap_storage_t;
@@ -71,23 +65,10 @@ static int load(const registry_storage_instance_t *storage,
     (void)storage;
 
     for (size_t i = 0; i < heap_storage_len; i++) {
-        const registry_value_t value = {
-            .type = REGISTRY_TYPE_NONE,
-            .buf = heap_storage[i].buf,
-            .buf_len = heap_storage[i].buf_len,
-        };
+        registry_value_t old_value;
+        registry_get(heap_storage[i].instance, heap_storage[i].parameter, &old_value);
 
-        const registry_path_t path = {
-            .namespace_id = &heap_storage[i].namespace_id,
-            .schema_id = &heap_storage[i].schema_id,
-            .instance_id = &heap_storage[i].instance_id,
-            .resource_id = &heap_storage[i].resource_id,
-        };
-
-        registry_value_t internal_value;
-        registry_get_by_path(&path, &internal_value);
-
-        load_cb(&internal_value, &value);
+        load_cb(old_value.buf, heap_storage[i].buf, old_value.buf_len);
     }
     return 0;
 }
@@ -98,24 +79,23 @@ static int save(const registry_storage_instance_t *storage,
                 const registry_value_t *value)
 {
     (void)storage;
-    // TODO finish this
 
     /* Search value in storage */
     for (size_t i = 0; i < heap_storage_len; i++) {
-        if (heap_storage[i].namespace_id == parameter->schema->namespace.id &&
-            heap_storage[i].schema_id == parameter->schema.id &&
-            heap_storage[i].instance_id == instance_id &&
-            heap_storage[i].resource_id == parameter->id) {
+        if (heap_storage[i].namespace == parameter->schema->namespace &&
+            heap_storage[i].schema == parameter->schema &&
+            heap_storage[i].instance == instance &&
+            heap_storage[i].parameter == parameter) {
             memcpy(heap_storage[i].buf, value->buf, value->buf_len);
             return 0;
         }
     }
 
     /* Value not found in storage => Append it at the end */
-    heap_storage[heap_storage_len].namespace_id = *parameter->schema->namespace.id;
-    heap_storage[heap_storage_len].schema_id = *parameter->schema.id;
-    heap_storage[heap_storage_len].instance_id = *instance_id;
-    heap_storage[heap_storage_len].resource_id = *parameter->id;
+    heap_storage[heap_storage_len].namespace = parameter->schema->namespace;
+    heap_storage[heap_storage_len].schema = parameter->schema;
+    heap_storage[heap_storage_len].instance = instance;
+    heap_storage[heap_storage_len].parameter = parameter;
     heap_storage[heap_storage_len].buf = malloc(value->buf_len);
     memcpy(heap_storage[heap_storage_len].buf, value->buf, value->buf_len);
     heap_storage[heap_storage_len].buf_len = value->buf_len;

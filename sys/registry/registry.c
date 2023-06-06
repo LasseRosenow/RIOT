@@ -52,16 +52,18 @@ int registry_register_schema_instance(const registry_schema_t *schema,
     assert(schema != NULL);
     assert(instance != NULL);
 
+    /* add schema to instance */
+    instance->schema = schema;
+
     /* add instance to schema */
     clist_rpush((clist_node_t *)&schema->instances, (clist_node_t *)&instance->node);
 
     return 0;
 }
 
-int registry_get(const registry_schema_t *schema, const registry_instance_t *instance,
-                 const registry_resource_t *parameter, registry_value_t *value)
+int registry_get(const registry_instance_t *instance, const registry_resource_t *parameter,
+                 registry_value_t *value)
 {
-    assert(schema != NULL);
     assert(instance != NULL);
     assert(parameter != NULL);
     assert(value != NULL);
@@ -70,7 +72,7 @@ int registry_get(const registry_schema_t *schema, const registry_instance_t *ins
     void *intern_val = NULL;
     size_t intern_val_len;
 
-    schema->mapping(parameter->id, instance, &intern_val, &intern_val_len);
+    parameter->schema->mapping(parameter->id, instance, &intern_val, &intern_val_len);
 
     /* update buf pointer in registry_value_t to point to the value inside the registry and set buf_len */
     value->type = parameter->type;
@@ -80,10 +82,9 @@ int registry_get(const registry_schema_t *schema, const registry_instance_t *ins
     return 0;
 }
 
-int registry_set(const registry_schema_t *schema, const registry_instance_t *instance,
-                 const registry_resource_t *parameter, const registry_value_t *value)
+int registry_set(const registry_instance_t *instance, const registry_resource_t *parameter,
+                 const registry_value_t *value)
 {
-    assert(schema != NULL);
     assert(instance != NULL);
     assert(parameter != NULL);
     assert(value != NULL);
@@ -92,7 +93,7 @@ int registry_set(const registry_schema_t *schema, const registry_instance_t *ins
     void *intern_val = NULL;
     size_t intern_val_len;
 
-    schema->mapping(parameter->id, instance, &intern_val, &intern_val_len);
+    parameter->schema->mapping(parameter->id, instance, &intern_val, &intern_val_len);
 
     /* check if val_type is compatible with param_meta->value.parameter.type */
     if (value->type != parameter->type) {
@@ -299,8 +300,7 @@ int registry_export_schema(const registry_schema_t *schema, const registry_expor
                 return -EINVAL;
             }
 
-            int _rc = registry_export_instance(schema, instance, export_cb, new_recursion_depth,
-                                               context);
+            int _rc = registry_export_instance(instance, export_cb, new_recursion_depth, context);
 
             if (!_rc) {
                 rc = _rc;
@@ -311,11 +311,10 @@ int registry_export_schema(const registry_schema_t *schema, const registry_expor
     return rc;
 }
 
-int registry_export_instance(const registry_schema_t *schema, const registry_instance_t *instance,
+int registry_export_instance(const registry_instance_t *instance,
                              const registry_export_cb_t export_cb, const int recursion_depth,
                              const void *context)
 {
-    assert(schema != NULL);
     assert(instance != NULL);
 
     /* export the given configuration schema instance */
@@ -334,8 +333,8 @@ int registry_export_instance(const registry_schema_t *schema, const registry_ins
 
         int _rc = rc;
 
-        for (size_t i = 0; i < schema->resources_len; i++) {
-            const registry_resource_t *child = schema->resources[i];
+        for (size_t i = 0; i < instance->schema->resources_len; i++) {
+            const registry_resource_t *child = instance->schema->resources[i];
 
             if (child->type == REGISTRY_TYPE_GROUP) {
                 _rc = registry_export_group(child, export_cb, new_recursion_depth, context);

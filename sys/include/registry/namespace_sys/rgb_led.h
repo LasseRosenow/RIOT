@@ -24,28 +24,19 @@
 extern "C" {
 #endif
 
-#include "registry/namespace_sys/util.h"
+#include "registry.h"
 
 /* RGB-LED */
+// TODO
 // #if IS_USED(MODULE_REGISTRY_NAMESPACE_SYS_RGB_LED) || IS_ACTIVE(DOXYGEN)
 
+extern const registry_resource_t registry_sys_rgb_led_red;
+extern const registry_resource_t registry_sys_rgb_led_green;
+extern const registry_resource_t registry_sys_rgb_led_blue;
+extern const registry_resource_t registry_sys_rgb_led_brightnesses_white;
+extern const registry_resource_t registry_sys_rgb_led_brightnesses_yellow;
+extern const registry_resource_t registry_sys_rgb_led_brightnesses;
 extern const registry_schema_t registry_sys_rgb_led;
-
-typedef const struct {
-    const registry_schema_t * const data;
-    const registry_parameter_uint8_t red;
-    const registry_parameter_uint8_t green;
-    const registry_parameter_uint8_t blue;
-    const struct {
-        const registry_resource_t * const data;
-        int (*commit)(void);
-        int (*export)(const registry_export_cb_t *export_cb, const void *context);
-        const registry_parameter_uint8_t white;
-        const registry_parameter_uint8_t yellow;
-    } brightnesses;
-} registry_typed_sys_rgb_led_t;
-
-extern const registry_typed_sys_rgb_led_t registry_typed_sys_rgb_led;
 
 typedef struct {
     clist_node_t node;

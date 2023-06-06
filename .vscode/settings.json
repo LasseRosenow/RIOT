@@ -38,6 +38,8 @@
         "type_traits": "c",
         "utility": "c",
         "cstring": "c",
-        "variant": "c"
+        "variant": "c",
+        "memory_resource": "c",
+        "system_error": "c"
     },
 }

@@ -31,6 +31,7 @@
 
 #include "registry/storage.h"
 #include "registry/util.h"
+#include "registry/error.h"
 
 const registry_storage_instance_t *_storage_dst;
 clist_node_t _storage_srcs;
@@ -78,6 +79,7 @@ int registry_load(void)
 /* registry_save */
 static int _registry_save_export_cb(const registry_export_cb_data_t *data,
                                     const registry_export_cb_data_type_t data_type,
+                                    const registry_instance_t *instance,
                                     const void *context)
 {
     (void)context;
@@ -93,24 +95,13 @@ static int _registry_save_export_cb(const registry_export_cb_data_t *data,
 
     const registry_storage_instance_t *dst = _storage_dst;
 
-    if (ENABLE_DEBUG) {
-        DEBUG("[registry_storage] Saving: ");
-        _debug_print_path(path);
-        DEBUG(" = ");
-        _debug_print_value(value);
-        DEBUG("\n");
-    }
-
     if (!dst) {
-        return -ENOENT;
+        return -REGISTRY_ERROR_NO_DST_STORAGE;
     }
 
     /* only parameters need to be exported to storage, not namespaces, schemas or groups */
-    if (value != NULL) {
-        return dst->itf->save(dst, path, value);
-    }
-
-    return 0;
+    return dst->itf->save(dst, data->parameter.instance, data->parameter.data,
+                          data->parameter.value);
 }
 
 int registry_save(void)
@@ -134,6 +125,7 @@ int registry_save(void)
     return res;
 }
 
+// TODO
 int registry_save_namespace(const registry_namespace_t *namespace);
 
 int registry_save_schema(const registry_schema_t *schema);

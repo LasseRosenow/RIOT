@@ -27,6 +27,7 @@ extern "C" {
 typedef const enum {
     REGISTRY_ERROR_NONE = 0,
     REGISTRY_ERROR_RESOURCE_TYPE_GROUP = 1,
+    REGISTRY_ERROR_NO_DST_STORAGE = 2,
 } registry_error_t;
 
 #ifdef __cplusplus

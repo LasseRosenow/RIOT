@@ -118,18 +118,6 @@ static int load(const registry_storage_instance_t *storage,
 
     sprintf(string_path, "%s", mount->mount_point);
 
-    if (path->namespace_id != NULL) {
-        _string_path_append_item(string_path, *path->namespace_id);
-    }
-
-    if (path->schema_id != NULL) {
-        _string_path_append_item(string_path, *path->schema_id);
-    }
-
-    if (path->instance_id != NULL) {
-        _string_path_append_item(string_path, *path->instance_id);
-    }
-
     /* read dirs */
     vfs_DIR dirp;
 
@@ -211,22 +199,18 @@ static int load(const registry_storage_instance_t *storage,
                                 }
                                 else {
                                     /* get registry meta data of configuration parameter */
-                                    registry_value_t value;
-                                    registry_get_by_path(&path, &value);
+                                    registry_value_t old_value;
+                                    registry_get_by_path(&path, &old_value);
 
                                     /* read value from file */
-                                    uint8_t new_value_buf[value.buf_len];
-                                    if (vfs_read(fd, new_value_buf, value.buf_len) < 0) {
+                                    uint8_t new_value_buf[old_value.buf_len];
+                                    if (vfs_read(fd, new_value_buf, old_value.buf_len) < 0) {
                                         DEBUG(
                                             "[registry storage_vfs] load: Can not read from file\n");
                                     }
                                     else {
-                                        /* add read value to value */
-                                        value.buf = new_value_buf;
-
                                         /* call callback with value and path */
-                                        // TODO Why is this null? Do we even need this parameter?
-                                        load_cb(&path, &value, NULL);
+                                        load_cb(old_value.buf, new_value_buf, old_value.buf_len);
                                     }
                                 }
 
@@ -291,25 +275,28 @@ static int save(const registry_storage_instance_t *storage,
     _mount(mount);
 
     /* create dir path */
+    // TODO
+    registry_path_t path = registry_to_path();
+
     char string_path[REGISTRY_PATH_STRING_MAX_LEN];
 
     sprintf(string_path, "%s", mount->mount_point);
 
-    _string_path_append_item(string_path, *path->namespace_id);
+    _string_path_append_item(string_path, *path.namespace_id);
     int res = vfs_mkdir(string_path, 0);
 
     if (res < 0 && res != -EEXIST) {
         DEBUG("[registry storage_vfs] save: Can not make dir: %s\n", string_path);
     }
 
-    _string_path_append_item(string_path, *path->schema_id);
+    _string_path_append_item(string_path, *path.schema_id);
     res = vfs_mkdir(string_path, 0);
 
     if (res < 0 && res != -EEXIST) {
         DEBUG("[registry storage_vfs] save: Can not make dir: %s\n", string_path);
     }
 
-    _string_path_append_item(string_path, *path->instance_id);
+    _string_path_append_item(string_path, *path.instance_id);
     res = vfs_mkdir(string_path, 0);
 
     if (res < 0 && res != -EEXIST) {
@@ -317,7 +304,7 @@ static int save(const registry_storage_instance_t *storage,
     }
 
     /* open file */
-    _string_path_append_item(string_path, *path->resource_id);
+    _string_path_append_item(string_path, *path.resource_id);
 
     int fd = vfs_open(string_path, O_CREAT | O_RDWR, 0);
 

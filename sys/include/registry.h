@@ -100,11 +100,12 @@ typedef const enum {
  * @brief Instance of a schema containing its data.
  */
 typedef struct {
-    clist_node_t node;          /**< Linked list node */
+    clist_node_t node;              /**< Linked list node */
 #if IS_ACTIVE(CONFIG_REGISTRY_ENABLE_META_NAME) || IS_ACTIVE(DOXYGEN)
-    const char * const name;    /**< String describing the instance */
+    const char * const name;        /**< String describing the instance */
 #endif /* CONFIG_REGISTRY_ENABLE_META_NAME */
-    const void * const data;    /**< Struct containing all configuration parameters of the schema */
+    const void * const data;        /**< Struct containing all configuration parameters of the schema */
+    const registry_schema_t schema; /**< Configuration Schema that the Schema Instance belongs to */
 
     /**
      * @brief Will be called after @ref registry_commit() was called on this instance.
@@ -124,15 +125,16 @@ typedef const struct _registry_resource_t registry_resource_t;
 
 struct _registry_resource_t {
 #if IS_USED(MODULE_REGISTRY_PATH) || IS_ACTIVE(DOXYGEN)
-    const registry_id_t id;                         /**< Integer representing the path id of the schema item */
+    const registry_id_t id;                         /**< Integer representing the path id of the configuration resource */
 #endif /* MODULE_REGISTRY_PATH */
 #if IS_ACTIVE(CONFIG_REGISTRY_ENABLE_META_NAME) || IS_ACTIVE(DOXYGEN)
-    const char * const name;                        /**< String describing the schema item */
+    const char * const name;                        /**< String describing the configuration resource */
 #endif /* CONFIG_REGISTRY_ENABLE_META_NAME */
 #if IS_ACTIVE(CONFIG_REGISTRY_ENABLE_META_DESCRIPTION) || IS_ACTIVE(DOXYGEN)
-    const char * const description;                 /**< String describing the schema item with more details */
+    const char * const description;                 /**< String describing the configuration resource with more details */
 #endif /* CONFIG_REGISTRY_ENABLE_META_DESCRIPTION */
-    const registry_type_t type;                     /**< Type of the schema item (group or parameter) */
+    const registry_schema_t *schema;                /**< Configuration Schema that the configuration resource belongs to */
+    const registry_type_t type;                     /**< Type of the configuration resource (group or parameter) */
     const registry_resource_t ** const resources;   /**< Array of pointers to all the configuration parameters and groups that belong to this group */
     const size_t resources_len;                     /**< Size of resources array */
 };
@@ -150,6 +152,7 @@ typedef struct {
 #if IS_ACTIVE(CONFIG_REGISTRY_ENABLE_META_DESCRIPTION) || IS_ACTIVE(DOXYGEN)
     const char * const description;                 /**< String describing the schema with more details */
 #endif /* CONFIG_REGISTRY_ENABLE_META_DESCRIPTION */
+    registry_namespace_t *namespace;                /**< Configuration Namespace that the Configuration Schema belongs to */
     clist_node_t instances;                         /**< Linked list of schema instances @ref registry_instance_t */
     const registry_resource_t ** const resources;   /**< Array of pointers to all the configuration parameters and groups that belong to this schema */
     const size_t resources_len;                     /**< Size of resources array */
@@ -198,27 +201,25 @@ int registry_register_schema_instance(const registry_schema_t *schema,
  * @brief Gets the current value of a parameter that belongs to an instance
  * of a configuration schema.
  *
- * @param[in] schema Pointer to the configuration schema.
  * @param[in] instance Pointer to the configuration schema instance.
  * @param[in] parameter Pointer to the configuration parameter.
  * @param[out] value Pointer to a uninitialized @ref registry_value_t struct.
  * @return 0 on success, non-zero on failure
  */
-int registry_get(const registry_schema_t *schema, const registry_instance_t *instance,
-                 const registry_resource_t *parameter, registry_value_t *value);
+int registry_get(const registry_instance_t *instance, const registry_resource_t *parameter,
+                 registry_value_t *value);
 
 /**
  * @brief Sets the value of a configuration parameter that belongs to an instance
  * of a configuration schema.
  *
- * @param[in] schema Pointer to the configuration schema.
  * @param[in] instance Pointer to the configuration schema instance.
  * @param[in] parameter Pointer to the configuration parameter.
  * @param[in] value Pointer to the new value for the configuration parameter.
  * @return 0 on success, non-zero on failure
  */
-int registry_set(const registry_schema_t *schema, const registry_instance_t *instance,
-                 const registry_resource_t *parameter, const registry_value_t *value);
+int registry_set(const registry_instance_t *instance, const registry_resource_t *parameter,
+                 const registry_value_t *value);
 
 /**
  * @brief Commits every configuration parameter.
@@ -268,7 +269,11 @@ typedef const union {
     const registry_schema_t *schema;
     const registry_instance_t *instance;
     const registry_resource_t *group;
-    const registry_resource_t *parameter;
+    const union {
+        registry_resource_t *data;
+        registry_value_t *value;
+        registry_instance_t *instance;
+    } parameter;
 } registry_export_cb_data_t;
 
 typedef const enum {
@@ -328,7 +333,6 @@ int registry_export_schema(const registry_schema_t *schema, const registry_expor
 /**
  * @brief Exports every configuration parameter within the given configuration schema instance.
  *
- * @param[in] schema Pointer to the configuration schema.
  * @param[in] instance Pointer to the configuration schema instance.
  * @param[in] export_cb Exporting callback function call with the @p path and current
  * value of a specific or all configuration parameters
@@ -337,7 +341,7 @@ int registry_export_schema(const registry_schema_t *schema, const registry_expor
  * to show the exact match plus its children ... plus n levels of children)
  * @param[in] context Context that will be passed to @p export_cb
  */
-int registry_export_instance(const registry_schema_t *schema, const registry_instance_t *instance,
+int registry_export_instance(const registry_instance_t *instance,
                              const registry_export_cb_t export_cb, const int recursion_depth,
                              const void *context);
 
