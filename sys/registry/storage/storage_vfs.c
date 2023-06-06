@@ -34,14 +34,16 @@
 #include "registry/path.h"
 #include "registry/path/util.h"
 
-#include "registry/path/storage.h"
+#include "registry/storage.h"
 
-static int load(const registry_path_storage_instance_t *storage, const registry_path_t *path,
-                const load_by_path_cb_t load_cb);
-static int save(const registry_path_storage_instance_t *storage, const registry_path_t *path,
+static int load(const registry_storage_instance_t *storage,
+                const load_cb_t load_cb);
+static int save(const registry_storage_instance_t *storage,
+                const registry_instance_t *instance,
+                const registry_resource_t *parameter,
                 const registry_value_t *value);
 
-registry_path_storage_t registry_path_storage_vfs = {
+registry_storage_t registry_storage_vfs = {
     .load = load,
     .save = save,
 };
@@ -103,8 +105,8 @@ static int _umount(vfs_mount_t *mount)
     return 0;
 }
 
-static int load(const registry_path_storage_instance_t *storage, const registry_path_t *path,
-                const load_by_path_cb_t load_cb)
+static int load(const registry_storage_instance_t *storage,
+                const load_cb_t load_cb)
 {
     vfs_mount_t *mount = storage->data;
 
@@ -278,7 +280,9 @@ static int load(const registry_path_storage_instance_t *storage, const registry_
     return 0;
 }
 
-static int save(const registry_path_storage_instance_t *storage, const registry_path_t *path,
+static int save(const registry_storage_instance_t *storage,
+                const registry_instance_t *instance,
+                const registry_resource_t *parameter,
                 const registry_value_t *value)
 {
     vfs_mount_t *mount = storage->data;

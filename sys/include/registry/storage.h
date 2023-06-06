@@ -30,9 +30,8 @@ extern "C" {
  * @brief Prototype of a callback function for the load action of a storage
  * interface
  */
-typedef int (*load_cb_t)(const registry_value_t **value_ptr,
-                         const registry_value_t *value,
-                         const size_t value_len);
+typedef int (*load_cb_t)(const registry_value_t *internal_value,
+                         const registry_value_t *value);
 
 typedef struct _registry_storage_t registry_storage_t;
 
@@ -51,7 +50,7 @@ typedef struct {
  */
 struct _registry_storage_t {
     /**
-     * @brief Loads all saved parameters and calls the @p cb callback function.
+     * @brief Loads all saved parameters and calls the @p load_cb callback function.
      *
      * @param[in] storage Storage descriptor
      * @param[in] load_cb Callback function to call for every saved parameter
@@ -64,7 +63,7 @@ struct _registry_storage_t {
      * @brief If implemented, it is used for any preparation the storage may
      * need before starting a saving process.
      *
-     * @param[in] instance Storage descriptor
+     * @param[in] storage Storage descriptor
      * @return 0 on success, non-zero on failure
      */
     int (*save_start)(const registry_storage_instance_t *storage);
@@ -72,20 +71,21 @@ struct _registry_storage_t {
     /**
      * @brief Saves a parameter into storage.
      *
-     * @param[in] instance Storage descriptor
-     * @param[in] path Path of the parameter
-     * @param[in] value Struct representing the value of the parameter
+     * @param[in] storage Storage descriptor
+     * @param[in] instance Pointer to the configuration schema instance.
+     * @param[in] parameter Pointer to the configuration parameter.
      * @return 0 on success, non-zero on failure
      */
     int (*save)(const registry_storage_instance_t *storage,
-                const registry_value_t *value,
-                const size_t value_len);
+                const registry_instance_t *instance,
+                const registry_resource_t *parameter,
+                const registry_value_t *value);
 
     /**
      * @brief If implemented, it is used for any tear-down the storage may need
      * after a saving process.
      *
-     * @param[in] instance Storage descriptor
+     * @param[in] storage Storage descriptor
      * @return 0 on success, non-zero on failure
      */
     int (*save_end)(const registry_storage_instance_t *storage);
@@ -135,12 +135,11 @@ int registry_save_namespace(const registry_namespace_t *namespace);
 
 int registry_save_schema(const registry_schema_t *schema);
 
-int registry_save_instance(const registry_schema_t *schema, const registry_instance_t *instance);
+int registry_save_instance(const registry_instance_t *instance);
 
-int registry_save_group(const registry_schema_t *schema, const registry_instance_t *instance,
-                        const registry_resource_t *group);
+int registry_save_group(const registry_instance_t *instance, const registry_resource_t *group);
 
-int registry_save_parameter(const registry_schema_t *schema, const registry_instance_t *instance,
+int registry_save_parameter(const registry_instance_t *instance,
                             const registry_resource_t *parameter);
 
 /* heap */

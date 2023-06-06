@@ -72,3 +72,9 @@ DAS BASIS EXPORT/COMMIT IST NUR AUF INSTANCE LEVEL!!!
   - path
     - path_storage (registry_path.h und IS_USED(REGISTRY_STORAGE))
   - keine ahnung iwo müssen noch die impls hin, also VFS, VFS_PATH usw.
+
+## Michel discussed
+
+- path => path_util? (enthält nur eine function, die einen path zu den entsprechenden pointern auflöst)
+- namespace => schema => (instance | parameter) doppelt vermaschen so, dass es auch rückwärts geht: (parameter | instance) => schema => namespace
+- storage only has pointer API

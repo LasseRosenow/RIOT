@@ -31,6 +31,13 @@
         "memory": "cpp",
         "new": "cpp",
         "functional": "cpp",
-        "namespace_sys.h": "c"
+        "namespace_sys.h": "c",
+        "ratio": "c",
+        "array": "c",
+        "tuple": "c",
+        "type_traits": "c",
+        "utility": "c",
+        "cstring": "c",
+        "variant": "c"
     },
 }
