@@ -32,7 +32,7 @@
 
 #include "registry/path.h"
 
-static const registry_namespace_t *_namespace_lookup(const registry_id_t namespace_id)
+static const registry_namespace_t *_namespace_lookup(const registry_namespace_id_t namespace_id)
 {
     clist_node_t *node = _registry_namespaces.next;
 
@@ -40,7 +40,7 @@ static const registry_namespace_t *_namespace_lookup(const registry_id_t namespa
         return NULL;
     }
 
-    registry_id_t index = 0;
+    registry_namespace_id_t index = 0;
 
     do {
         node = node->next;
@@ -57,7 +57,7 @@ static const registry_namespace_t *_namespace_lookup(const registry_id_t namespa
 }
 
 static const registry_schema_t *_schema_lookup(const registry_namespace_t *namespace,
-                                               const registry_id_t schema_id)
+                                               const registry_schema_id_t schema_id)
 {
     for (size_t i = 0; i < namespace->schemas_len; i++) {
         const registry_schema_t *schema = namespace->schemas[i];
@@ -71,7 +71,7 @@ static const registry_schema_t *_schema_lookup(const registry_namespace_t *names
 }
 
 static const registry_instance_t *_instance_lookup(const registry_schema_t *schema,
-                                                   const registry_id_t instance_id)
+                                                   const registry_instance_id_t instance_id)
 {
     assert(schema != NULL);
 
@@ -82,7 +82,7 @@ static const registry_instance_t *_instance_lookup(const registry_schema_t *sche
         return NULL;
     }
 
-    registry_id_t index = 0;
+    registry_instance_id_t index = 0;
 
     do {
         node = node->next;
@@ -100,7 +100,7 @@ static const registry_instance_t *_instance_lookup(const registry_schema_t *sche
 }
 
 static const registry_resource_t *_resource_lookup(const registry_schema_t *schema,
-                                                   const registry_id_t resource_id)
+                                                   const registry_resource_id_t resource_id)
 {
     // TODO this is incorrect. this function does not find nested resources
     const registry_resource_t *schema_resource;
@@ -120,7 +120,7 @@ static const registry_resource_t *_resource_lookup(const registry_schema_t *sche
 
 /* convert to path */
 int registry_path_from_namespace(const registry_namespace_t *namespace, registry_path_t *path,
-                                 registry_id_t *namespace_id_buf)
+                                 registry_namespace_id_t *namespace_id_buf)
 {
     assert(namespace != NULL);
     assert(path != NULL);
@@ -146,7 +146,7 @@ int registry_path_from_namespace(const registry_namespace_t *namespace, registry
 }
 
 int registry_path_from_schema(const registry_schema_t *schema, registry_path_t *path,
-                              registry_id_t *namespace_id_buf)
+                              registry_namespace_id_t *namespace_id_buf)
 {
     assert(schema != NULL);
     assert(path != NULL);
@@ -163,7 +163,8 @@ int registry_path_from_schema(const registry_schema_t *schema, registry_path_t *
 }
 
 int registry_path_from_instance(const registry_instance_t *instance, registry_path_t *path,
-                                registry_id_t *namespace_id_buf, registry_id_t *instance_id_buf)
+                                registry_namespace_id_t *namespace_id_buf,
+                                registry_instance_id_t *instance_id_buf)
 {
     assert(instance != NULL);
     assert(path != NULL);
@@ -196,7 +197,8 @@ int registry_path_from_instance(const registry_instance_t *instance, registry_pa
 
 int registry_path_from_resource(const registry_instance_t *instance,
                                 const registry_resource_t *resource, registry_path_t *path,
-                                registry_id_t *namespace_id_buf, registry_id_t *instance_id_buf)
+                                registry_namespace_id_t *namespace_id_buf,
+                                registry_instance_id_t *instance_id_buf)
 {
     assert(instance != NULL);
     assert(resource != NULL);
@@ -289,6 +291,8 @@ registry_resource_t *registry_resource_from_path(const registry_path_t *path)
 }
 
 /* util */
+// TODO this cannot work, the registry_path struct only has pointers.
+// If we use stack variables to fill the pointer, then the value will be lost after the function is left
 int registry_path_util_parse_string_path(const char *string_path,
                                          registry_path_t *registry_path)
 {
@@ -300,10 +304,10 @@ int registry_path_util_parse_string_path(const char *string_path,
         registry_id_t id = strtol(ptr, &ptr, 10);
 
         switch (i) {
-        case 0: *(registry_id_t *)registry_path->namespace_id = id; break;
-        case 1: *(registry_id_t *)registry_path->schema_id = id; break;
-        case 2: *(registry_id_t *)registry_path->instance_id = id; break;
-        case 3: *(registry_id_t *)registry_path->resource_id = id; break;
+        case 0: *(registry_namespace_id_t *)registry_path->namespace_id = id; break;
+        case 1: *(registry_schema_id_t *)registry_path->schema_id = id; break;
+        case 2: *(registry_instance_id_t *)registry_path->instance_id = id; break;
+        case 3: *(registry_resource_id_t *)registry_path->resource_id = id; break;
         }
 
         if (*ptr != '\0') {

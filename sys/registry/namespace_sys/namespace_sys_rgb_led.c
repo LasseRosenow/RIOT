@@ -35,7 +35,7 @@
 
 /* Mapping */
 
-static void mapping(const registry_id_t parameter_id, const registry_instance_t *instance,
+static void mapping(const registry_resource_id_t parameter_id, const registry_instance_t *instance,
                     void **val, size_t *val_len)
 {
     registry_sys_rgb_led_instance_t *_instance =

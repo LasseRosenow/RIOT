@@ -63,12 +63,11 @@ static registry_storage_instance_t vfs_instance_2 = {
 
 static bool commit_success = false;
 
-static int test_instance_0_commit_cb(const registry_id_t *id, const void *context)
+static int test_instance_0_commit_cb(const registry_resource_id_t *resource_id, const void *context)
 {
-    (void)path;
     (void)context;
 
-    if (id != NULL && *id == REGISTRY_SCHEMA_FULL_EXAMPLE_BOOL) {
+    if (resource_id != NULL && *resource_id == REGISTRY_SCHEMA_FULL_EXAMPLE_BOOL) {
         commit_success = true;
     }
 

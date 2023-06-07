@@ -47,6 +47,7 @@ registry_storage_t registry_storage_vfs = {
     .save = save,
 };
 
+// TODO this is not good
 static void _string_path_append_item(char *dest, registry_id_t number)
 {
     int size = snprintf(NULL, 0, "/%d", number);
@@ -275,8 +276,8 @@ static int save(const registry_storage_instance_t *storage,
 
     /* create dir path */
     registry_path_t path;
-    registry_id_t namespace_id;
-    registry_id_t instance_id;
+    registry_namespace_id_t namespace_id;
+    registry_instance_id_t instance_id;
     registry_path_from_resource(instance, parameter, &path, &namespace_id, &instance_id);
 
     char string_path[REGISTRY_PATH_STRING_MAX_LEN];

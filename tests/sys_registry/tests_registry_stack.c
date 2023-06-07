@@ -66,14 +66,14 @@ typedef enum {
     REGISTRY_APP_SCHEMA_STACK_TEST_PARAMETER_LEVEL_6,
 } registry_app_schema_stack_test_indices_t;
 
-static void mapping(const registry_id_t param_id, const registry_instance_t *instance,
+static void mapping(const registry_resource_id_t parameter_id, const registry_instance_t *instance,
                     void **val,
                     size_t *val_len)
 {
     registry_app_schema_stack_test_t *_instance =
         (registry_app_schema_stack_test_t *)instance->data;
 
-    switch (param_id) {
+    switch (parameter_id) {
     case REGISTRY_APP_SCHEMA_STACK_TEST_PARAMETER_LEVEL_1:
         *val = &_instance->level_1;
         *val_len = sizeof(_instance->level_1);
@@ -178,10 +178,11 @@ static int test_export_cb(const registry_path_t path,
 }
 
 /* Instace */
-static int stack_test_instance_commit_cb(const registry_id_t *id, const void *context)
+static int stack_test_instance_commit_cb(const registry_resource_id_t *resource_id,
+                                         const void *context)
 {
     (void)context;
-    (void)id;
+    (void)resource_id;
     return 0;
 }
 
@@ -250,52 +251,7 @@ static void setup(void)
     registry_register_storage_dst(&vfs_instance_2);
 }
 
-static registry_id_t parameter_path_level_1[] = {
-    REGISTRY_APP_SCHEMA_STACK_TEST_PARAMETER_LEVEL_1,
-};
-
-static registry_id_t parameter_path_level_2[] = {
-    REGISTRY_APP_SCHEMA_STACK_TEST_GROUP_LEVEL_1,
-    REGISTRY_APP_SCHEMA_STACK_TEST_PARAMETER_LEVEL_2,
-};
-
-static registry_id_t parameter_path_level_3[] = {
-    REGISTRY_APP_SCHEMA_STACK_TEST_GROUP_LEVEL_1,
-    REGISTRY_APP_SCHEMA_STACK_TEST_GROUP_LEVEL_2,
-    REGISTRY_APP_SCHEMA_STACK_TEST_PARAMETER_LEVEL_3,
-};
-
-static registry_id_t parameter_path_level_4[] = {
-    REGISTRY_APP_SCHEMA_STACK_TEST_GROUP_LEVEL_1,
-    REGISTRY_APP_SCHEMA_STACK_TEST_GROUP_LEVEL_2,
-    REGISTRY_APP_SCHEMA_STACK_TEST_GROUP_LEVEL_3,
-    REGISTRY_APP_SCHEMA_STACK_TEST_PARAMETER_LEVEL_4,
-};
-
-static registry_id_t parameter_path_level_5[] = {
-    REGISTRY_APP_SCHEMA_STACK_TEST_GROUP_LEVEL_1,
-    REGISTRY_APP_SCHEMA_STACK_TEST_GROUP_LEVEL_2,
-    REGISTRY_APP_SCHEMA_STACK_TEST_GROUP_LEVEL_3,
-    REGISTRY_APP_SCHEMA_STACK_TEST_GROUP_LEVEL_4,
-    REGISTRY_APP_SCHEMA_STACK_TEST_PARAMETER_LEVEL_5,
-};
-
-static registry_id_t parameter_path_level_6[] = {
-    REGISTRY_APP_SCHEMA_STACK_TEST_GROUP_LEVEL_1,
-    REGISTRY_APP_SCHEMA_STACK_TEST_GROUP_LEVEL_2,
-    REGISTRY_APP_SCHEMA_STACK_TEST_GROUP_LEVEL_3,
-    REGISTRY_APP_SCHEMA_STACK_TEST_GROUP_LEVEL_4,
-    REGISTRY_APP_SCHEMA_STACK_TEST_GROUP_LEVEL_5,
-    REGISTRY_APP_SCHEMA_STACK_TEST_PARAMETER_LEVEL_6,
-};
-
-static registry_path_t path = {
-    .namespace_id = (registry_namespace_id_t[]) { REGISTRY_NAMESPACE_APP },
-    .schema_id = (registry_id_t[]) { REGISTRY_APP_SCHEMA_STACK_TEST },
-    .instance_id = (registry_id_t[]) { 0 },
-    .path = parameter_path_level_1,
-    .path_len = ARRAY_SIZE(parameter_path_level_1),
-};
+static registry_path_t path;
 
 typedef enum {
     GET,
@@ -400,32 +356,7 @@ int registry_tests_stack_run(void)
 
     setup();
 
-    printf("\nLevel 1:\n");
-    path.path = parameter_path_level_1;
-    path.path_len = ARRAY_SIZE(parameter_path_level_1);
-    run_all_tests();
-
-    printf("\nLevel 2:\n");
-    path.path = parameter_path_level_2;
-    path.path_len = ARRAY_SIZE(parameter_path_level_2);
-    run_all_tests();
-
-    printf("\nLevel 3:\n");
-    path.path = parameter_path_level_3;
-    path.path_len = ARRAY_SIZE(parameter_path_level_3);
-    run_all_tests();
-
-    printf("\nLevel 4:\n");
-    path.path = parameter_path_level_4;
-    path.path_len = ARRAY_SIZE(parameter_path_level_4);
-    run_all_tests();
-
-    printf("\nLevel 5:\n");
-    path.path = parameter_path_level_5;
-    path.path_len = ARRAY_SIZE(parameter_path_level_5);
-    run_all_tests();
-
-    (void)parameter_path_level_6;
+    // TODO stack  test still necessary after we removed infinite path length?
 
     printf("\nRegistry: Test: Stack consumtions: END\n");
 

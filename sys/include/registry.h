@@ -39,7 +39,10 @@ extern "C" {
 #define CONFIG_REGISTRY_USE_FLOAT64 1
 // TODO REMOVE THIS END
 
-typedef uint32_t registry_id_t;
+typedef uint8_t registry_namespace_id_t;
+typedef uint32_t registry_schema_id_t;
+typedef uint16_t registry_instance_id_t;
+typedef uint16_t registry_resource_id_t;
 
 typedef const struct _registry_namespace_t registry_namespace_t;
 typedef const struct _registry_schema_t registry_schema_t;
@@ -120,7 +123,8 @@ struct _registry_instance_t {
      * @param[in] context Context of the instance
      * @return 0 on success, non-zero on failure
      */
-    int (*commit_cb)(const registry_commit_cb_scope_t scope, const registry_id_t *id,
+    int (*commit_cb)(const registry_commit_cb_scope_t scope,
+                     const registry_resource_id_t *resource_id,
                      const void *context);
 
     void *context; /**< Optional context used by the instance */
@@ -128,7 +132,7 @@ struct _registry_instance_t {
 
 struct _registry_resource_t {
 #if IS_USED(MODULE_REGISTRY_PATH) || IS_ACTIVE(DOXYGEN)
-    const registry_id_t id;                         /**< Integer representing the path id of the configuration resource */
+    const registry_resource_id_t id;                         /**< Integer representing the path id of the configuration resource */
 #endif /* MODULE_REGISTRY_PATH */
 #if IS_ACTIVE(CONFIG_REGISTRY_ENABLE_META_NAME) || IS_ACTIVE(DOXYGEN)
     const char * const name;                        /**< String describing the configuration resource */
@@ -147,7 +151,7 @@ struct _registry_resource_t {
  */
 struct _registry_schema_t {
 #if IS_USED(MODULE_REGISTRY_PATH) || IS_ACTIVE(DOXYGEN)
-    const registry_id_t id;                         /**< Integer representing the path id of the schema */
+    const registry_schema_id_t id;                         /**< Integer representing the path id of the schema */
 #endif /* MODULE_REGISTRY_PATH */
 #if IS_ACTIVE(CONFIG_REGISTRY_ENABLE_META_NAME) || IS_ACTIVE(DOXYGEN)
     const char * const name;                        /**< String describing the schema */
@@ -168,7 +172,7 @@ struct _registry_schema_t {
      * @param[in] val Pointer to buffer containing the new value
      * @param[in] val_len Pointer to length of the buffer to store the current value
      */
-    void(*const mapping)(const registry_id_t parameter_id,
+    void(*const mapping)(const registry_resource_id_t parameter_id,
                          const registry_instance_t *instance,
                          void **val,
                          size_t *val_len);

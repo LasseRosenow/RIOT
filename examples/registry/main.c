@@ -38,7 +38,8 @@
 //     { NULL, NULL, NULL }
 // };
 
-int rgb_led_instance_0_commit_cb(const registry_commit_cb_scope_t scope, const registry_id_t *id,
+int rgb_led_instance_0_commit_cb(const registry_commit_cb_scope_t scope,
+                                 const registry_resource_id_t *resource_id,
                                  const void *context)
 {
     (void)scope;

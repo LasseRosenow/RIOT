@@ -45,10 +45,10 @@ extern "C" {
 
 /* Dynamic registry path */
 typedef struct {
-    const registry_id_t *namespace_id;
-    const registry_id_t *schema_id;
-    const registry_id_t *instance_id;
-    const registry_id_t *resource_id;
+    const registry_namespace_id_t *namespace_id;
+    const registry_schema_id_t *schema_id;
+    const registry_instance_id_t *instance_id;
+    const registry_resource_id_t *resource_id;
 } registry_path_t;
 
 #define _REGISTRY_PATH_NUMARGS(...)  (sizeof((registry_id_t[]){ __VA_ARGS__ }) / \
@@ -106,17 +106,19 @@ typedef struct {
 
 
 int registry_path_from_namespace(const registry_namespace_t *namespace, registry_path_t *path,
-                                 registry_id_t *namespace_id_buf);
+                                 registry_namespace_id_t *namespace_id_buf);
 
 int registry_path_from_schema(const registry_schema_t *schema, registry_path_t *path,
-                              registry_id_t *namespace_id_buf);
+                              registry_namespace_id_t *namespace_id_buf);
 
 int registry_path_from_instance(const registry_instance_t *instance, registry_path_t *path,
-                                registry_id_t *namespace_id_buf, registry_id_t *instance_id_buf);
+                                registry_namespace_id_t *namespace_id_buf,
+                                registry_instance_id_t *instance_id_buf);
 
 int registry_path_from_resource(const registry_instance_t *instance,
                                 const registry_resource_t *resource, registry_path_t *path,
-                                registry_id_t *namespace_id_buf, registry_id_t *instance_id_buf);
+                                registry_namespace_id_t *namespace_id_buf,
+                                registry_instance_id_t *instance_id_buf);
 
 /* convert from path */
 registry_resource_t *registry_namespace_from_path(const registry_path_t *path);
