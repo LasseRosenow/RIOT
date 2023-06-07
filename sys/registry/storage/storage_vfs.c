@@ -275,8 +275,10 @@ static int save(const registry_storage_instance_t *storage,
     _mount(mount);
 
     /* create dir path */
-    // TODO
-    registry_path_t path = registry_to_path();
+    registry_path_t path;
+    registry_id_t namespace_id;
+    registry_id_t instance_id;
+    registry_path_from_resource(instance, parameter, &path, &namespace_id, &instance_id);
 
     char string_path[REGISTRY_PATH_STRING_MAX_LEN];
 

@@ -51,15 +51,6 @@ typedef struct {
     const registry_id_t *resource_id;
 } registry_path_t;
 
-/**
- * @brief Descriptor used to check duplications in storage facilities
- */
-typedef struct {
-    const registry_path_t *path;    /**< path of the parameter being checked */
-    const registry_value_t *val;    /**< value of the parameter being checked */
-    bool is_dup;                    /**< flag indicating if the parameter is duplicated or not */
-} registry_dup_check_arg_t;
-
 #define _REGISTRY_PATH_NUMARGS(...)  (sizeof((registry_id_t[]){ __VA_ARGS__ }) / \
                                       sizeof(registry_id_t))
 
@@ -113,75 +104,29 @@ typedef struct {
                                  _REGISTRY_PATH_0) \
         (__VA_ARGS__)
 
-/**
- * @brief Registers a new namespace for configuration schemas.
- *
- * @param[in] namespace Pointer to the namespace object.
- */
-int registry_path_register_namespace(const registry_namespace_t *namespace);
 
-/**
- * @brief Registers a new schema on a given namespace.
- *
- * @param[in] namespace_id ID of the namespace.
- * @param[in] schema Pointer to the schema structure.
- */
-int registry_path_register_schema(const registry_id_t *namespace_id,
-                                  const registry_schema_t *schema);
+int registry_path_from_namespace(const registry_namespace_t *namespace, registry_path_t *path,
+                                 registry_id_t *namespace_id_buf);
 
-/**
- * @brief Gets the current value of a parameter that belongs to a configuration
- *        group, identified by @p path.
- * @param[in] path Path of the parameter to get the value of
- * @param[out] value Pointer to a uninitialized @ref registry_value_t struct
- * @return 0 on success, non-zero on failure
- */
-int registry_get_by_path(const registry_path_t *path, registry_value_t *value);
+int registry_path_from_schema(const registry_schema_t *schema, registry_path_t *path,
+                              registry_id_t *namespace_id_buf);
 
-/**
- * @brief Sets the value of a parameter that belongs to a configuration group.
- *
- * @param[in] path Path of the parameter to be set
- * @param[in] value New value for the parameter
- * @return -EINVAL if schema could not be found, otherwise returns the
- *             value of the set schema function.
- */
-int registry_set_by_path(const registry_path_t *path, const registry_value_t *value);
+int registry_path_from_instance(const registry_instance_t *instance, registry_path_t *path,
+                                registry_id_t *namespace_id_buf, registry_id_t *instance_id_buf);
 
-/**
- * @brief If a @p path is passed it calls the commit schema for that
- *        configuration group. If no @p path is passed the commit schema is
- *        called for every registered configuration group.
- *
- * @param[in] path Path of the configuration group to commit the changes (can
- * be NULL).
- * @return 0 on success, -EINVAL if the group has not implemented the commit
- * function.
- */
-int registry_commit_by_path(const registry_path_t *path);
+int registry_path_from_resource(const registry_instance_t *instance,
+                                const registry_resource_t *resource, registry_path_t *path,
+                                registry_id_t *namespace_id_buf, registry_id_t *instance_id_buf);
 
-typedef int (*registry_path_export_cb_t)(const registry_path_t *path,
-                                         const registry_export_cb_data_t *data,
-                                         const registry_export_cb_data_type_t data_type,
-                                         const registry_value_t *value,
-                                         const void *context);
+/* convert from path */
+registry_resource_t *registry_namespace_from_path(const registry_path_t *path);
 
-/**
- * @brief Export an specific or all configuration parameters using the
- * @p export_cb function. If @p path is NULL then @p export_cb is called for
- * every configuration parameter on each configuration group.
- *
- * @param[in] export_cb Exporting callback function call with the @p path and current
- * value of a specific or all configuration parameters
- * @param[in] path Path representing the configuration parameter. Can be NULL.
- * @param[in] recursion_depth Defines how deeply nested child groups / parameters
- * will be shown. (0 to show all children, 1 to only show the exact match, 2 - n
- * to show the exact match plus its children ... plus n levels of children)
- * @param[in] context Context that will be passed to @p export_cb
- * @return 0 on success, non-zero on failure
- */
-int registry_export_by_path(const registry_path_export_cb_t export_cb, const registry_path_t *path,
-                            const int recursion_depth, const void *context);
+registry_resource_t *registry_schema_from_path(const registry_path_t *path);
+
+registry_resource_t *registry_instance_from_path(const registry_path_t *path);
+
+registry_resource_t *registry_resource_from_path(const registry_path_t *path);
+
 
 #ifdef __cplusplus
 }

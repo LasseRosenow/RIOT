@@ -40,6 +40,7 @@
         "cstring": "c",
         "variant": "c",
         "memory_resource": "c",
-        "system_error": "c"
+        "system_error": "c",
+        "error.h": "c"
     },
 }

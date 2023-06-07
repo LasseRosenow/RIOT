@@ -25,15 +25,84 @@
 
 #define ENABLE_DEBUG (0)
 #include "debug.h"
+#include "container.h"
 #include "registry.h"
 #include "registry/util.h"
 #include "registry/error.h"
 
 #include "registry/path.h"
 
-static const registry_resource_t *_resource_lookup(const registry_path_t *path,
-                                                   const registry_schema_t *schema)
+static const registry_namespace_t *_namespace_lookup(const registry_id_t namespace_id)
 {
+    clist_node_t *node = _registry_namespaces.next;
+
+    if (!node) {
+        return NULL;
+    }
+
+    registry_id_t index = 0;
+
+    do {
+        node = node->next;
+        const registry_namespace_t *namespace = container_of(node, registry_namespace_t, node);
+
+        if (index == namespace_id) {
+            return namespace;
+        }
+
+        index++;
+    } while (node != _registry_namespaces.next);
+
+    return NULL;
+}
+
+static const registry_schema_t *_schema_lookup(const registry_namespace_t *namespace,
+                                               const registry_id_t schema_id)
+{
+    for (size_t i = 0; i < namespace->schemas_len; i++) {
+        const registry_schema_t *schema = namespace->schemas[i];
+
+        if (schema->id == schema_id) {
+            return schema;
+        }
+    }
+
+    return NULL;
+}
+
+static const registry_instance_t *_instance_lookup(const registry_schema_t *schema,
+                                                   const registry_id_t instance_id)
+{
+    assert(schema != NULL);
+
+    /* find instance with correct instance_id */
+    clist_node_t *node = schema->instances.next;
+
+    if (!node) {
+        return NULL;
+    }
+
+    registry_id_t index = 0;
+
+    do {
+        node = node->next;
+        const registry_instance_t *instance = container_of(node, registry_instance_t, node);
+
+        /* check if index equals instance_id */
+        if (index == instance_id) {
+            return instance;
+        }
+
+        index++;
+    } while (node != schema->instances.next);
+
+    return NULL;
+}
+
+static const registry_resource_t *_resource_lookup(const registry_schema_t *schema,
+                                                   const registry_id_t resource_id)
+{
+    // TODO this is incorrect. this function does not find nested resources
     const registry_resource_t *schema_resource;
     const registry_resource_t **schema_resources = schema->resources;
     size_t schema_resources_len = schema->resources_len;
@@ -41,7 +110,7 @@ static const registry_resource_t *_resource_lookup(const registry_path_t *path,
     for (size_t i = 0; i < schema_resources_len; i++) {
         schema_resource = schema_resources[i];
 
-        if (schema_resource->id == *path->resource_id) {
+        if (schema_resource->id == resource_id) {
             return schema_resource;
         }
     }
@@ -49,474 +118,172 @@ static const registry_resource_t *_resource_lookup(const registry_path_t *path,
     return NULL;
 }
 
-int registry_set_by_path(const registry_path_t *path, const registry_value_t *value)
+/* convert to path */
+int registry_path_from_namespace(const registry_namespace_t *namespace, registry_path_t *path,
+                                 registry_id_t *namespace_id_buf)
 {
-    /* lookup namespace */
-    const registry_namespace_t *namespace = registry_util_namespace_lookup(*path->namespace_id);
+    assert(namespace != NULL);
+    assert(path != NULL);
 
-    if (!namespace) {
+    clist_node_t *node = _registry_namespaces.next;
+
+    if (!node) {
         return -EINVAL;
     }
 
-    /* lookup schema */
-    const registry_schema_t *schema = registry_util_schema_lookup(namespace, *path->schema_id);
+    do {
+        node = node->next;
 
-    if (!schema) {
-        return -EINVAL;
-    }
-
-    /* lookup instance */
-    const registry_instance_t *instance = registry_util_instance_lookup(schema, *path->instance_id);
-
-    if (!instance) {
-        return -EINVAL;
-    }
-
-    /* lookup parameter meta data */
-    const registry_resource_t *parameter = _resource_lookup(path, schema);
-
-    if (!parameter) {
-        return -EINVAL;
-    }
-    else if (parameter->type == REGISTRY_TYPE_GROUP) {
-        return -REGISTRY_ERROR_RESOURCE_TYPE_GROUP;
-    }
-
-    return registry_set(schema, instance, parameter, value);
-}
-
-int registry_get_by_path(const registry_path_t *path, registry_value_t *value)
-{
-    /* lookup namespace */
-    const registry_namespace_t *namespace = registry_util_namespace_lookup(*path->namespace_id);
-
-    if (!namespace) {
-        return -EINVAL;
-    }
-
-    /* lookup schema */
-    const registry_schema_t *schema = registry_util_schema_lookup(namespace, *path->schema_id);
-
-    if (!schema) {
-        return -EINVAL;
-    }
-
-    /* lookup instance */
-    const registry_instance_t *instance = registry_util_instance_lookup(schema, *path->instance_id);
-
-    if (!instance) {
-        return -EINVAL;
-    }
-
-    /* lookup parameter meta data */
-    const registry_resource_t *parameter = _resource_lookup(path, schema);
-
-    if (!parameter) {
-        return -EINVAL;
-    }
-    else if (parameter->type == REGISTRY_TYPE_GROUP) {
-        return -REGISTRY_ERROR_RESOURCE_TYPE_GROUP;
-    }
-
-    return registry_get(schema, instance, parameter, value);
-}
-
-static int _registry_commit_schema_by_path(const registry_path_t *path)
-{
-    int rc = 0;
-
-    /* lookup namespace */
-    const registry_namespace_t *namespace = registry_util_namespace_lookup(*path->namespace_id);
-
-    if (!namespace) {
-        return -EINVAL;
-    }
-
-    /* lookup schema */
-    const registry_schema_t *schema = registry_util_schema_lookup(namespace, *path->schema_id);
-
-    if (!schema) {
-        return -EINVAL;
-    }
-
-    /* schema/instance */
-    if (path->instance_id != NULL) {
-        /* lookup instance */
-        const registry_instance_t *instance = registry_util_instance_lookup(schema,
-                                                                            *path->instance_id);
-        if (!instance) {
-            return -EINVAL;
-        }
-        if (instance->commit_cb) {
-            int _rc = instance->commit_cb(REGISTRY_COMMIT_INSTANCE, NULL, instance->context);
-            if (!_rc) {
-                rc = _rc;
-            }
-        }
-        else {
-            rc = -EINVAL;
-        }
-    }
-    /* only schema */
-    else {
-        for (size_t i = 0; i < clist_count((clist_node_t *)&schema->instances); i++) {
-            const registry_instance_t *instance = registry_util_instance_lookup(schema, i);
-            if (instance->commit_cb) {
-                int _rc =
-                    instance->commit_cb(REGISTRY_COMMIT_INSTANCE, NULL, instance->context);
-                if (!_rc) {
-                    rc = _rc;
-                }
-            }
-            else {
-                rc = -EINVAL;
-            }
-        }
-    }
-
-    return rc;
-}
-
-static int _registry_commit_namespace_by_path(const registry_path_t *path)
-{
-    int rc = 0;
-
-    /* lookup namespace */
-    const registry_namespace_t *namespace = registry_util_namespace_lookup(*path->namespace_id);
-
-    if (!namespace) {
-        return -EINVAL;
-    }
-
-    /* schema/? */
-    if (path->schema_id != NULL) {
-        int _rc = _registry_commit_schema_by_path(path);
-        if (!_rc) {
-            rc = _rc;
-        }
-    }
-    /* no schema => call all */
-    else {
-        for (size_t i = 0; i < namespace->schemas_len; i++) {
-            const registry_schema_t *schema = namespace->schemas[i];
-            registry_path_t new_path = {
-                .namespace_id = path->namespace_id,
-                .schema_id = &schema->id,
-                .instance_id = NULL,
-                .resource_id = NULL,
-            };
-
-            int _rc =
-                _registry_commit_schema_by_path(&new_path);
-            if (!_rc) {
-                rc = _rc;
-            }
-        }
-    }
-
-    return rc;
-}
-
-int registry_commit_by_path(const registry_path_t *path)
-{
-    int rc = 0;
-
-    if (path->namespace_id != NULL) {
-        int _rc = _registry_commit_namespace_by_path(path);
-        if (!_rc) {
-            rc = _rc;
-        }
-    }
-    else {
-        clist_node_t *node = _registry_namespaces.next;
-
-        if (!node) {
-            return -EINVAL;
+        if (namespace == container_of(node, registry_namespace_t, node)) {
+            path->namespace_id = namespace_id_buf;
+            break;
         }
 
-        registry_id_t index = 0;
-
-        do {
-            node = node->next;
-            registry_namespace_t *namespace = container_of(node, registry_namespace_t, node);
-
-            if (!namespace) {
-                return -EINVAL;
-            }
-
-            /* create new path that includes the new namespace_id */
-            registry_path_t new_path = {
-                .namespace_id = &index,
-                .schema_id = NULL,
-                .instance_id = NULL,
-                .resource_id = NULL,
-            };
-
-            int _rc = _registry_commit_namespace_by_path(&new_path);
-
-            if (!_rc) {
-                rc = _rc;
-            }
-
-            index++;
-        } while (node != _registry_namespaces.next);
-    }
-
-    return rc;
-}
-
-static void _registry_export_params_by_path(const registry_path_export_cb_t export_cb,
-                                            const registry_path_t *path,
-                                            const registry_schema_t *schema,
-                                            const void *context)
-{
-    const registry_resource_t *schema_resource = _resource_lookup(path, schema);
-
-    /* check if the current schema_resource is a group or a parameter */
-    if (schema_resource->type == REGISTRY_TYPE_GROUP) {
-        /* group => search for parameters */
-        registry_export_cb_data_t export_data = { .group = schema_resource };
-        export_cb(path, &export_data, REGISTRY_EXPORT_GROUP, NULL, context);
-    }
-    else {
-        /* parameter found => export */
-        registry_value_t value;
-        registry_get_by_path(path, &value);
-        registry_export_cb_data_t export_data = { .parameter = schema_resource };
-        export_cb(path, &export_data, REGISTRY_EXPORT_PARAMETER, &value, context);
-    }
-}
-
-static int _registry_export_instance_by_path(const registry_path_export_cb_t export_cb,
-                                             const registry_path_t *path,
-                                             const registry_schema_t *schema,
-                                             const int recursion_depth, const void *context)
-{
-    const registry_instance_t *instance = registry_util_instance_lookup(schema, *path->instance_id);
-
-    if (!instance) {
-        return -EINVAL;
-    }
-
-    /* export instance */
-    registry_export_cb_data_t export_data = { .instance = instance };
-    export_cb(path, &export_data, REGISTRY_EXPORT_INSTANCE, NULL, context);
-
-    /* schema/instance/item => export concrete schema item with data of the given instance */
-    if (path->resource_id != NULL) {
-        _registry_export_params_by_path(export_cb, path, schema, context);
-    }
-    /* schema/instance => export the schema instance meta data (name) and its parameters recursively depending on recursion_depth */
-    else {
-        /* export instance parameters (recursion_depth == 1 means only the exact path, which would only be a specific instance in this case) */
-        if (recursion_depth != 1) {
-            _registry_export_params_by_path(export_cb, path, schema, context);
-        }
-    }
+        (*namespace_id_buf)++;
+    } while (node != _registry_namespaces.next);
 
     return 0;
 }
 
-static int _registry_export_schema_by_path(const registry_path_export_cb_t export_cb,
-                                           const registry_path_t *path, const int recursion_depth,
-                                           const void *context)
+int registry_path_from_schema(const registry_schema_t *schema, registry_path_t *path,
+                              registry_id_t *namespace_id_buf)
 {
-    int rc = 0;
+    assert(schema != NULL);
+    assert(path != NULL);
+
+    int result = 0;
+
+    /* set namespace_id */
+    result = registry_path_from_namespace(schema->namespace, path, namespace_id_buf);
+
+    /* set schema_id */
+    path->schema_id = &schema->id;
+
+    return result;
+}
+
+int registry_path_from_instance(const registry_instance_t *instance, registry_path_t *path,
+                                registry_id_t *namespace_id_buf, registry_id_t *instance_id_buf)
+{
+    assert(instance != NULL);
+    assert(path != NULL);
+
+    int result = 0;
+
+    /* set namespace_id and schema_id */
+    result = registry_path_from_schema(instance->schema, path, namespace_id_buf);
+
+    /* set instance_id */
+    clist_node_t *node = instance->schema->instances.next;
+
+    if (!node) {
+        return -EINVAL;
+    }
+
+    do {
+        node = node->next;
+
+        if (instance == container_of(node, registry_instance_t, node)) {
+            path->instance_id = instance_id_buf;
+            break;
+        }
+
+        (*instance_id_buf)++;
+    } while (node != _registry_namespaces.next);
+
+    return result;
+}
+
+int registry_path_from_resource(const registry_instance_t *instance,
+                                const registry_resource_t *resource, registry_path_t *path,
+                                registry_id_t *namespace_id_buf, registry_id_t *instance_id_buf)
+{
+    assert(instance != NULL);
+    assert(resource != NULL);
+    assert(path != NULL);
+
+    int result = 0;
+
+    /* set namespace_id, schema_id and instance_id */
+    result = registry_path_from_instance(instance, path, namespace_id_buf, instance_id_buf);
+
+    /* set resource_id */
+    path->resource_id = &resource->id;
+
+    return result;
+}
+
+/* convert from path */
+registry_resource_t *registry_namespace_from_path(const registry_path_t *path)
+{
+    assert(path != NULL);
+
+    /* lookup namespace */
+    return registry_util_namespace_lookup(*path->namespace_id);
+}
+
+registry_resource_t *registry_schema_from_path(const registry_path_t *path)
+{
+    assert(path != NULL);
 
     /* lookup namespace */
     const registry_namespace_t *namespace = registry_util_namespace_lookup(*path->namespace_id);
 
     if (!namespace) {
-        return -EINVAL;
+        return NULL;
+    }
+
+    /* lookup schema */
+    return registry_util_schema_lookup(namespace, *path->schema_id);
+}
+
+registry_resource_t *registry_instance_from_path(const registry_path_t *path)
+{
+    assert(path != NULL);
+
+    /* lookup namespace */
+    const registry_namespace_t *namespace = registry_util_namespace_lookup(*path->namespace_id);
+
+    if (!namespace) {
+        return NULL;
     }
 
     /* lookup schema */
     const registry_schema_t *schema = registry_util_schema_lookup(namespace, *path->schema_id);
 
     if (!schema) {
-        return -EINVAL;
+        return NULL;
     }
 
-    /* export schema */
-    registry_export_cb_data_t export_data = { .schema = schema };
-    export_cb(path, &export_data, REGISTRY_EXPORT_SCHEMA, NULL, context);
-
-    /* get instance, if in path */
-    if (path->instance_id != NULL) {
-        int _rc =
-            _registry_export_instance_by_path(export_cb, path, schema, recursion_depth, context);
-        if (!_rc) {
-            rc = _rc;
-        }
-    }
-    /* schema => Export schema meta data (name, description etc.) and its items depending on recursion_depth */
-    else {
-        /* export instances (recursion_depth == 1 means only the exact path, which would only be a specific schema in this case) */
-        if (recursion_depth != 1) {
-            int new_recursion_depth = 0;
-            if (recursion_depth != 0) {
-                new_recursion_depth = recursion_depth - 1;
-            }
-
-            clist_node_t *node = schema->instances.next;
-
-            if (!node) {
-                return -EINVAL;
-            }
-
-            registry_id_t instance_id = 0;
-
-            do {
-                node = node->next;
-                registry_instance_t *instance = container_of(node, registry_instance_t, node);
-
-                if (!instance) {
-                    return -EINVAL;
-                }
-
-                /* create new path that includes the new instance_id */
-                registry_path_t new_path = {
-                    .namespace_id = path->namespace_id,
-                    .schema_id = path->schema_id,
-                    .instance_id = &instance_id,
-                    .resource_id = NULL,
-                };
-
-                int _rc = _registry_export_instance_by_path(export_cb, &new_path, schema,
-                                                            new_recursion_depth,
-                                                            context);
-                if (!_rc) {
-                    rc = _rc;
-                }
-
-                instance_id++;
-            } while (node != schema->instances.next);
-        }
-    }
-
-    return rc;
+    /* lookup instance */
+    return _instance_lookup(schema, *path->instance_id);
 }
 
-static int _registry_export_namespace_by_path(const registry_path_export_cb_t export_cb,
-                                              const registry_path_t *path,
-                                              const int recursion_depth, const void *context)
+registry_resource_t *registry_resource_from_path(const registry_path_t *path)
 {
-    int rc = 0;
+    assert(path != NULL);
 
     /* lookup namespace */
-    const registry_namespace_t *namespace = registry_util_namespace_lookup(*path->namespace_id);
+    const registry_namespace_t *namespace = _namespace_lookup(*path->namespace_id);
 
     if (!namespace) {
-        return -EINVAL;
+        return NULL;
     }
 
-    /* export namespace */
-    registry_export_cb_data_t export_data = { .namespace = namespace };
-    export_cb(path, &export_data, REGISTRY_EXPORT_NAMESPACE, NULL, context);
+    /* lookup schema */
+    const registry_schema_t *schema = _schema_lookup(namespace, *path->schema_id);
 
-    /* get schema, if in path */
-    if (path->schema_id != NULL) {
-        int _rc = _registry_export_schema_by_path(export_cb, path, recursion_depth, context);
-        if (!_rc) {
-            rc = _rc;
-        }
-    }
-    /**
-     * empty path => export everything depending on recursion_depth
-     * (0 = everything, 1 = nothing, 2 = all schemas, 3 = all schemas and all their instances etc.)
-     */
-    else {
-        if (recursion_depth != 1) {
-            int new_recursion_depth = 0;
-            if (recursion_depth != 0) {
-                new_recursion_depth = recursion_depth - 1;
-            }
-
-            for (size_t i = 0; i < namespace->schemas_len; i++) {
-                const registry_schema_t *schema = namespace->schemas[i];
-
-                /* create new path that includes the new schema_id */
-                registry_path_t new_path = {
-                    .namespace_id = path->namespace_id,
-                    .schema_id = &schema->id,
-                    .instance_id = NULL,
-                    .resource_id = NULL,
-                };
-
-                int _rc = _registry_export_schema_by_path(export_cb, &new_path,
-                                                          new_recursion_depth,
-                                                          context);
-                if (!_rc) {
-                    rc = _rc;
-                }
-            }
-        }
+    if (!schema) {
+        return NULL;
     }
 
-    return rc;
-}
+    /* lookup instance */
+    const registry_instance_t *instance = _instance_lookup(schema, *path->instance_id);
 
-int registry_export_by_path(const registry_path_export_cb_t export_cb, const registry_path_t *path,
-                            const int recursion_depth, const void *context)
-{
-    assert(export_cb != NULL);
-
-    int rc = 0;
-
-    DEBUG("[registry export] exporting all in ");
-    // TODO DEBUG PRINT PATH FUNCTION
-    DEBUG("\n");
-
-    /* get namespace if in path */
-    if (path->namespace_id != NULL) {
-        int _rc = _registry_export_namespace_by_path(export_cb, path, recursion_depth, context);
-        if (!_rc) {
-            rc = _rc;
-        }
-    }
-    else {
-        if (recursion_depth != 1) {
-            int new_recursion_depth = 0;
-            if (recursion_depth != 0) {
-                new_recursion_depth = recursion_depth - 1;
-            }
-
-            clist_node_t *node = _registry_namespaces.next;
-
-            if (!node) {
-                return -EINVAL;
-            }
-
-            registry_id_t index = 0;
-
-            do {
-                node = node->next;
-                registry_namespace_t *namespace = container_of(node, registry_namespace_t, node);
-
-                if (!namespace) {
-                    return -EINVAL;
-                }
-
-                /* create new path that includes the new namespace_id */
-                registry_path_t new_path = {
-                    .namespace_id = &index,
-                    .schema_id = NULL,
-                    .instance_id = NULL,
-                    .resource_id = NULL,
-                };
-
-                int _rc = _registry_export_namespace_by_path(export_cb, &new_path,
-                                                             new_recursion_depth,
-                                                             context);
-
-                if (!_rc) {
-                    rc = _rc;
-                }
-
-                index++;
-            } while (node != _registry_namespaces.next);
-        }
+    if (!instance) {
+        return NULL;
     }
 
-    return rc;
+    /* lookup resource */
+    return _resource_lookup(path, schema);
 }
