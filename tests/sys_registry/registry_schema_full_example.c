@@ -25,13 +25,13 @@
 #include "registry.h"
 #include "registry_schema_full_example.h"
 
-static void mapping(const registry_id_t param_id, const registry_instance_t *instance,
+static void mapping(const registry_resource_id_t parameter_id, const registry_instance_t *instance,
                     void **val,
                     size_t *val_len)
 {
     registry_schema_full_example_t *_instance = (registry_schema_full_example_t *)instance->data;
 
-    switch (param_id) {
+    switch (parameter_id) {
     case REGISTRY_SCHEMA_FULL_EXAMPLE_STRING:
         *val = &_instance->string;
         *val_len = sizeof(_instance->string);
