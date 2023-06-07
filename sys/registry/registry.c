@@ -53,7 +53,7 @@ int registry_register_schema_instance(const registry_schema_t *schema,
     assert(instance != NULL);
 
     /* add schema to instance */
-    instance->schema = schema;
+    (*((registry_instance_t *)instance)).schema = schema;
 
     /* add instance to schema */
     clist_rpush((clist_node_t *)&schema->instances, (clist_node_t *)&instance->node);
@@ -337,10 +337,11 @@ int registry_export_instance(const registry_instance_t *instance,
             const registry_resource_t *child = instance->schema->resources[i];
 
             if (child->type == REGISTRY_TYPE_GROUP) {
-                _rc = registry_export_group(child, export_cb, new_recursion_depth, context);
+                _rc =
+                    registry_export_group(instance, child, export_cb, new_recursion_depth, context);
             }
             else {
-                _rc = registry_export_parameter(child, export_cb, context);
+                _rc = registry_export_parameter(instance, child, export_cb, context);
             }
 
             if (!_rc) {
@@ -352,7 +353,8 @@ int registry_export_instance(const registry_instance_t *instance,
     return rc;
 }
 
-int registry_export_group(const registry_resource_t *group, const registry_export_cb_t export_cb,
+int registry_export_group(const registry_instance_t *instance, const registry_resource_t *group,
+                          const registry_export_cb_t export_cb,
                           const int recursion_depth, const void *context)
 {
     assert(group != NULL);
@@ -377,10 +379,11 @@ int registry_export_group(const registry_resource_t *group, const registry_expor
             const registry_resource_t *child = group->resources[i];
 
             if (child->type == REGISTRY_TYPE_GROUP) {
-                _rc = registry_export_group(child, export_cb, new_recursion_depth, context);
+                _rc =
+                    registry_export_group(instance, child, export_cb, new_recursion_depth, context);
             }
             else {
-                _rc = registry_export_parameter(child, export_cb, context);
+                _rc = registry_export_parameter(instance, child, export_cb, context);
             }
 
             if (!_rc) {
@@ -392,11 +395,21 @@ int registry_export_group(const registry_resource_t *group, const registry_expor
     return rc;
 }
 
-int registry_export_parameter(const registry_resource_t *parameter,
+int registry_export_parameter(const registry_instance_t *instance,
+                              const registry_resource_t *parameter,
                               const registry_export_cb_t export_cb, const void *context)
 {
     assert(parameter != NULL);
 
-    registry_export_cb_data_t export_data = { .parameter = parameter };
+    registry_value_t value;
+    registry_get(instance, parameter, &value);
+
+    registry_export_cb_data_t export_data = {
+        .parameter = {
+            .data = parameter,
+            .instance = instance,
+            .value = &value,
+        }
+    };
     return export_cb(&export_data, REGISTRY_EXPORT_PARAMETER, context);
 }

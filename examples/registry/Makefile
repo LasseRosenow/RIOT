@@ -14,7 +14,7 @@ USEMODULE += littlefs2
 USEMODULE += mtd
 
 # USEMODULE +=  registry_cli
-USEMODULE +=  registry_path_storage_vfs
+USEMODULE +=  registry_storage_vfs
 USEMODULE +=  registry_namespace_sys_rgb_led
 
 # Comment this out to disable code in RIOT that does safety checking

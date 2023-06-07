@@ -41,6 +41,7 @@
         "variant": "c",
         "memory_resource": "c",
         "system_error": "c",
-        "error.h": "c"
+        "error.h": "c",
+        "errno.h": "c"
     },
 }

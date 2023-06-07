@@ -31,10 +31,7 @@
 #include "registry.h"
 #include "registry/util.h"
 #include "registry/path.h"
-#include "registry/path/util.h"
-#if IS_USED(MODULE_REGISTRY_PATH_STORAGE) || IS_ACTIVE(DOXYGEN)
-#include "registry/path/storage.h"
-#endif
+#include "registry/storage.h"
 
 #include "registry/cli.h"
 
@@ -199,7 +196,7 @@ int registry_cli_cmd(int argc, char **argv)
         registry_export_by_path(_export_cb, &path, recursion_level, NULL);
         return 0;
     }
-#if IS_USED(MODULE_REGISTRY_PATH_STORAGE) || IS_ACTIVE(DOXYGEN)
+#if IS_USED(MODULE_REGISTRY_STORAGE) || IS_ACTIVE(DOXYGEN)
     else if (strcmp(argv[1], "load") == 0) {
         if (argc > 2) {
             if (registry_path_util_parse_string_path(argv[2], &path) < 0) {

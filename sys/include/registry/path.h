@@ -127,6 +127,8 @@ registry_resource_t *registry_instance_from_path(const registry_path_t *path);
 
 registry_resource_t *registry_resource_from_path(const registry_path_t *path);
 
+int registry_path_util_parse_string_path(const char *string_path,
+                                         registry_path_t *registry_path);
 
 #ifdef __cplusplus
 }

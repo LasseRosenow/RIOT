@@ -287,3 +287,31 @@ registry_resource_t *registry_resource_from_path(const registry_path_t *path)
     /* lookup resource */
     return _resource_lookup(path, schema);
 }
+
+/* util */
+int registry_path_util_parse_string_path(const char *string_path,
+                                         registry_path_t *registry_path)
+{
+    char *ptr = (char *)string_path;
+
+    int i = 0;
+
+    while (*ptr != '\0') {
+        registry_id_t id = strtol(ptr, &ptr, 10);
+
+        switch (i) {
+        case 0: *(registry_id_t *)registry_path->namespace_id = id; break;
+        case 1: *(registry_id_t *)registry_path->schema_id = id; break;
+        case 2: *(registry_id_t *)registry_path->instance_id = id; break;
+        case 3: *(registry_id_t *)registry_path->resource_id = id; break;
+        }
+
+        if (*ptr != '\0') {
+            ptr++;
+        }
+
+        i++;
+    }
+
+    return 0;
+}

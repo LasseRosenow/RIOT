@@ -32,7 +32,6 @@
 #include "vfs.h"
 #include "ps.h"
 #include "registry/path.h"
-#include "registry/path/util.h"
 
 #include "registry/storage.h"
 
