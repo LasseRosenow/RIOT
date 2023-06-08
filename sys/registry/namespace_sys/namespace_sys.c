@@ -26,7 +26,6 @@
 #include "registry.h"
 
 #include "registry/namespace_sys.h"
-#include "registry/namespace_sys/util.h"
 
 /* Sys namespace */
 

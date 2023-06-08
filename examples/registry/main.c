@@ -46,8 +46,8 @@ int rgb_led_instance_0_commit_cb(const registry_commit_cb_scope_t scope,
     (void)context;
     printf("RGB instance commit_cb was executed on ");
 
-    if (id != NULL) {
-        printf("param: /%d", *id);
+    if (resource_id != NULL) {
+        printf("param: /%d", *resource_id);
     }
     else {
         printf("whole instance");

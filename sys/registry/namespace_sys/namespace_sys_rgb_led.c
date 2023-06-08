@@ -126,7 +126,7 @@ const registry_resource_t registry_sys_rgb_led_brightnesses = {
     .description = "",
     .schema = &registry_sys_rgb_led,
     .type = REGISTRY_TYPE_GROUP,
-    .resources = (registry_resource_t *[]) {
+    .resources = (const registry_resource_t *[]) {
         &registry_sys_rgb_led_brightnesses_white,
         &registry_sys_rgb_led_brightnesses_yellow,
     },
@@ -139,7 +139,7 @@ const registry_schema_t registry_sys_rgb_led = {
     .description = "",
     .namespace = &registry_sys,
     .mapping = mapping,
-    .resources = (registry_resource_t *[]) {
+    .resources = (const registry_resource_t *[]) {
         &registry_sys_rgb_led_red,
         &registry_sys_rgb_led_green,
         &registry_sys_rgb_led_blue,

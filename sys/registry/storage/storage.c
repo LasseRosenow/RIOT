@@ -27,7 +27,7 @@
 
 #define ENABLE_DEBUG (0)
 #include "debug.h"
-#include "container.h"
+#include "clist.h"
 
 #include "registry/storage.h"
 #include "registry/util.h"
@@ -49,10 +49,9 @@ void registry_register_storage_dst(const registry_storage_instance_t *dst)
 }
 
 /* registry_load */
-static int _registry_load_cb(const registry_value_t *internal_value,
-                             const registry_value_t *value)
+static int _registry_load_cb(const void *old_value_buf, const void *new_value_buf, size_t buf_len)
 {
-    memcpy(internal_value->buf, value->buf, internal_value->buf_len);
+    memcpy((void *)old_value_buf, new_value_buf, buf_len);
 
     return 0;
 }
@@ -79,12 +78,9 @@ int registry_load(void)
 /* registry_save */
 static int _registry_save_export_cb(const registry_export_cb_data_t *data,
                                     const registry_export_cb_data_type_t data_type,
-                                    const registry_instance_t *instance,
                                     const void *context)
 {
     (void)context;
-    (void)data;
-    (void)data_type;
 
     /* The registry also exports just the namespace or just a schema, but the storage is only interested in configuration parameter values */
     if (data_type != REGISTRY_EXPORT_PARAMETER) {

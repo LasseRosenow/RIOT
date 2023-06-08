@@ -44,10 +44,10 @@ typedef uint32_t registry_schema_id_t;
 typedef uint16_t registry_instance_id_t;
 typedef uint16_t registry_resource_id_t;
 
-typedef const struct _registry_namespace_t registry_namespace_t;
-typedef const struct _registry_schema_t registry_schema_t;
+typedef struct _registry_namespace_t registry_namespace_t;
+typedef struct _registry_schema_t registry_schema_t;
 typedef struct _registry_instance_t registry_instance_t;
-typedef const struct _registry_resource_t registry_resource_t;
+typedef struct _registry_resource_t registry_resource_t;
 
 /**
  * @brief Data types of the registry
@@ -159,7 +159,7 @@ struct _registry_schema_t {
 #if IS_ACTIVE(CONFIG_REGISTRY_ENABLE_META_DESCRIPTION) || IS_ACTIVE(DOXYGEN)
     const char * const description;                 /**< String describing the schema with more details */
 #endif /* CONFIG_REGISTRY_ENABLE_META_DESCRIPTION */
-    registry_namespace_t * const namespace;         /**< Configuration Namespace that the Configuration Schema belongs to */
+    const registry_namespace_t * const namespace;   /**< Configuration Namespace that the Configuration Schema belongs to */
     clist_node_t instances;                         /**< Linked list of schema instances @ref registry_instance_t */
     const registry_resource_t ** const resources;   /**< Array of pointers to all the configuration parameters and groups that belong to this schema */
     const size_t resources_len;                     /**< Size of resources array */

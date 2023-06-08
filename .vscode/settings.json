@@ -42,6 +42,7 @@
         "memory_resource": "c",
         "system_error": "c",
         "error.h": "c",
-        "errno.h": "c"
+        "errno.h": "c",
+        "container.h": "c"
     },
 }
