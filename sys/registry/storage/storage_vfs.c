@@ -199,10 +199,12 @@ static int load(const registry_storage_instance_t *storage,
                                 else {
                                     /* get pointer to registry internal configuration parameter */
                                     registry_value_t old_value;
-                                    registry_resource_t *resource = registry_resource_from_path(
-                                        &path);
-                                    registry_instance_t *instance = registry_instance_from_path(
-                                        &path);
+                                    const registry_resource_t *resource =
+                                        registry_resource_from_path(
+                                            &path);
+                                    const registry_instance_t *instance =
+                                        registry_instance_from_path(
+                                            &path);
                                     registry_get(instance, resource, &old_value);
 
                                     /* read value from file */

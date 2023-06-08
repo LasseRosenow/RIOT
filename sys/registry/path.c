@@ -22,6 +22,7 @@
 
 #include <errno.h>
 #include <assert.h>
+#include <stdlib.h>
 
 #define ENABLE_DEBUG (0)
 #include "debug.h"
@@ -216,52 +217,30 @@ int registry_path_from_resource(const registry_instance_t *instance,
 }
 
 /* convert from path */
-registry_namespace_t *registry_namespace_from_path(const registry_path_t *path)
+const registry_namespace_t *registry_namespace_from_path(const registry_path_t *path)
 {
     assert(path != NULL);
 
     /* lookup namespace */
-    return registry_util_namespace_lookup(*path->namespace_id);
+    return _namespace_lookup(*path->namespace_id);
 }
 
-registry_schema_t *registry_schema_from_path(const registry_path_t *path)
+const registry_schema_t *registry_schema_from_path(const registry_path_t *path)
 {
     assert(path != NULL);
 
     /* lookup namespace */
-    const registry_namespace_t *namespace = registry_util_namespace_lookup(*path->namespace_id);
+    const registry_namespace_t *namespace = _namespace_lookup(*path->namespace_id);
 
     if (!namespace) {
         return NULL;
     }
 
     /* lookup schema */
-    return registry_util_schema_lookup(namespace, *path->schema_id);
+    return _schema_lookup(namespace, *path->schema_id);
 }
 
-registry_instance_t *registry_instance_from_path(const registry_path_t *path)
-{
-    assert(path != NULL);
-
-    /* lookup namespace */
-    const registry_namespace_t *namespace = registry_util_namespace_lookup(*path->namespace_id);
-
-    if (!namespace) {
-        return NULL;
-    }
-
-    /* lookup schema */
-    const registry_schema_t *schema = registry_util_schema_lookup(namespace, *path->schema_id);
-
-    if (!schema) {
-        return NULL;
-    }
-
-    /* lookup instance */
-    return _instance_lookup(schema, *path->instance_id);
-}
-
-registry_resource_t *registry_resource_from_path(const registry_path_t *path)
+const registry_instance_t *registry_instance_from_path(const registry_path_t *path)
 {
     assert(path != NULL);
 
@@ -280,14 +259,29 @@ registry_resource_t *registry_resource_from_path(const registry_path_t *path)
     }
 
     /* lookup instance */
-    const registry_instance_t *instance = _instance_lookup(schema, *path->instance_id);
+    return _instance_lookup(schema, *path->instance_id);
+}
 
-    if (!instance) {
+const registry_resource_t *registry_resource_from_path(const registry_path_t *path)
+{
+    assert(path != NULL);
+
+    /* lookup namespace */
+    const registry_namespace_t *namespace = _namespace_lookup(*path->namespace_id);
+
+    if (!namespace) {
+        return NULL;
+    }
+
+    /* lookup schema */
+    const registry_schema_t *schema = _schema_lookup(namespace, *path->schema_id);
+
+    if (!schema) {
         return NULL;
     }
 
     /* lookup resource */
-    return _resource_lookup(path, schema);
+    return _resource_lookup(schema, *path->resource_id);
 }
 
 /* util */
@@ -301,7 +295,7 @@ int registry_path_from_string(const char *string_path,
     int i = 0;
 
     while (*ptr != '\0') {
-        registry_id_t id = strtol(ptr, &ptr, 10);
+        uint32_t id = strtol(ptr, &ptr, 10);
 
         switch (i) {
         case 0: *(registry_namespace_id_t *)path->namespace_id = id; break;
