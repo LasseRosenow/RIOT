@@ -216,7 +216,7 @@ int registry_path_from_resource(const registry_instance_t *instance,
 }
 
 /* convert from path */
-registry_resource_t *registry_namespace_from_path(const registry_path_t *path)
+registry_namespace_t *registry_namespace_from_path(const registry_path_t *path)
 {
     assert(path != NULL);
 
@@ -224,7 +224,7 @@ registry_resource_t *registry_namespace_from_path(const registry_path_t *path)
     return registry_util_namespace_lookup(*path->namespace_id);
 }
 
-registry_resource_t *registry_schema_from_path(const registry_path_t *path)
+registry_schema_t *registry_schema_from_path(const registry_path_t *path)
 {
     assert(path != NULL);
 
@@ -239,7 +239,7 @@ registry_resource_t *registry_schema_from_path(const registry_path_t *path)
     return registry_util_schema_lookup(namespace, *path->schema_id);
 }
 
-registry_resource_t *registry_instance_from_path(const registry_path_t *path)
+registry_instance_t *registry_instance_from_path(const registry_path_t *path)
 {
     assert(path != NULL);
 
@@ -293,8 +293,8 @@ registry_resource_t *registry_resource_from_path(const registry_path_t *path)
 /* util */
 // TODO this cannot work, the registry_path struct only has pointers.
 // If we use stack variables to fill the pointer, then the value will be lost after the function is left
-int registry_path_util_parse_string_path(const char *string_path,
-                                         registry_path_t *registry_path)
+int registry_path_from_string(const char *string_path,
+                              registry_path_t *path)
 {
     char *ptr = (char *)string_path;
 
@@ -304,10 +304,10 @@ int registry_path_util_parse_string_path(const char *string_path,
         registry_id_t id = strtol(ptr, &ptr, 10);
 
         switch (i) {
-        case 0: *(registry_namespace_id_t *)registry_path->namespace_id = id; break;
-        case 1: *(registry_schema_id_t *)registry_path->schema_id = id; break;
-        case 2: *(registry_instance_id_t *)registry_path->instance_id = id; break;
-        case 3: *(registry_resource_id_t *)registry_path->resource_id = id; break;
+        case 0: *(registry_namespace_id_t *)path->namespace_id = id; break;
+        case 1: *(registry_schema_id_t *)path->schema_id = id; break;
+        case 2: *(registry_instance_id_t *)path->instance_id = id; break;
+        case 3: *(registry_resource_id_t *)path->resource_id = id; break;
         }
 
         if (*ptr != '\0') {

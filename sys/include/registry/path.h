@@ -121,16 +121,16 @@ int registry_path_from_resource(const registry_instance_t *instance,
                                 registry_instance_id_t *instance_id_buf);
 
 /* convert from path */
-registry_resource_t *registry_namespace_from_path(const registry_path_t *path);
+registry_namespace_t *registry_namespace_from_path(const registry_path_t *path);
 
-registry_resource_t *registry_schema_from_path(const registry_path_t *path);
+registry_schema_t *registry_schema_from_path(const registry_path_t *path);
 
-registry_resource_t *registry_instance_from_path(const registry_path_t *path);
+registry_instance_t *registry_instance_from_path(const registry_path_t *path);
 
 registry_resource_t *registry_resource_from_path(const registry_path_t *path);
 
-int registry_path_util_parse_string_path(const char *string_path,
-                                         registry_path_t *registry_path);
+int registry_path_from_string(const char *string_path,
+                              registry_path_t *path);
 
 #ifdef __cplusplus
 }

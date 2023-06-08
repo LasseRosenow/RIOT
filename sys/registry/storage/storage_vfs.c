@@ -47,8 +47,7 @@ registry_storage_t registry_storage_vfs = {
     .save = save,
 };
 
-// TODO this is not good
-static void _string_path_append_item(char *dest, registry_id_t number)
+static void _string_path_append_item(char *dest, uint32_t number)
 {
     int size = snprintf(NULL, 0, "/%d", number);
 
@@ -191,16 +190,20 @@ static int load(const registry_storage_instance_t *storage,
 
                                 /* try to convert string path to registry int path */
                                 registry_path_t path;
-                                if (registry_path_util_parse_string_path(string_path +
-                                                                         strlen(mount->mount_point),
-                                                                         &path) < 0) {
+                                if (registry_path_from_string(string_path +
+                                                              strlen(mount->mount_point),
+                                                              &path) < 0) {
                                     DEBUG(
                                         "[registry storage_vfs] load: Invalid registry path\n");
                                 }
                                 else {
-                                    /* get registry meta data of configuration parameter */
+                                    /* get pointer to registry internal configuration parameter */
                                     registry_value_t old_value;
-                                    registry_get_by_path(&path, &old_value);
+                                    registry_resource_t *resource = registry_resource_from_path(
+                                        &path);
+                                    registry_instance_t *instance = registry_instance_from_path(
+                                        &path);
+                                    registry_get(instance, resource, &old_value);
 
                                     /* read value from file */
                                     uint8_t new_value_buf[old_value.buf_len];
