@@ -106,7 +106,7 @@ int registry_save(void)
     int res;
 
     if (!_storage_dst) {
-        return -ENOENT;
+        return -REGISTRY_ERROR_NO_DST_STORAGE;
     }
 
     if (_storage_dst->itf->save_start) {
@@ -122,14 +122,108 @@ int registry_save(void)
     return res;
 }
 
-// TODO
-int registry_save_namespace(const registry_namespace_t *namespace);
+int registry_save_namespace(const registry_namespace_t *namespace)
+{
+    int res;
 
-int registry_save_schema(const registry_schema_t *schema);
+    if (!_storage_dst) {
+        return -REGISTRY_ERROR_NO_DST_STORAGE;
+    }
 
-int registry_save_instance(const registry_instance_t *instance);
+    if (_storage_dst->itf->save_start) {
+        _storage_dst->itf->save_start(_storage_dst);
+    }
 
-int registry_save_group(const registry_instance_t *instance, const registry_resource_t *group);
+    res = registry_export_namespace(namespace, _registry_save_export_cb, 0, NULL);
+
+    if (_storage_dst->itf->save_end) {
+        _storage_dst->itf->save_end(_storage_dst);
+    }
+
+    return res;
+}
+
+int registry_save_schema(const registry_schema_t *schema)
+{
+    int res;
+
+    if (!_storage_dst) {
+        return -REGISTRY_ERROR_NO_DST_STORAGE;
+    }
+
+    if (_storage_dst->itf->save_start) {
+        _storage_dst->itf->save_start(_storage_dst);
+    }
+
+    res = registry_export_schema(schema, _registry_save_export_cb, 0, NULL);
+
+    if (_storage_dst->itf->save_end) {
+        _storage_dst->itf->save_end(_storage_dst);
+    }
+
+    return res;
+}
+
+int registry_save_instance(const registry_instance_t *instance)
+{
+    int res;
+
+    if (!_storage_dst) {
+        return -REGISTRY_ERROR_NO_DST_STORAGE;
+    }
+
+    if (_storage_dst->itf->save_start) {
+        _storage_dst->itf->save_start(_storage_dst);
+    }
+
+    res = registry_export_instance(instance, _registry_save_export_cb, 0, NULL);
+
+    if (_storage_dst->itf->save_end) {
+        _storage_dst->itf->save_end(_storage_dst);
+    }
+
+    return res;
+}
+
+int registry_save_group(const registry_instance_t *instance, const registry_resource_t *group)
+{
+    int res;
+
+    if (!_storage_dst) {
+        return -REGISTRY_ERROR_NO_DST_STORAGE;
+    }
+
+    if (_storage_dst->itf->save_start) {
+        _storage_dst->itf->save_start(_storage_dst);
+    }
+
+    res = registry_export_group(instance, group, _registry_save_export_cb, 0, NULL);
+
+    if (_storage_dst->itf->save_end) {
+        _storage_dst->itf->save_end(_storage_dst);
+    }
+
+    return res;
+}
 
 int registry_save_parameter(const registry_instance_t *instance,
-                            const registry_resource_t *parameter);
+                            const registry_resource_t *parameter)
+{
+    int res;
+
+    if (!_storage_dst) {
+        return -REGISTRY_ERROR_NO_DST_STORAGE;
+    }
+
+    if (_storage_dst->itf->save_start) {
+        _storage_dst->itf->save_start(_storage_dst);
+    }
+
+    res = registry_export_parameter(instance, parameter, _registry_save_export_cb, NULL);
+
+    if (_storage_dst->itf->save_end) {
+        _storage_dst->itf->save_end(_storage_dst);
+    }
+
+    return res;
+}
