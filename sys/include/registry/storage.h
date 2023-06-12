@@ -95,10 +95,10 @@ extern clist_node_t _storage_srcs;
 
 /**
  * @brief Registers a new storage as a source of configurations. Multiple
- *        storages can be configured as sources at the same time. Configurations
- *        will be loaded from all of them. This is commonly called by the
- *        storage facilities who implement their own registry_<storage-name>_src
- *        function.
+ * storages can be configured as sources at the same time. Configurations
+ * will be loaded from all of them. If more than one storage contain values
+ * for the same key, then only the value of the storage is used, that was
+ * registered last.
  *
  * @param[in] src Pointer to the storage to register as source.
  */
@@ -106,10 +106,9 @@ void registry_register_storage_src(const registry_storage_instance_t *src);
 
 /**
  * @brief Registers a new storage as a destination for saving configurations.
- *        Only one storage can be registered as destination at a time. If a
- *        previous storage had been registered before it will be replaced by the
- *        new one. This is commonly called by the storage facilities who
- *        implement their own registry_<storage-name>_dst function.
+ * Only one storage can be registered as destination at a time. If a
+ * previous storage had been registered before it will be replaced by the
+ * new one.
  *
  * @param[in] dst Pointer to the storage to register
  */

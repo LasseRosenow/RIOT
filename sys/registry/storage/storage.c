@@ -71,7 +71,6 @@ int registry_load(void)
                                                         node);
         src->itf->load(src, _registry_load_cb);
     } while (node != _storage_srcs.next);
-    // TODO Possible bug? SFs could override with outdated values if SF_DST is not last in SF_SRCs?
 
     return 0;
 }
