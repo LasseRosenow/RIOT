@@ -33,8 +33,9 @@
 
 #include "registry/namespace_sys/rgb_led.h"
 
-/* Mapping */
+#if IS_USED(MODULE_REGISTRY_NAMESPACE_SYS_RGB_LED) || IS_ACTIVE(DOXYGEN)
 
+/* Mapping */
 static void mapping(const registry_resource_id_t parameter_id, const registry_instance_t *instance,
                     void **val, size_t *val_len)
 {
@@ -147,3 +148,5 @@ const registry_schema_t registry_sys_rgb_led = {
     },
     .resources_len = 4,
 };
+
+#endif

@@ -199,13 +199,13 @@ static int load(const registry_storage_instance_t *storage,
                                 else {
                                     /* get pointer to registry internal configuration parameter */
                                     registry_value_t old_value;
-                                    const registry_resource_t *resource =
+                                    const registry_resource_t *parameter =
                                         registry_resource_from_path(
                                             &path);
                                     const registry_instance_t *instance =
                                         registry_instance_from_path(
                                             &path);
-                                    registry_get(instance, resource, &old_value);
+                                    registry_get(instance, parameter, &old_value);
 
                                     /* read value from file */
                                     uint8_t new_value_buf[old_value.buf_len];
@@ -215,7 +215,7 @@ static int load(const registry_storage_instance_t *storage,
                                     }
                                     else {
                                         /* call callback with value and path */
-                                        load_cb(old_value.buf, new_value_buf, old_value.buf_len);
+                                        load_cb(instance, parameter, new_value_buf);
                                     }
                                 }
 

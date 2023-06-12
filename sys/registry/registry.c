@@ -83,11 +83,11 @@ int registry_get(const registry_instance_t *instance, const registry_resource_t 
 }
 
 int registry_set(const registry_instance_t *instance, const registry_resource_t *parameter,
-                 const registry_value_t *value)
+                 const void *buf)
 {
     assert(instance != NULL);
     assert(parameter != NULL);
-    assert(value != NULL);
+    assert(buf != NULL);
 
     /* get pointer to registry internal value buffer and length */
     void *intern_val = NULL;
@@ -95,14 +95,8 @@ int registry_set(const registry_instance_t *instance, const registry_resource_t 
 
     parameter->schema->mapping(parameter->id, instance, &intern_val, &intern_val_len);
 
-    /* check if val_type is compatible with param_meta->value.parameter.type */
-    if (value->type != parameter->type) {
-        return -EINVAL;
-    }
-    else {
-        /* call handler to apply the new value to the correct parameter in the instance of the schema */
-        memcpy(intern_val, value->buf, intern_val_len);
-    }
+    /* call handler to apply the new value to the correct parameter in the instance of the schema */
+    memcpy(intern_val, buf, intern_val_len);
 
     return 0;
 }
@@ -401,14 +395,10 @@ int registry_export_parameter(const registry_instance_t *instance,
 {
     assert(parameter != NULL);
 
-    registry_value_t value;
-    registry_get(instance, parameter, &value);
-
     registry_export_cb_data_t export_data = {
         .parameter = {
             .data = parameter,
             .instance = instance,
-            .value = &value,
         }
     };
     return export_cb(&export_data, REGISTRY_EXPORT_PARAMETER, context);

@@ -65,10 +65,7 @@ static int load(const registry_storage_instance_t *storage,
     (void)storage;
 
     for (size_t i = 0; i < heap_storage_len; i++) {
-        registry_value_t old_value;
-        registry_get(heap_storage[i].instance, heap_storage[i].parameter, &old_value);
-
-        load_cb(old_value.buf, heap_storage[i].buf, old_value.buf_len);
+        load_cb(heap_storage[i].instance, heap_storage[i].parameter, heap_storage[i].buf);
     }
     return 0;
 }

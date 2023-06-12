@@ -222,11 +222,11 @@ int registry_get(const registry_instance_t *instance, const registry_resource_t 
  *
  * @param[in] instance Pointer to the configuration schema instance.
  * @param[in] parameter Pointer to the configuration parameter.
- * @param[in] value Pointer to the new value for the configuration parameter.
+ * @param[in] buf Pointer to the new value for the configuration parameter.
  * @return 0 on success, non-zero on failure
  */
 int registry_set(const registry_instance_t *instance, const registry_resource_t *parameter,
-                 const registry_value_t *value);
+                 const void *buf);
 
 /**
  * @brief Commits every configuration parameter.
@@ -278,7 +278,6 @@ typedef const union {
     const registry_resource_t *group;
     const struct {
         const registry_resource_t *data;
-        const registry_value_t *value;
         const registry_instance_t *instance;
     } parameter;
 } registry_export_cb_data_t;

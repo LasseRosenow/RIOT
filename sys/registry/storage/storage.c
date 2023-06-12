@@ -50,11 +50,11 @@ void registry_register_storage_dst(const registry_storage_instance_t *dst)
 }
 
 /* registry_load */
-static int _registry_load_cb(const void *old_value_buf, const void *new_value_buf, size_t buf_len)
+static int _registry_load_cb(const registry_instance_t *instance,
+                             const registry_resource_t *parameter,
+                             const void *buf)
 {
-    memcpy((void *)old_value_buf, new_value_buf, buf_len);
-
-    return 0;
+    return registry_set(instance, parameter, &buf);
 }
 
 int registry_load(void)
@@ -82,22 +82,23 @@ static int _registry_save_export_cb(const registry_export_cb_data_t *data,
 {
     (void)context;
 
-    /* The registry also exports just the namespace or just a schema, but the storage is only interested in configuration parameter values */
+    /* the registry also exports just the namespace or just a schema, but the storage is only interested in configuration parameter values */
     if (data_type != REGISTRY_EXPORT_PARAMETER) {
         return 0;
     }
 
-    // TODO export must export all the parameter values or the different instances, for example by providing the instance as a field of parameter->data?
-
-    const registry_storage_instance_t *dst = _storage_dst;
-
-    if (!dst) {
+    /* check if a destination storage is registered */
+    if (!_storage_dst) {
         return -REGISTRY_ERROR_NO_DST_STORAGE;
     }
 
-    /* only parameters need to be exported to storage, not namespaces, schemas or groups */
-    return dst->itf->save(dst, data->parameter.instance, data->parameter.data,
-                          data->parameter.value);
+    /* get value of configuration parameter */
+    registry_value_t value;
+    registry_get(data->parameter.instance, data->parameter.data, &value);
+
+    /* save parameter value via the save function of the registered destination storage */
+    return _storage_dst->itf->save(_storage_dst, data->parameter.instance, data->parameter.data,
+                                   &value);
 }
 
 int registry_save(void)

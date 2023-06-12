@@ -30,7 +30,8 @@ extern "C" {
  * @brief Prototype of a callback function for the load action of a storage
  * interface
  */
-typedef int (*load_cb_t)(const void *old_value_buf, const void *new_value_buf, size_t buf_len);
+typedef int (*load_cb_t)(const registry_instance_t *instance, const registry_resource_t *parameter,
+                         const void *buf);
 
 typedef struct _registry_storage_t registry_storage_t;
 
@@ -73,6 +74,7 @@ struct _registry_storage_t {
      * @param[in] storage Storage descriptor
      * @param[in] instance Pointer to the configuration schema instance.
      * @param[in] parameter Pointer to the configuration parameter.
+     * @param[in] value Configuration parameter value.
      * @return 0 on success, non-zero on failure
      */
     int (*save)(const registry_storage_instance_t *storage,
