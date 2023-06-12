@@ -27,8 +27,7 @@ extern "C" {
 #include "registry.h"
 
 /* RGB-LED */
-// TODO
-// #if IS_USED(MODULE_REGISTRY_NAMESPACE_SYS_RGB_LED) || IS_ACTIVE(DOXYGEN)
+#if IS_USED(MODULE_REGISTRY_NAMESPACE_SYS_RGB_LED) || IS_ACTIVE(DOXYGEN)
 
 extern const registry_resource_t registry_sys_rgb_led_red;
 extern const registry_resource_t registry_sys_rgb_led_green;
@@ -56,7 +55,7 @@ typedef const enum {
     REGISTRY_SYS_RGB_LED_BRIGHTNESSES_YELLOW,
 } registry_sys_rgb_led_indices_t;
 
-// #endif
+#endif
 
 #ifdef __cplusplus
 }

@@ -43,6 +43,7 @@
         "system_error": "c",
         "error.h": "c",
         "errno.h": "c",
-        "container.h": "c"
+        "container.h": "c",
+        "list.h": "c"
     },
 }
