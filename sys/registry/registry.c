@@ -203,7 +203,7 @@ int registry_commit_parameter(const registry_instance_t *instance,
     return instance->commit_cb(REGISTRY_COMMIT_PARAMETER, &parameter->id, instance->context);
 }
 
-int registry_export(const registry_export_cb_t export_cb, const int recursion_depth,
+int registry_export(const registry_export_cb_t export_cb, const uint8_t recursion_depth,
                     const void *context)
 {
     int rc = 0;
@@ -234,7 +234,7 @@ int registry_export(const registry_export_cb_t export_cb, const int recursion_de
 }
 
 int registry_export_namespace(const registry_namespace_t *namespace,
-                              const registry_export_cb_t export_cb, const int recursion_depth,
+                              const registry_export_cb_t export_cb, const uint8_t recursion_depth,
                               const void *context)
 {
     assert(namespace != NULL);
@@ -268,7 +268,7 @@ int registry_export_namespace(const registry_namespace_t *namespace,
 }
 
 int registry_export_schema(const registry_schema_t *schema, const registry_export_cb_t export_cb,
-                           const int recursion_depth, const void *context)
+                           const uint8_t recursion_depth, const void *context)
 {
     assert(schema != NULL);
 
@@ -312,7 +312,7 @@ int registry_export_schema(const registry_schema_t *schema, const registry_expor
 }
 
 int registry_export_instance(const registry_instance_t *instance,
-                             const registry_export_cb_t export_cb, const int recursion_depth,
+                             const registry_export_cb_t export_cb, const uint8_t recursion_depth,
                              const void *context)
 {
     assert(instance != NULL);
@@ -355,7 +355,7 @@ int registry_export_instance(const registry_instance_t *instance,
 
 int registry_export_group(const registry_instance_t *instance, const registry_resource_t *group,
                           const registry_export_cb_t export_cb,
-                          const int recursion_depth, const void *context)
+                          const uint8_t recursion_depth, const void *context)
 {
     assert(group != NULL);
 

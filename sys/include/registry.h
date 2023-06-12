@@ -295,18 +295,22 @@ typedef int (*registry_export_cb_t)(const registry_export_cb_data_t *data,
                                     const registry_export_cb_data_type_t data_type,
                                     const void *context);
 
+#define REGISTRY_EXPORT_ALL = 0;
+#define REGISTRY_EXPORT_SELF = 1;
+#define REGISTRY_EXPORT_WITH_N_LEVELS_OF_CHILDREN(_n) (_n + 1);
+
 /**
  * @brief Exports every configuration parameter.
  *
  * @param[in] export_cb Exporting callback function call with the @p path and current
  * value of a specific or all configuration parameters
  * @param[in] recursion_depth Defines how deeply nested child groups / parameters
- * will be shown. (0 to show all children, 1 to only show the exact match, 2 - n
- * to show the exact match plus its children ... plus n levels of children)
+ * will be shown. (0 to show all children, 1 to only show the exact match, n > 1
+ * to show the exact match plus n - 1 levels of children)
  * @param[in] context Context that will be passed to @p export_cb
  */
-int registry_export(const registry_export_cb_t export_cb, const int recursion_depth,
-                    const void *context);
+int registry_export(const registry_export_cb_t export_cb,
+                    const uint8_t recursion_depth, const void *context);
 
 /**
  * @brief Exports every configuration parameter within the given configuration namespace.
@@ -320,7 +324,7 @@ int registry_export(const registry_export_cb_t export_cb, const int recursion_de
  * @param[in] context Context that will be passed to @p export_cb
  */
 int registry_export_namespace(const registry_namespace_t *namespace,
-                              const registry_export_cb_t export_cb, const int recursion_depth,
+                              const registry_export_cb_t export_cb, const uint8_t recursion_depth,
                               const void *context);
 
 /**
@@ -335,7 +339,7 @@ int registry_export_namespace(const registry_namespace_t *namespace,
  * @param[in] context Context that will be passed to @p export_cb
  */
 int registry_export_schema(const registry_schema_t *schema, const registry_export_cb_t export_cb,
-                           const int recursion_depth, const void *context);
+                           const uint8_t recursion_depth, const void *context);
 
 /**
  * @brief Exports every configuration parameter within the given configuration schema instance.
@@ -349,7 +353,7 @@ int registry_export_schema(const registry_schema_t *schema, const registry_expor
  * @param[in] context Context that will be passed to @p export_cb
  */
 int registry_export_instance(const registry_instance_t *instance,
-                             const registry_export_cb_t export_cb, const int recursion_depth,
+                             const registry_export_cb_t export_cb, const uint8_t recursion_depth,
                              const void *context);
 
 /**
@@ -365,7 +369,7 @@ int registry_export_instance(const registry_instance_t *instance,
  * @param[in] context Context that will be passed to @p export_cb
  */
 int registry_export_group(const registry_instance_t *instance, const registry_resource_t *group,
-                          const registry_export_cb_t export_cb, const int recursion_depth,
+                          const registry_export_cb_t export_cb, const uint8_t recursion_depth,
                           const void *context);
 
 /**
