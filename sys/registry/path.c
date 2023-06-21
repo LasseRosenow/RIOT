@@ -101,19 +101,42 @@ static const registry_instance_t *_instance_lookup(const registry_schema_t *sche
     return NULL;
 }
 
+static const registry_resource_t *_internal_resource_lookup(const registry_resource_t *resource,
+                                                            const registry_resource_id_t resource_id)
+{
+    const registry_resource_t *resource;
+    const registry_resource_t **resources = resource->resources;
+    size_t resources_len = resource->resources_len;
+
+    for (size_t i = 0; i < resources_len; i++) {
+        resource = resources[i];
+
+        if (resource->id == resource_id) {
+            return resource;
+        }
+        else if (resource->type == REGISTRY_TYPE_GROUP) {
+            return _internal_resource_lookup(resource, resource_id);
+        }
+    }
+
+    return NULL;
+}
+
 static const registry_resource_t *_resource_lookup(const registry_schema_t *schema,
                                                    const registry_resource_id_t resource_id)
 {
-    // TODO this is incorrect. this function does not find nested resources
-    const registry_resource_t *schema_resource;
-    const registry_resource_t **schema_resources = schema->resources;
-    size_t schema_resources_len = schema->resources_len;
+    const registry_resource_t *resource;
+    const registry_resource_t **resources = schema->resources;
+    size_t resources_len = schema->resources_len;
 
-    for (size_t i = 0; i < schema_resources_len; i++) {
-        schema_resource = schema_resources[i];
+    for (size_t i = 0; i < resources_len; i++) {
+        resource = resources[i];
 
-        if (schema_resource->id == resource_id) {
-            return schema_resource;
+        if (resource->id == resource_id) {
+            return resource;
+        }
+        else if (resource->type == REGISTRY_TYPE_GROUP) {
+            return _internal_resource_lookup(resource, resource_id);
         }
     }
 
