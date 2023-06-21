@@ -78,3 +78,7 @@ DAS BASIS EXPORT/COMMIT IST NUR AUF INSTANCE LEVEL!!!
 - path => path_util? (enthält nur eine function, die einen path zu den entsprechenden pointern auflöst)
 - namespace => schema => (instance | parameter) doppelt vermaschen so, dass es auch rückwärts geht: (parameter | instance) => schema => namespace
 - storage only has pointer API
+
+## Lasse discussed with himself
+
+- Vielleicht ist es eine gute idee, einfach verschiedene registry_path_t zu haben. z.B. registry_schema_path_t und registry_resource_path_t. und dann ohne Nullable fields halt
