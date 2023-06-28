@@ -15,7 +15,6 @@
  * @file
  *
  * @author      Lasse Rosenow <lasse.rosenow@haw-hamburg.de>
- * @author      Leandro Lanzieri <leandro.lanzieri@haw-hamburg.de>
  *
  * @}
  */
@@ -144,196 +143,152 @@ static const registry_resource_t *_resource_lookup(const registry_schema_t *sche
 }
 
 /* convert to path */
-int registry_path_from_namespace(const registry_namespace_t *namespace, registry_path_t *path,
-                                 registry_namespace_id_t *namespace_id_buf)
+const registry_namespace_path_t registry_path_from_namespace(const registry_namespace_t *namespace)
 {
     assert(namespace != NULL);
-    assert(path != NULL);
+
+    registry_namespace_id_t namespace_id = 0;
 
     clist_node_t *node = _registry_namespaces.next;
-
-    if (!node) {
-        return -EINVAL;
-    }
 
     do {
         node = node->next;
 
         if (namespace == container_of(node, registry_namespace_t, node)) {
-            path->namespace_id = namespace_id_buf;
             break;
         }
 
-        (*namespace_id_buf)++;
+        namespace_id++;
     } while (node != _registry_namespaces.next);
 
-    return 0;
+    return (registry_namespace_path_t) {
+               .namespace_id = namespace_id,
+    };
 }
 
-int registry_path_from_schema(const registry_schema_t *schema, registry_path_t *path,
-                              registry_namespace_id_t *namespace_id_buf)
+const registry_schema_path_t registry_path_from_schema(const registry_schema_t *schema)
 {
     assert(schema != NULL);
-    assert(path != NULL);
 
-    int result = 0;
+    /* get namespace_id */
+    const registry_namespace_path_t path = registry_path_from_namespace(schema->namespace);
 
-    /* set namespace_id */
-    result = registry_path_from_namespace(schema->namespace, path, namespace_id_buf);
-
-    /* set schema_id */
-    path->schema_id = &schema->id;
-
-    return result;
+    return (registry_schema_path_t) {
+               .namespace_id = path.namespace_id,
+               .schema_id = schema->id,
+    };
 }
 
-int registry_path_from_instance(const registry_instance_t *instance, registry_path_t *path,
-                                registry_namespace_id_t *namespace_id_buf,
-                                registry_instance_id_t *instance_id_buf)
+const registry_instance_path_t registry_path_from_instance(const registry_instance_t *instance)
 {
     assert(instance != NULL);
-    assert(path != NULL);
 
-    int result = 0;
+    /* get namespace_id and schema_id */
+    const registry_schema_path_t path = registry_path_from_schema(instance->schema);
 
-    /* set namespace_id and schema_id */
-    result = registry_path_from_schema(instance->schema, path, namespace_id_buf);
+    /* get instance_id */
+    registry_instance_id_t instance_id = 0;
 
-    /* set instance_id */
     clist_node_t *node = instance->schema->instances.next;
-
-    if (!node) {
-        return -EINVAL;
-    }
 
     do {
         node = node->next;
 
         if (instance == container_of(node, registry_instance_t, node)) {
-            path->instance_id = instance_id_buf;
             break;
         }
 
-        (*instance_id_buf)++;
+        instance_id++;
     } while (node != _registry_namespaces.next);
 
-    return result;
+    return (registry_instance_path_t) {
+               .namespace_id = path.namespace_id,
+               .schema_id = path.schema_id,
+               .instance_id = instance_id,
+    };
 }
 
-int registry_path_from_resource(const registry_instance_t *instance,
-                                const registry_resource_t *resource, registry_path_t *path,
-                                registry_namespace_id_t *namespace_id_buf,
-                                registry_instance_id_t *instance_id_buf)
+const registry_resource_path_t registry_path_from_resource(const registry_instance_t *instance,
+                                                           const registry_resource_t *resource)
 {
     assert(instance != NULL);
     assert(resource != NULL);
-    assert(path != NULL);
 
-    int result = 0;
+    /* get namespace_id, schema_id and instance_id */
+    const registry_instance_path_t path = registry_path_from_instance(instance);
 
-    /* set namespace_id, schema_id and instance_id */
-    result = registry_path_from_instance(instance, path, namespace_id_buf, instance_id_buf);
-
-    /* set resource_id */
-    path->resource_id = &resource->id;
-
-    return result;
+    return (registry_resource_path_t) {
+               .namespace_id = path.namespace_id,
+               .schema_id = path.schema_id,
+               .instance_id = path.instance_id,
+               .resource_id = resource->id,
+    };
 }
 
 /* convert from path */
-const registry_namespace_t *registry_namespace_from_path(const registry_path_t *path)
+const registry_namespace_t *registry_namespace_from_path(const registry_namespace_path_t *path)
 {
     assert(path != NULL);
 
     /* lookup namespace */
-    return _namespace_lookup(*path->namespace_id);
+    return _namespace_lookup(path->namespace_id);
 }
 
-const registry_schema_t *registry_schema_from_path(const registry_path_t *path)
+const registry_schema_t *registry_schema_from_path(const registry_schema_path_t *path)
 {
     assert(path != NULL);
 
     /* lookup namespace */
-    const registry_namespace_t *namespace = _namespace_lookup(*path->namespace_id);
+    const registry_namespace_t *namespace = _namespace_lookup(path->namespace_id);
 
     if (!namespace) {
         return NULL;
     }
 
     /* lookup schema */
-    return _schema_lookup(namespace, *path->schema_id);
+    return _schema_lookup(namespace, path->schema_id);
 }
 
-const registry_instance_t *registry_instance_from_path(const registry_path_t *path)
+const registry_instance_t *registry_instance_from_path(const registry_instance_path_t *path)
 {
     assert(path != NULL);
 
     /* lookup namespace */
-    const registry_namespace_t *namespace = _namespace_lookup(*path->namespace_id);
+    const registry_namespace_t *namespace = _namespace_lookup(path->namespace_id);
 
     if (!namespace) {
         return NULL;
     }
 
     /* lookup schema */
-    const registry_schema_t *schema = _schema_lookup(namespace, *path->schema_id);
+    const registry_schema_t *schema = _schema_lookup(namespace, path->schema_id);
 
     if (!schema) {
         return NULL;
     }
 
     /* lookup instance */
-    return _instance_lookup(schema, *path->instance_id);
+    return _instance_lookup(schema, path->instance_id);
 }
 
-const registry_resource_t *registry_resource_from_path(const registry_path_t *path)
+const registry_resource_t *registry_resource_from_path(const registry_resource_path_t *path)
 {
     assert(path != NULL);
 
     /* lookup namespace */
-    const registry_namespace_t *namespace = _namespace_lookup(*path->namespace_id);
+    const registry_namespace_t *namespace = _namespace_lookup(path->namespace_id);
 
     if (!namespace) {
         return NULL;
     }
 
     /* lookup schema */
-    const registry_schema_t *schema = _schema_lookup(namespace, *path->schema_id);
+    const registry_schema_t *schema = _schema_lookup(namespace, path->schema_id);
 
     if (!schema) {
         return NULL;
     }
 
     /* lookup resource */
-    return _resource_lookup(schema, *path->resource_id);
-}
-
-/* util */
-// TODO this cannot work, the registry_path struct only has pointers.
-// If we use stack variables to fill the pointer, then the value will be lost after the function is left
-int registry_path_from_string(const char *string_path,
-                              registry_path_t *path)
-{
-    char *ptr = (char *)string_path;
-
-    int i = 0;
-
-    while (*ptr != '\0') {
-        uint32_t id = strtol(ptr, &ptr, 10);
-
-        switch (i) {
-        case 0: *(registry_namespace_id_t *)path->namespace_id = id; break;
-        case 1: *(registry_schema_id_t *)path->schema_id = id; break;
-        case 2: *(registry_instance_id_t *)path->instance_id = id; break;
-        case 3: *(registry_resource_id_t *)path->resource_id = id; break;
-        }
-
-        if (*ptr != '\0') {
-            ptr++;
-        }
-
-        i++;
-    }
-
-    return 0;
+    return _resource_lookup(schema, path->resource_id);
 }

@@ -190,6 +190,28 @@ static int load(const registry_storage_instance_t *storage,
 
                                 /* try to convert string path to registry int path */
                                 registry_path_t path;
+                                char *ptr = (char *)string_path;
+                                int i = 0;
+
+                                while (*ptr != '\0') {
+                                    uint32_t id = strtol(ptr, &ptr, 10);
+
+                                    switch (i) {
+                                    case 0: path.namespace_id = id;
+                                        break;
+                                    case 1: *(registry_schema_id_t *)path->schema_id = id; break;
+                                    case 2: *(registry_instance_id_t *)path->instance_id = id;
+                                        break;
+                                    case 3: *(registry_resource_id_t *)path->resource_id = id;
+                                        break;
+                                    }
+
+                                    if (*ptr != '\0') {
+                                        ptr++;
+                                    }
+
+                                    i++;
+                                }
                                 if (registry_path_from_string(string_path +
                                                               strlen(mount->mount_point),
                                                               &path) < 0) {
