@@ -65,14 +65,14 @@ typedef struct {
     const registry_resource_id_t resource_id;
 } registry_resource_path_t;
 
-const registry_namespace_path_t registry_path_from_namespace(const registry_namespace_t *namespace);
+registry_namespace_path_t registry_path_from_namespace(const registry_namespace_t *namespace);
 
-const registry_schema_path_t registry_path_from_schema(const registry_schema_t *schema);
+registry_schema_path_t registry_path_from_schema(const registry_schema_t *schema);
 
-const registry_instance_path_t registry_path_from_instance(const registry_instance_t *instance);
+registry_instance_path_t registry_path_from_instance(const registry_instance_t *instance);
 
-const registry_resource_path_t registry_path_from_resource(const registry_instance_t *instance,
-                                                           const registry_resource_t *resource);
+registry_resource_path_t registry_path_from_resource(const registry_instance_t *instance,
+                                                     const registry_resource_t *resource);
 
 /* convert from path */
 const registry_namespace_t *registry_namespace_from_path(const registry_namespace_path_t *path);

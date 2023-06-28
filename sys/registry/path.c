@@ -100,12 +100,11 @@ static const registry_instance_t *_instance_lookup(const registry_schema_t *sche
     return NULL;
 }
 
-static const registry_resource_t *_internal_resource_lookup(const registry_resource_t *resource,
+static const registry_resource_t *_internal_resource_lookup(const registry_resource_t **resources,
+                                                            size_t resources_len,
                                                             const registry_resource_id_t resource_id)
 {
     const registry_resource_t *resource;
-    const registry_resource_t **resources = resource->resources;
-    size_t resources_len = resource->resources_len;
 
     for (size_t i = 0; i < resources_len; i++) {
         resource = resources[i];
@@ -114,7 +113,8 @@ static const registry_resource_t *_internal_resource_lookup(const registry_resou
             return resource;
         }
         else if (resource->type == REGISTRY_TYPE_GROUP) {
-            return _internal_resource_lookup(resource, resource_id);
+            return _internal_resource_lookup(resource->resources, resource->resources_len,
+                                             resource_id);
         }
     }
 
@@ -135,7 +135,8 @@ static const registry_resource_t *_resource_lookup(const registry_schema_t *sche
             return resource;
         }
         else if (resource->type == REGISTRY_TYPE_GROUP) {
-            return _internal_resource_lookup(resource, resource_id);
+            return _internal_resource_lookup(resource->resources, resource->resources_len,
+                                             resource_id);
         }
     }
 
@@ -143,7 +144,7 @@ static const registry_resource_t *_resource_lookup(const registry_schema_t *sche
 }
 
 /* convert to path */
-const registry_namespace_path_t registry_path_from_namespace(const registry_namespace_t *namespace)
+registry_namespace_path_t registry_path_from_namespace(const registry_namespace_t *namespace)
 {
     assert(namespace != NULL);
 
@@ -166,7 +167,7 @@ const registry_namespace_path_t registry_path_from_namespace(const registry_name
     };
 }
 
-const registry_schema_path_t registry_path_from_schema(const registry_schema_t *schema)
+registry_schema_path_t registry_path_from_schema(const registry_schema_t *schema)
 {
     assert(schema != NULL);
 
@@ -179,7 +180,7 @@ const registry_schema_path_t registry_path_from_schema(const registry_schema_t *
     };
 }
 
-const registry_instance_path_t registry_path_from_instance(const registry_instance_t *instance)
+registry_instance_path_t registry_path_from_instance(const registry_instance_t *instance)
 {
     assert(instance != NULL);
 
@@ -208,8 +209,8 @@ const registry_instance_path_t registry_path_from_instance(const registry_instan
     };
 }
 
-const registry_resource_path_t registry_path_from_resource(const registry_instance_t *instance,
-                                                           const registry_resource_t *resource)
+registry_resource_path_t registry_path_from_resource(const registry_instance_t *instance,
+                                                     const registry_resource_t *resource)
 {
     assert(instance != NULL);
     assert(resource != NULL);

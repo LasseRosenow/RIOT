@@ -189,7 +189,7 @@ static int load(const registry_storage_instance_t *storage,
                                 vfs_fstat(fd, &_stat);
 
                                 /* try to convert string path to registry int path */
-                                registry_path_t path;
+                                registry_resource_path_t path;
                                 char *ptr = (char *)string_path;
                                 int i = 0;
 
