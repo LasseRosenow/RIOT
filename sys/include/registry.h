@@ -109,6 +109,9 @@ typedef const enum {
  */
 struct _registry_instance_t {
     clist_node_t node;                  /**< Linked list node */
+#if IS_USED(MODULE_REGISTRY_PATH) || IS_ACTIVE(DOXYGEN)
+    const registry_instance_id_t id;    /**< Integer representing the path id of the schema instance */
+#endif /* MODULE_REGISTRY_PATH */
 #if IS_ACTIVE(CONFIG_REGISTRY_ENABLE_META_NAME) || IS_ACTIVE(DOXYGEN)
     const char * const name;            /**< String describing the instance */
 #endif /* CONFIG_REGISTRY_ENABLE_META_NAME */
@@ -179,9 +182,16 @@ struct _registry_schema_t {
 };
 
 struct _registry_namespace_t {
-    clist_node_t node;                          /**< Linked list node */
+    clist_node_t node;                  /**< Linked list node */
+#if IS_USED(MODULE_REGISTRY_PATH) || IS_ACTIVE(DOXYGEN)
+    const registry_namespace_id_t id;   /**< Integer representing the path id of the namespace */
+#endif /* MODULE_REGISTRY_PATH */
+#if IS_ACTIVE(CONFIG_REGISTRY_ENABLE_META_NAME) || IS_ACTIVE(DOXYGEN)
     const char * const name;                    /**< String describing the configuration namespace */
+#endif /* CONFIG_REGISTRY_ENABLE_META_NAME */
+#if IS_ACTIVE(CONFIG_REGISTRY_ENABLE_META_DESCRIPTION) || IS_ACTIVE(DOXYGEN)
     const char * const description;             /**< String describing the configuration namespace with more details */
+#endif /* CONFIG_REGISTRY_ENABLE_META_DESCRIPTION */
     const registry_schema_t ** const schemas;   /**< Array of pointers to all the configuration schemas that belong to this namespace */
     const size_t schemas_len;                   /**< Size of schemas array */
 };

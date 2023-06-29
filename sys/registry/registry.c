@@ -40,6 +40,12 @@ int registry_register_namespace(const registry_namespace_t *namespace)
 {
     assert(namespace != NULL);
 
+    /* get _registry_namespaces length to determine the id of the new namespace */
+    size_t count = clist_count(&_registry_namespaces);
+
+    /* set id of new namespace to the namespace count */
+    *(registry_namespace_id_t *)&namespace->id = count;
+
     /* add namespace to list */
     clist_rpush((clist_node_t *)&_registry_namespaces, (clist_node_t *)&namespace->node);
 
@@ -54,6 +60,12 @@ int registry_register_schema_instance(const registry_schema_t *schema,
 
     /* add schema to instance */
     (*((registry_instance_t *)instance)).schema = schema;
+
+    /* get instances length to determine the id of the new instance */
+    size_t count = clist_count(&schema->instances);
+
+    /* set id of new instance to the instance count */
+    *(registry_instance_id_t *)&instance->id = count;
 
     /* add instance to schema */
     clist_rpush((clist_node_t *)&schema->instances, (clist_node_t *)&instance->node);

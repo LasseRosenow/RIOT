@@ -148,22 +148,8 @@ registry_namespace_path_t registry_path_from_namespace(const registry_namespace_
 {
     assert(namespace != NULL);
 
-    registry_namespace_id_t namespace_id = 0;
-
-    clist_node_t *node = _registry_namespaces.next;
-
-    do {
-        node = node->next;
-
-        if (namespace == container_of(node, registry_namespace_t, node)) {
-            break;
-        }
-
-        namespace_id++;
-    } while (node != _registry_namespaces.next);
-
     return (registry_namespace_path_t) {
-               .namespace_id = namespace_id,
+               .namespace_id = namespace->id,
     };
 }
 
@@ -171,11 +157,8 @@ registry_schema_path_t registry_path_from_schema(const registry_schema_t *schema
 {
     assert(schema != NULL);
 
-    /* get namespace_id */
-    const registry_namespace_path_t path = registry_path_from_namespace(schema->namespace);
-
     return (registry_schema_path_t) {
-               .namespace_id = path.namespace_id,
+               .namespace_id = schema->namespace->id,
                .schema_id = schema->id,
     };
 }
@@ -184,28 +167,10 @@ registry_instance_path_t registry_path_from_instance(const registry_instance_t *
 {
     assert(instance != NULL);
 
-    /* get namespace_id and schema_id */
-    const registry_schema_path_t path = registry_path_from_schema(instance->schema);
-
-    /* get instance_id */
-    registry_instance_id_t instance_id = 0;
-
-    clist_node_t *node = instance->schema->instances.next;
-
-    do {
-        node = node->next;
-
-        if (instance == container_of(node, registry_instance_t, node)) {
-            break;
-        }
-
-        instance_id++;
-    } while (node != _registry_namespaces.next);
-
     return (registry_instance_path_t) {
-               .namespace_id = path.namespace_id,
-               .schema_id = path.schema_id,
-               .instance_id = instance_id,
+               .namespace_id = instance->schema->namespace->id,
+               .schema_id = instance->schema->id,
+               .instance_id = instance->id,
     };
 }
 
@@ -215,13 +180,10 @@ registry_resource_path_t registry_path_from_resource(const registry_instance_t *
     assert(instance != NULL);
     assert(resource != NULL);
 
-    /* get namespace_id, schema_id and instance_id */
-    const registry_instance_path_t path = registry_path_from_instance(instance);
-
     return (registry_resource_path_t) {
-               .namespace_id = path.namespace_id,
-               .schema_id = path.schema_id,
-               .instance_id = path.instance_id,
+               .namespace_id = instance->schema->namespace->id,
+               .schema_id = instance->schema->id,
+               .instance_id = instance->id,
                .resource_id = resource->id,
     };
 }

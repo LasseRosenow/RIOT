@@ -188,57 +188,40 @@ static int load(const registry_storage_instance_t *storage,
                                 /* get filesize */
                                 vfs_fstat(fd, &_stat);
 
-                                /* try to convert string path to registry int path */
-                                registry_resource_path_t path;
+                                /* convert string path to registry int path */
                                 char *ptr = (char *)string_path;
-                                int i = 0;
+                                registry_namespace_id_t namespace_id = strtol(ptr, &ptr, 10);
+                                ptr++;
+                                registry_schema_id_t schema_id = strtol(ptr, &ptr, 10);
+                                ptr++;
+                                registry_instance_id_t instance_id = strtol(ptr, &ptr, 10);
+                                ptr++;
+                                registry_resource_id_t resource_id = strtol(ptr, &ptr, 10);
 
-                                while (*ptr != '\0') {
-                                    uint32_t id = strtol(ptr, &ptr, 10);
+                                registry_resource_path_t path = {
+                                    .namespace_id = namespace_id,
+                                    .schema_id = schema_id,
+                                    .instance_id = instance_id,
+                                    .resource_id = resource_id,
+                                };
 
-                                    switch (i) {
-                                    case 0: path.namespace_id = id;
-                                        break;
-                                    case 1: *(registry_schema_id_t *)path->schema_id = id; break;
-                                    case 2: *(registry_instance_id_t *)path->instance_id = id;
-                                        break;
-                                    case 3: *(registry_resource_id_t *)path->resource_id = id;
-                                        break;
-                                    }
+                                /* get pointer to registry internal configuration parameter */
+                                registry_value_t value;
+                                const registry_resource_t *parameter = registry_resource_from_path(
+                                    &path);
+                                const registry_instance_t *instance = registry_instance_from_path(
+                                    &path);
+                                registry_get(instance, parameter, &value);
 
-                                    if (*ptr != '\0') {
-                                        ptr++;
-                                    }
-
-                                    i++;
-                                }
-                                if (registry_path_from_string(string_path +
-                                                              strlen(mount->mount_point),
-                                                              &path) < 0) {
+                                /* read value from file */
+                                uint8_t new_value_buf[value.buf_len];
+                                if (vfs_read(fd, new_value_buf, value.buf_len) < 0) {
                                     DEBUG(
-                                        "[registry storage_vfs] load: Invalid registry path\n");
+                                        "[registry storage_vfs] load: Can not read from file\n");
                                 }
                                 else {
-                                    /* get pointer to registry internal configuration parameter */
-                                    registry_value_t old_value;
-                                    const registry_resource_t *parameter =
-                                        registry_resource_from_path(
-                                            &path);
-                                    const registry_instance_t *instance =
-                                        registry_instance_from_path(
-                                            &path);
-                                    registry_get(instance, parameter, &old_value);
-
-                                    /* read value from file */
-                                    uint8_t new_value_buf[old_value.buf_len];
-                                    if (vfs_read(fd, new_value_buf, old_value.buf_len) < 0) {
-                                        DEBUG(
-                                            "[registry storage_vfs] load: Can not read from file\n");
-                                    }
-                                    else {
-                                        /* call callback with value and path */
-                                        load_cb(instance, parameter, new_value_buf);
-                                    }
+                                    /* call callback with value and path */
+                                    load_cb(instance, parameter, new_value_buf);
                                 }
 
                                 /* close file */
@@ -302,30 +285,27 @@ static int save(const registry_storage_instance_t *storage,
     _mount(mount);
 
     /* create dir path */
-    registry_path_t path;
-    registry_namespace_id_t namespace_id;
-    registry_instance_id_t instance_id;
-    registry_path_from_resource(instance, parameter, &path, &namespace_id, &instance_id);
+    registry_resource_path_t path = registry_path_from_resource(instance, parameter);
 
     char string_path[REGISTRY_PATH_STRING_MAX_LEN];
 
     sprintf(string_path, "%s", mount->mount_point);
 
-    _string_path_append_item(string_path, *path.namespace_id);
+    _string_path_append_item(string_path, path.namespace_id);
     int res = vfs_mkdir(string_path, 0);
 
     if (res < 0 && res != -EEXIST) {
         DEBUG("[registry storage_vfs] save: Can not make dir: %s\n", string_path);
     }
 
-    _string_path_append_item(string_path, *path.schema_id);
+    _string_path_append_item(string_path, path.schema_id);
     res = vfs_mkdir(string_path, 0);
 
     if (res < 0 && res != -EEXIST) {
         DEBUG("[registry storage_vfs] save: Can not make dir: %s\n", string_path);
     }
 
-    _string_path_append_item(string_path, *path.instance_id);
+    _string_path_append_item(string_path, path.instance_id);
     res = vfs_mkdir(string_path, 0);
 
     if (res < 0 && res != -EEXIST) {
@@ -333,7 +313,7 @@ static int save(const registry_storage_instance_t *storage,
     }
 
     /* open file */
-    _string_path_append_item(string_path, *path.resource_id);
+    _string_path_append_item(string_path, path.resource_id);
 
     int fd = vfs_open(string_path, O_CREAT | O_RDWR, 0);
 
