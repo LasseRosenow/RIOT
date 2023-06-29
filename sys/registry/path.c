@@ -181,69 +181,50 @@ registry_resource_path_t registry_path_from_resource(const registry_instance_t *
 }
 
 /* convert from path */
-const registry_namespace_t *registry_namespace_from_path(const registry_namespace_path_t *path)
+int registry_from_namespace_path(const registry_namespace_path_t *path,
+                                 registry_namespace_t **namespace)
 {
     assert(path != NULL);
 
-    /* lookup namespace */
-    return _namespace_lookup(path->namespace_id);
+    *namespace = _namespace_lookup(path->namespace_id);
+
+    return 0;
 }
 
-const registry_schema_t *registry_schema_from_path(const registry_schema_path_t *path)
+int registry_from_schema_path(const registry_schema_path_t *path,
+                              registry_namespace_t **namespace, registry_schema_t **schema)
 {
     assert(path != NULL);
 
-    /* lookup namespace */
-    const registry_namespace_t *namespace = _namespace_lookup(path->namespace_id);
+    *namespace = _namespace_lookup(path->namespace_id);
+    *schema = _schema_lookup(*namespace, path->schema_id);
 
-    if (!namespace) {
-        return NULL;
-    }
-
-    /* lookup schema */
-    return _schema_lookup(namespace, path->schema_id);
+    return 0;
 }
 
-const registry_instance_t *registry_instance_from_path(const registry_instance_path_t *path)
+int registry_from_instance_path(const registry_instance_path_t *path,
+                                registry_namespace_t **namespace, registry_schema_t **schema,
+                                registry_instance_t **instance)
 {
     assert(path != NULL);
 
-    /* lookup namespace */
-    const registry_namespace_t *namespace = _namespace_lookup(path->namespace_id);
+    *namespace = _namespace_lookup(path->namespace_id);
+    *schema = _schema_lookup(*namespace, path->schema_id);
+    *instance = _instance_lookup(*schema, path->instance_id);
 
-    if (!namespace) {
-        return NULL;
-    }
-
-    /* lookup schema */
-    const registry_schema_t *schema = _schema_lookup(namespace, path->schema_id);
-
-    if (!schema) {
-        return NULL;
-    }
-
-    /* lookup instance */
-    return _instance_lookup(schema, path->instance_id);
+    return 0;
 }
 
-const registry_resource_t *registry_resource_from_path(const registry_resource_path_t *path)
+int registry_from_resource_path(const registry_resource_path_t *path,
+                                registry_namespace_t **namespace, registry_schema_t **schema,
+                                registry_instance_t **instance, registry_resource_t **resource)
 {
     assert(path != NULL);
 
-    /* lookup namespace */
-    const registry_namespace_t *namespace = _namespace_lookup(path->namespace_id);
+    *namespace = _namespace_lookup(path->namespace_id);
+    *schema = _schema_lookup(*namespace, path->schema_id);
+    *instance = _instance_lookup(*schema, path->instance_id);
+    *resource = _resource_lookup(*schema, path->resource_id);
 
-    if (!namespace) {
-        return NULL;
-    }
-
-    /* lookup schema */
-    const registry_schema_t *schema = _schema_lookup(namespace, path->schema_id);
-
-    if (!schema) {
-        return NULL;
-    }
-
-    /* lookup resource */
-    return _resource_lookup(schema, path->resource_id);
+    return 0;
 }
