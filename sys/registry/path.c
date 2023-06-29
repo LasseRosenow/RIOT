@@ -41,17 +41,13 @@ static const registry_namespace_t *_namespace_lookup(const registry_namespace_id
         return NULL;
     }
 
-    registry_namespace_id_t index = 0;
-
     do {
         node = node->next;
         const registry_namespace_t *namespace = container_of(node, registry_namespace_t, node);
 
-        if (index == namespace_id) {
+        if (namespace->id == namespace_id) {
             return namespace;
         }
-
-        index++;
     } while (node != _registry_namespaces.next);
 
     return NULL;
@@ -83,18 +79,14 @@ static const registry_instance_t *_instance_lookup(const registry_schema_t *sche
         return NULL;
     }
 
-    registry_instance_id_t index = 0;
-
     do {
         node = node->next;
         const registry_instance_t *instance = container_of(node, registry_instance_t, node);
 
         /* check if index equals instance_id */
-        if (index == instance_id) {
+        if (instance->id == instance_id) {
             return instance;
         }
-
-        index++;
     } while (node != schema->instances.next);
 
     return NULL;
