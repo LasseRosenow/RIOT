@@ -396,6 +396,10 @@ PSEUDOMODULES += fortuna_reseed
 ##              will be removed after 2023.07 release.
 PSEUDOMODULES += random_cmd
 ## @}
+PSEUDOMODULES += registry_%
+NO_PSEUDOMODULES += registry_namespace_sys
+NO_PSEUDOMODULES += registry_storage
+
 PSEUDOMODULES += riotboot_%
 PSEUDOMODULES += rtt_cmd
 PSEUDOMODULES += saul_adc

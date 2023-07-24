@@ -1,0 +1,77 @@
+[
+    {
+        "type": "File",
+        "name": "/home/lasse/Schreibtisch/RIOT/riot-registry/RIOT/sys/include/registry.h",
+        "parent_id": null,
+        "workspaceRoot": "/home/lasse/Schreibtisch/RIOT/riot-registry/RIOT",
+        "workspacePath": "sys/include/registry.h",
+        "id": "Nzqu9YDJFce8xnCT"
+    },
+    {
+        "type": "Directory",
+        "name": "/home/lasse/Schreibtisch/RIOT/riot-registry/RIOT/sys/include/registry",
+        "parent_id": null,
+        "workspaceRoot": "/home/lasse/Schreibtisch/RIOT/riot-registry/RIOT",
+        "workspacePath": "sys/include/registry",
+        "id": "V2E5C4uIhnHiWUAK",
+        "label": "include"
+    },
+    {
+        "type": "Group",
+        "name": "test",
+        "parent_id": "V2E5C4uIhnHiWUAK",
+        "workspaceRoot": null,
+        "workspacePath": null,
+        "id": "4kdNMrZ0eLwsn2u7"
+    },
+    {
+        "type": "Directory",
+        "name": "/home/lasse/Schreibtisch/RIOT/riot-registry/RIOT/sys/registry",
+        "parent_id": null,
+        "workspaceRoot": "/home/lasse/Schreibtisch/RIOT/riot-registry/RIOT",
+        "workspacePath": "sys/registry",
+        "id": "nH3Ea0ALTdV6yp52"
+    },
+    {
+        "type": "Directory",
+        "name": "/home/lasse/Schreibtisch/RIOT/riot-registry/RIOT/examples/registry",
+        "parent_id": null,
+        "workspaceRoot": "/home/lasse/Schreibtisch/RIOT/riot-registry/RIOT",
+        "workspacePath": "examples/registry",
+        "id": "4YbTtIZDkBeOSKCE",
+        "label": "example"
+    },
+    {
+        "type": "Directory",
+        "name": "/home/lasse/Schreibtisch/RIOT/riot-registry/RIOT/tests/sys_registry",
+        "parent_id": null,
+        "workspaceRoot": "/home/lasse/Schreibtisch/RIOT/riot-registry/RIOT",
+        "workspacePath": "tests/sys_registry",
+        "id": "Kk9UgEycGMOwVYmB",
+        "label": "tests"
+    },
+    {
+        "type": "File",
+        "name": "/home/lasse/Schreibtisch/RIOT/riot-registry/RIOT/TODO.md",
+        "parent_id": null,
+        "workspaceRoot": "/home/lasse/Schreibtisch/RIOT/riot-registry/RIOT",
+        "workspacePath": "TODO.md",
+        "id": "D2fWMdji3e9OFobC"
+    },
+    {
+        "type": "Directory",
+        "name": "/home/lasse/Schreibtisch/RIOT/riot-registry/RIOT/docs",
+        "parent_id": null,
+        "workspaceRoot": "/home/lasse/Schreibtisch/RIOT/riot-registry/RIOT",
+        "workspacePath": "docs",
+        "id": "x6QLhOE0qAtfzZbT"
+    },
+    {
+        "type": "Directory",
+        "name": "/home/lasse/Schreibtisch/RIOT/riot-registry/RIOT/dist/tools/registry_gen",
+        "parent_id": null,
+        "workspaceRoot": "/home/lasse/Schreibtisch/RIOT/riot-registry/RIOT",
+        "workspacePath": "dist/tools/registry_gen",
+        "id": "bCHZWrUJds0XDSNk"
+    }
+]
