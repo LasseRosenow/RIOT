@@ -186,7 +186,9 @@ int registry_from_namespace_path(const registry_namespace_path_t *path,
 {
     assert(path != NULL);
 
-    *namespace = (registry_namespace_t *)_namespace_lookup(path->namespace_id);
+    if (namespace != NULL) {
+        *namespace = (registry_namespace_t *)_namespace_lookup(path->namespace_id);
+    }
 
     return 0;
 }
@@ -196,8 +198,13 @@ int registry_from_schema_path(const registry_schema_path_t *path,
 {
     assert(path != NULL);
 
-    *namespace = (registry_namespace_t *)_namespace_lookup(path->namespace_id);
-    *schema = (registry_schema_t *)_schema_lookup(*namespace, path->schema_id);
+    if (namespace != NULL) {
+        *namespace = (registry_namespace_t *)_namespace_lookup(path->namespace_id);
+    }
+
+    if (schema != NULL) {
+        *schema = (registry_schema_t *)_schema_lookup(*namespace, path->schema_id);
+    }
 
     return 0;
 }
@@ -208,9 +215,17 @@ int registry_from_instance_path(const registry_instance_path_t *path,
 {
     assert(path != NULL);
 
-    *namespace = (registry_namespace_t *)_namespace_lookup(path->namespace_id);
-    *schema = (registry_schema_t *)_schema_lookup(*namespace, path->schema_id);
-    *instance = (registry_instance_t *)_instance_lookup(*schema, path->instance_id);
+    if (namespace != NULL) {
+        *namespace = (registry_namespace_t *)_namespace_lookup(path->namespace_id);
+    }
+
+    if (schema != NULL) {
+        *schema = (registry_schema_t *)_schema_lookup(*namespace, path->schema_id);
+    }
+
+    if (instance != NULL) {
+        *instance = (registry_instance_t *)_instance_lookup(*schema, path->instance_id);
+    }
 
     return 0;
 }
@@ -221,10 +236,21 @@ int registry_from_resource_path(const registry_resource_path_t *path,
 {
     assert(path != NULL);
 
-    *namespace = (registry_namespace_t *)_namespace_lookup(path->namespace_id);
-    *schema = (registry_schema_t *)_schema_lookup(*namespace, path->schema_id);
-    *instance = (registry_instance_t *)_instance_lookup(*schema, path->instance_id);
-    *resource = (registry_resource_t *)_resource_lookup(*schema, path->resource_id);
+    if (namespace != NULL) {
+        *namespace = (registry_namespace_t *)_namespace_lookup(path->namespace_id);
+    }
+
+    if (schema != NULL) {
+        *schema = (registry_schema_t *)_schema_lookup(*namespace, path->schema_id);
+    }
+
+    if (instance != NULL) {
+        *instance = (registry_instance_t *)_instance_lookup(*schema, path->instance_id);
+    }
+
+    if (resource != NULL) {
+        *resource = (registry_resource_t *)_resource_lookup(*schema, path->resource_id);
+    }
 
     return 0;
 }
