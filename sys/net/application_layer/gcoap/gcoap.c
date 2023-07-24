@@ -1390,6 +1390,17 @@ kernel_pid_t gcoap_init(void)
         gcoap_forward_proxy_init();
     }
 
+#ifdef MODULE_NANOCOAP_RESOURCES
+    /* add CoAP resources from XFA */
+    XFA_USE_CONST(coap_resource_t, coap_resources_xfa);
+    static gcoap_listener_t _xfa_listener = {
+        .resources = coap_resources_xfa,
+    };
+    _xfa_listener.resources_len = XFA_LEN(coap_resource_t, coap_resources_xfa),
+
+    gcoap_register_listener(&_xfa_listener);
+#endif
+
     return _pid;
 }
 
@@ -1609,12 +1620,12 @@ ssize_t gcoap_req_send_tl(const uint8_t *buf, size_t len,
 
 int gcoap_resp_init(coap_pkt_t *pdu, uint8_t *buf, size_t len, unsigned code)
 {
-    if (coap_get_type(pdu) == COAP_TYPE_CON) {
-        coap_hdr_set_type(pdu->hdr, COAP_TYPE_ACK);
-    }
-    coap_hdr_set_code(pdu->hdr, code);
+    int header_len = coap_build_reply(pdu, code, buf, len, 0);
 
-    unsigned header_len  = coap_get_total_hdr_len(pdu);
+    /* request contained no-response option or not enough space for response */
+    if (header_len <= 0) {
+        return -1;
+    }
 
     pdu->options_len = 0;
     pdu->payload     = buf + header_len;

@@ -49,6 +49,8 @@
 #include "usbdev_esp32.h"
 #elif defined(MCU_EFM32)
 #include "usbdev_efm32.h"
+#elif defined(MCU_GD32V)
+#include "vendor/usbdev_gd32v.h"
 #else
 #error "MCU not supported"
 #endif
@@ -70,6 +72,24 @@
 
 #endif
 
+#ifdef MCU_GD32V
+
+#define RCU_CFG0_SCS_PLL        (2UL << RCU_CFG0_SCS_Pos)   /* PLL used */
+
+#define USB_OTG_GCCFG_PWRON     (1UL << 16) /* Power on */
+#define USB_OTG_GCCFG_VBUSBCEN  (1UL << 19) /* VBUS B-device comparer enable */
+#define USB_OTG_GCCFG_VBUSIG    (1UL << 21) /* VBUS detection ignore */
+
+/* Although the following defines are done in `vendor/gd32vf103_rcu.h`, they
+ * have to be defined here since `vendor/gd32vf103_rcu.h` can't be included due
+ * to type conflicts with `vendor/gd32vf103_periph.h`. */
+#define RCU_CKUSB_CKPLL_DIV1_5  (0UL << 22) /* USB clock is PLL clock/1.5 */
+#define RCU_CKUSB_CKPLL_DIV1    (1UL << 22) /* USB clock is PLL clock */
+#define RCU_CKUSB_CKPLL_DIV2_5  (2UL << 22) /* USB clock is PLL clock/2.5 */
+#define RCU_CKUSB_CKPLL_DIV2    (3UL << 22) /* USB clock is PLL clock/2 */
+
+#endif
+
 #if defined(DWC2_USB_OTG_FS_ENABLED) && defined(DWC2_USB_OTG_HS_ENABLED)
 #define _TOTAL_NUM_ENDPOINTS  (DWC2_USB_OTG_FS_NUM_EP + \
                                DWC2_USB_OTG_HS_NUM_EP)
@@ -80,14 +100,13 @@
 #endif
 
 /* Mask for the set of interrupts used */
-#define DWC2_FSHS_USB_GINT_MASK    \
-    (USB_OTG_GINTMSK_USBSUSPM | \
-     USB_OTG_GINTMSK_WUIM     | \
-     USB_OTG_GINTMSK_ENUMDNEM | \
-     USB_OTG_GINTMSK_USBRST   | \
-     USB_OTG_GINTMSK_OTGINT   | \
-     USB_OTG_GINTMSK_IEPINT   | \
-     USB_OTG_GINTMSK_OEPINT)
+#define DWC2_FSHS_USB_GINT_MASK    (USB_OTG_GINTMSK_USBSUSPM | \
+                                    USB_OTG_GINTMSK_WUIM     | \
+                                    USB_OTG_GINTMSK_ENUMDNEM | \
+                                    USB_OTG_GINTMSK_USBRST   | \
+                                    USB_OTG_GINTMSK_OTGINT   | \
+                                    USB_OTG_GINTMSK_IEPINT   | \
+                                    USB_OTG_GINTMSK_OEPINT)
 
 #define DWC2_PKTSTS_GONAK          0x01    /**< Rx fifo global out nak */
 #define DWC2_PKTSTS_DATA_UPDT      0x02    /**< Rx fifo data update    */
@@ -130,6 +149,10 @@ typedef struct {
     usbdev_ep_t *in;                            /**< In endpoints */
     dwc2_usb_otg_fshs_out_ep_t *out;            /**< Out endpoints */
     bool suspend;                               /**< Suspend status */
+    bool setup_stage;      /**< Indicates that EP0 is in SETUP stage */
+#ifdef DWC2_USB_OTG_HS_ENABLED
+    uint8_t *ep0_out_buf;  /**< Points to the buffer of EP0 OUT handler */
+#endif
 } dwc2_usb_otg_fshs_t;
 
 /* List of instantiated USB peripherals */
@@ -204,22 +227,22 @@ static __IO uint32_t *_pcgcctl_reg(const dwc2_usb_otg_fshs_config_t *conf)
  */
 static size_t _max_endpoints(const dwc2_usb_otg_fshs_config_t *config)
 {
-    return (config->type == DWC2_USB_OTG_FS) ?
-           DWC2_USB_OTG_FS_NUM_EP :
-           DWC2_USB_OTG_HS_NUM_EP;
+    (void)config;
+#if defined(DWC2_USB_OTG_FS_ENABLED) && defined(DWC2_USB_OTG_HS_ENABLED)
+    return config->type == DWC2_USB_OTG_FS ? DWC2_USB_OTG_FS_NUM_EP
+                                           : DWC2_USB_OTG_HS_NUM_EP
+#elif defined(DWC2_USB_OTG_FS_ENABLED)
+    return DWC2_USB_OTG_FS_NUM_EP;
+#elif defined(DWC2_USB_OTG_HS_ENABLED)
+    return DWC2_USB_OTG_HS_NUM_EP;
+#else
+    return 0;
+#endif
 }
 
-static bool _uses_dma(const dwc2_usb_otg_fshs_config_t *config)
+static inline bool _uses_dma(const dwc2_usb_otg_fshs_config_t *config)
 {
-/* DMA mode is disabled for now due to several problems:
- * - The STALL bit of the OUT control endpoint does not seem to be cleared
- *   automatically on the next SETUP received. At least the USB OTG HS core
- *   does not generate an interrupt on the next SETUP received. This happens,
- *   for example, when CDC ACM is used and the host sends the SET_LINE_CODING
- *   request. In this case the enumeration of further interfaces, for example
- *   CDC ECM is stopped.
- * - The Enumeration fails for CDC ECM interface which uses URB support. */
-#if 0 /* defined(DWC2_USB_OTG_HS_ENABLED) && STM32_USB_OTG_HS_USE_DMA */
+#ifdef DWC2_USB_OTG_HS_ENABLED
     return config->type == DWC2_USB_OTG_HS;
 #else
     (void)config;
@@ -468,21 +491,17 @@ static usbdev_ep_t *_get_ep(dwc2_usb_otg_fshs_t *usbdev, unsigned num,
 #if defined(DEVELHELP) && !defined(NDEBUG)
 static size_t _total_fifo_size(const dwc2_usb_otg_fshs_config_t *conf)
 {
-    if (conf->type == DWC2_USB_OTG_FS) {
-#ifdef DWC2_USB_OTG_FS_ENABLED
-        return DWC2_USB_OTG_FS_TOTAL_FIFO_SIZE;
+    (void)conf;
+#if defined(DWC2_USB_OTG_FS_ENABLED) && defined(DWC2_USB_OTG_HS_ENABLED)
+    return conf->type == DWC2_USB_OTG_FS ? DWC2_USB_OTG_FS_TOTAL_FIFO_SIZE
+                                         : DWC2_USB_OTG_HS_TOTAL_FIFO_SIZE;
+#elif defined(DWC2_USB_OTG_FS_ENABLED)
+    return DWC2_USB_OTG_FS_TOTAL_FIFO_SIZE;
+#elif defined(DWC2_USB_OTG_HS_ENABLED)
+    return DWC2_USB_OTG_HS_TOTAL_FIFO_SIZE;
 #else
-        return 0;
-#endif  /* DWC2_USB_OTG_FS_ENABLED */
-    }
-    else {
-#ifdef DWC2_USB_OTG_HS_ENABLED
-        return DWC2_USB_OTG_HS_TOTAL_FIFO_SIZE;
-#else
-        return 0;
-#endif  /* DWC2_USB_OTG_HS_ENABLED */
-    }
-
+    return 0;
+#endif
 }
 #endif /* defined(DEVELHELP) && !defined(NDEBUG) */
 
@@ -506,20 +525,49 @@ static void _configure_tx_fifo(dwc2_usb_otg_fshs_t *usbdev, size_t num,
     usbdev->fifo_pos += wordlen;
 }
 
+/*
+ * GRFXSIZ, DWC2_USB_OTG_{HS,FS}_RX_FIFO_SIZE, DWC2_USB_OTG_FIFO_MIN_WORD_SIZE
+ * are given in 32-bit words
+ *
+ * +--------------------+
+ * |   TX FIFO EPn IN   |
+ * +--------------------+ GRFXSIZ + (n * DWC2_USB_OTG_FIFO_MIN_WORD_SIZE)
+ * |         ...        |
+ * +--------------------+ GRFXSIZ + (2 * DWC2_USB_OTG_FIFO_MIN_WORD_SIZE)
+ * |   TX FIFO EP1 IN   |
+ * +--------------------+ GRFXSIZ + (1 * DWC2_USB_OTG_FIFO_MIN_WORD_SIZE)
+ * |   TX FIFO EP0 IN   |
+ * +--------------------+ GRXFSIZ = DWC2_USB_OTG_{HS,FS}_RX_FIFO_SIZE
+ * |                    |
+ * |                    |
+ * | RX FIFO Shared OUT |
+ * |                    |
+ * |                    |
+ * +--------------------+ 0
+ */
 static void _configure_fifo(dwc2_usb_otg_fshs_t *usbdev)
 {
-    /* TODO: cleanup, more dynamic, etc */
+    /* TODO: dynamic FIFO size handling */
     const dwc2_usb_otg_fshs_config_t *conf = usbdev->config;
-    size_t rx_size = conf->type == DWC2_USB_OTG_FS
-                     ? DWC2_USB_OTG_FS_RX_FIFO_SIZE
-                     : DWC2_USB_OTG_HS_RX_FIFO_SIZE;
+
+    size_t rx_size = 0;
+#if defined(DWC2_USB_OTG_FS_ENABLED) && defined(DWC2_USB_OTG_HS_ENABLED)
+    rx_size = (conf->type == DWC2_USB_OTG_FS) ? DWC2_USB_OTG_FS_RX_FIFO_SIZE
+                                              : DWC2_USB_OTG_HS_RX_FIFO_SIZE;
+#elif defined(DWC2_USB_OTG_FS_ENABLED)
+    rx_size = DWC2_USB_OTG_FS_RX_FIFO_SIZE;
+#elif defined(DWC2_USB_OTG_HS_ENABLED)
+    rx_size = DWC2_USB_OTG_HS_RX_FIFO_SIZE;
+#endif
 
     _global_regs(conf)->GRXFSIZ =
         (_global_regs(conf)->GRXFSIZ & ~USB_OTG_GRXFSIZ_RXFD) |
         rx_size;
+    /* set size and position of TX FIFO for EP0 IN */
     _global_regs(conf)->DIEPTXF0_HNPTXFSIZ =
         (DWC2_USB_OTG_FIFO_MIN_WORD_SIZE << USB_OTG_TX0FD_Pos) |
         rx_size;
+    /* position of TX FIFO for EP1 IN */
     usbdev->fifo_pos = (rx_size + DWC2_USB_OTG_FIFO_MIN_WORD_SIZE);
 }
 
@@ -587,10 +635,19 @@ static void _flush_rx_fifo(const dwc2_usb_otg_fshs_config_t *conf)
 static void _sleep_periph(const dwc2_usb_otg_fshs_config_t *conf)
 {
     *_pcgcctl_reg(conf) |= USB_OTG_PCGCCTL_STOPCLK;
-    /* Unblocking STM32_PM_STOP during suspend on the stm32f446 breaks
-     * while (un)blocking works on the stm32f401, needs more
-     * investigation with a larger set of chips */
-#if defined(STM32_USB_OTG_CID_1x)
+#if defined(MCU_STM32)
+    /* Unblocking STM32_PM_STOP during suspend on the stm32f446 breaks while
+     * (un)blocking works on the stm32f401, needs more investigation.
+     * Works with:
+     * stm32f407vg  FS  CID: 1200, HWREV: 4f54281a, HWCFG: 229dcd20
+     * stm32f429zi  HS  CID: 1100, HWREV: 4f54281a, HWCFG: 229ed590
+     * stm32f439zi  FS  CID: 1200, HWREV: 4f54281a, HWCFG: 229dcd20
+     * stm32f723ie  FS  CID: 3000, HWREV: 4f54330a, HWCFG: 229ed520
+     * stm32f723ie  HS  CID: 3100, HWREV: 4f54330a, HWCFG: 229fe1d0
+     * stm32f746ng  FS  CID: 2000, HWREV: 4f54320a, HWCFG: 229ed520
+     * stm32f746ng  HS  CID: 2100, HWREV: 4f54320a, HWCFG: 229fe190
+     * stm32f767zi  FS  CID: 2000, HWREV: 4f54320a, HWCFG: 229ed520
+     */
     pm_unblock(STM32_PM_STOP);
 #elif defined(MCU_EFM32)
     /* switch USB core clock source either to LFXO or LFRCO */
@@ -598,12 +655,14 @@ static void _sleep_periph(const dwc2_usb_otg_fshs_config_t *conf)
     pm_unblock(EFM32_PM_MODE_EM2);
 #elif defined(MCU_ESP32)
     pm_unblock(ESP_PM_LIGHT_SLEEP);
+#elif defined(MCU_GD32V)
+    pm_unblock(GD32V_PM_DEEPSLEEP);
 #endif
 }
 
 static void _wake_periph(const dwc2_usb_otg_fshs_config_t *conf)
 {
-#if defined(STM32_USB_OTG_CID_1x)
+#if defined(MCU_STM32)
     pm_block(STM32_PM_STOP);
 #elif defined(MCU_EFM32)
     pm_block(EFM32_PM_MODE_EM2);
@@ -614,9 +673,11 @@ static void _wake_periph(const dwc2_usb_otg_fshs_config_t *conf)
     CMU_ClockSelectSet(cmuClock_USB, cmuSelect_HFCLK);
 #else
 #error "EFM32 family not yet supported"
-#endif
+#endif /* defined(CPU_FAM_EFM32GG12B) */
 #elif defined(MCU_ESP32)
     pm_block(ESP_PM_LIGHT_SLEEP);
+#elif defined(MCU_GD32V)
+    pm_block(GD32V_PM_DEEPSLEEP);
 #endif
     *_pcgcctl_reg(conf) &= ~USB_OTG_PCGCCTL_STOPCLK;
     _flush_rx_fifo(conf);
@@ -684,10 +745,15 @@ static void _usbdev_init(usbdev_t *dev)
     pm_block(STM32_PM_STOP);
     pm_block(STM32_PM_STANDBY);
 
-#if defined(PWR_CR2_USV) /* on L4 */
-    /* Validate USB Supply */
+#if defined(PWR_CR2_USV)
+    /*  on L4: Validate USB Supply */
     PWR->CR2 |= PWR_CR2_USV;
 #endif /* PWR_CR2_USV */
+
+#if defined(PWR_SVMCR_USV)
+    /* on U5: Validate USB Supply */
+    PWR->SVMCR |= PWR_SVMCR_USV;
+#endif /* PWR_SVMCR_USV */
 
     /* Enable the clock to the peripheral */
     periph_clk_en(conf->ahb, conf->rcc_mask);
@@ -746,8 +812,52 @@ static void _usbdev_init(usbdev_t *dev)
     /* USB VBUSEN pin is not yet used */
     /* USB_ROUTELOC0 = location */
 
+#elif defined(MCU_GD32V)
+
+    /* Block both DEEP_SLEEP and STANDBY, TODO DEEP_SLEEP is unblocked during
+     * USB suspend status */
+    pm_block(GD32V_PM_DEEPSLEEP);
+    pm_block(GD32V_PM_STANDBY);
+
+    /* ensure that PLL clock is used */
+    assert((RCU->CFG0 & RCU_CFG0_SCS_Msk) == RCU_CFG0_SCS_PLL);
+    /* ensure that the 48 MHz USB clock can be generated */
+    static_assert((CLOCK_CORECLOCK == MHZ(48)) || (CLOCK_CORECLOCK == MHZ(72)) ||
+                  (CLOCK_CORECLOCK == MHZ(96)) || (CLOCK_CORECLOCK == MHZ(120)),
+                  "CLOCK_CORECLOCK has to be 48, 72, 96 or 120");
+
+    /* divide the core clock to get 48 MHz USB clock */
+    RCU->CFG0 &= ~RCU_CFG0_USBFSPSC_Msk;
+    switch (CLOCK_CORECLOCK) {
+    case MHZ(48):
+        RCU->CFG0 |= RCU_CKUSB_CKPLL_DIV1;
+        break;
+    case MHZ(72):
+        RCU->CFG0 |= RCU_CKUSB_CKPLL_DIV1_5;
+        break;
+    case MHZ(96):
+        RCU->CFG0 |= RCU_CKUSB_CKPLL_DIV2;
+        break;
+    case MHZ(120):
+        RCU->CFG0 |= RCU_CKUSB_CKPLL_DIV2_5;
+        break;
+    }
+
+    /* enable USB OTG clock */
+    periph_clk_en(conf->bus, conf->rcu_mask);
+
+    /* reset the USB OTG peripheral */
+    RCU->AHBRST |= RCU_AHBRST_USBFSRST_Msk;
+    RCU->AHBRST &= ~RCU_AHBRST_USBFSRST_Msk;
+
 #else
 #error "MCU not supported"
+#endif
+
+#if ENABLE_DEBUG
+    uint32_t *_otg_core = (uint32_t *)&_global_regs(usbdev->config)->CID;
+    DEBUG("CID: %04" PRIx32 ", HWREV: %08" PRIx32 ", HWCFG: %08" PRIx32 "\n",
+          _otg_core[0], _otg_core[1], _otg_core[3]);
 #endif
 
 #ifdef DWC2_USB_OTG_HS_ENABLED
@@ -899,11 +1009,11 @@ static void _usbdev_init(usbdev_t *dev)
 
     /* Disable Vbus detection and force the pull-up on, GCCFG is STM32 specific */
 #if defined(STM32_USB_OTG_CID_1x)
-    /* Enable no Vbus sensing */
+    /* set No Vbus Sensing */
     _global_regs(usbdev->config)->GCCFG |= USB_OTG_GCCFG_NOVBUSSENS;
 #elif defined(STM32_USB_OTG_CID_2x)
-    /* Enable no Vbus Detect enable  and enable 'Power Down Disable */
-    _global_regs(usbdev->config)->GCCFG |= USB_OTG_GCCFG_VBDEN;
+    /* clear Vbus Detect Enable */
+    _global_regs(usbdev->config)->GCCFG &= ~USB_OTG_GCCFG_VBDEN;
     /* Force Vbus Detect values and ID detect values to device mode */
     _global_regs(usbdev->config)->GOTGCTL |= USB_OTG_GOTGCTL_VBVALOVAL |
                                              USB_OTG_GOTGCTL_VBVALOEN |
@@ -930,6 +1040,11 @@ static void _usbdev_init(usbdev_t *dev)
                                              USB_OTG_GOTGCTL_VBVALOEN |
                                              USB_OTG_GOTGCTL_BVALOEN |
                                              USB_OTG_GOTGCTL_BVALOVAL;
+#elif defined(MCU_GD32V)
+    /* disable Vbus sensing */
+    _global_regs(usbdev->config)->GCCFG |= USB_OTG_GCCFG_PWRON |
+                                           USB_OTG_GCCFG_VBUSIG |
+                                           USB_OTG_GCCFG_VBUSBCEN;
 #else
 #error "MCU not supported"
 #endif
@@ -961,7 +1076,7 @@ static void _usbdev_init(usbdev_t *dev)
     _flush_tx_fifo(conf, 0x10);
 
     /* Values from the reference manual tables on TRDT configuration        *
-     * 0x09 for 24Mhz ABH frequency, 0x06 for 32Mhz or higher AHB frequency */
+     * 0x09 for 24Mhz AHB frequency, 0x06 for 32Mhz or higher AHB frequency */
     uint8_t trdt = conf->type == DWC2_USB_OTG_FS ? 0x06 : 0x09;
     _global_regs(conf)->GUSBCFG =
         (_global_regs(conf)->GUSBCFG & ~USB_OTG_GUSBCFG_TRDT) |
@@ -972,36 +1087,34 @@ static void _usbdev_init(usbdev_t *dev)
     /* Disable the global NAK for both directions */
     _disable_global_nak(conf);
 
+    uint32_t gint_mask = DWC2_FSHS_USB_GINT_MASK;
+
     if (_uses_dma(conf)) {
         _global_regs(usbdev->config)->GAHBCFG |=
             /* Configure DMA */
             USB_OTG_GAHBCFG_DMAEN |
             /* DMA configured as 8 x 32bit accesses */
             (0x05 << USB_OTG_GAHBCFG_HBSTLEN_Pos);
-
-        /* Unmask the transfer complete interrupts
-         * Only needed when using DMA, otherwise the RX FIFO not empty
-         * interrupt is used */
-        _device_regs(conf)->DOEPMSK |= USB_OTG_DOEPMSK_XFRCM;
-        _device_regs(conf)->DIEPMSK |= USB_OTG_DIEPMSK_XFRCM;
     }
-
-    uint32_t gint_mask = DWC2_FSHS_USB_GINT_MASK;
-    if (!_uses_dma(conf)) {
+    else {
+        /* Use RXFLVL (RX FIFO Level) interrupt for IN EPs in non-DMA mode */
         gint_mask |= USB_OTG_GINTMSK_RXFLVLM;
     }
+
+    /* Unmask XFRC (Transfer Completed) interrupt for IN and OUT EPs */
+    _device_regs(conf)->DIEPMSK |= USB_OTG_DIEPMSK_XFRCM;
+    _device_regs(conf)->DOEPMSK |= USB_OTG_DOEPMSK_XFRCM | USB_OTG_DOEPMSK_STUPM;
 
     /* Clear the interrupt flags and unmask those interrupts */
     _global_regs(conf)->GINTSTS |= gint_mask;
     _global_regs(conf)->GINTMSK |= gint_mask;
 
     DEBUG("usbdev: USB peripheral currently in %s mode\n",
-          (_global_regs(
-               conf)->GINTSTS & USB_OTG_GINTSTS_CMOD) ? "host" : "device");
+          (_global_regs(conf)->GINTSTS & USB_OTG_GINTSTS_CMOD) ? "host"
+                                                               : "device");
 
-    /* Enable interrupts and configure the TX level to interrupt on empty */
-    _global_regs(conf)->GAHBCFG |= USB_OTG_GAHBCFG_GINT |
-                                   USB_OTG_GAHBCFG_TXFELVL;
+    /* Enable interrupts */
+    _global_regs(conf)->GAHBCFG |= USB_OTG_GAHBCFG_GINT;
 
 #if defined(MCU_STM32)
     /* Unmask the interrupt in the NVIC */
@@ -1013,15 +1126,45 @@ static void _usbdev_init(usbdev_t *dev)
     void isr_otg_fs(void *arg);
     /* Allocate the interrupt and connect it with USB interrupt source */
     esp_intr_alloc(ETS_USB_INTR_SOURCE, ESP_INTR_FLAG_LOWMED, isr_otg_fs, NULL, NULL);
+#elif defined(MCU_GD32V)
+    void isr_otg_fs(unsigned irq);
+    clic_set_handler(conf->irqn, isr_otg_fs);
+    clic_enable_interrupt(conf->irqn, CPU_DEFAULT_IRQ_PRIO);
 #else
 #error "MCU not supported"
 #endif
 }
 
+static usb_speed_t _get_max_speed(const usbdev_t *dev)
+{
+    dwc2_usb_otg_fshs_t *usbdev = (dwc2_usb_otg_fshs_t *)dev;
+    const dwc2_usb_otg_fshs_config_t *conf = usbdev->config;
+    if (IS_USED(DWC2_USB_OTG_HS_ENABLED) && (conf->type == DWC2_USB_OTG_HS)) {
+        return USB_SPEED_HIGH;
+    }
+    return USB_SPEED_FULL;
+}
+
+static usb_speed_t _get_enumeration_speed(const usbdev_t *dev)
+{
+    dwc2_usb_otg_fshs_t *usbdev = (dwc2_usb_otg_fshs_t *)dev;
+    const dwc2_usb_otg_fshs_config_t *conf = usbdev->config;
+    unsigned speed = (_device_regs(conf)->DSTS & USB_OTG_DSTS_ENUMSPD_Msk) >>
+                     USB_OTG_DSTS_ENUMSPD_Pos;
+    switch (speed) {
+        case 0x00:
+            return USB_SPEED_HIGH;
+        case 0x03:
+            return USB_SPEED_FULL;
+        default:
+            assert(false); /* reserved values by peripheral */
+    }
+    return USB_SPEED_FULL; /* Should not be reached */
+}
+
 static int _usbdev_get(usbdev_t *dev, usbopt_t opt,
                        void *value, size_t max_len)
 {
-    (void)dev;
     (void)max_len;
     int res = -ENOTSUP;
     switch (opt) {
@@ -1032,7 +1175,12 @@ static int _usbdev_get(usbdev_t *dev, usbopt_t opt,
             break;
         case USBOPT_MAX_SPEED:
             assert(max_len == sizeof(usb_speed_t));
-            *(usb_speed_t *)value = USB_SPEED_FULL;
+            *(usb_speed_t *)value = _get_max_speed(dev);
+            res = sizeof(usb_speed_t);
+            break;
+        case USBOPT_ENUMERATED_SPEED:
+            assert(max_len == sizeof(usb_speed_t));
+            *(usb_speed_t *)value = _get_enumeration_speed(dev);
             res = sizeof(usb_speed_t);
             break;
         default:
@@ -1099,6 +1247,7 @@ static void _usbdev_esr(usbdev_t *dev)
         }
 
         /* Reset all the things! */
+        usbdev->setup_stage = false;
         _flush_rx_fifo(conf);
         _flush_tx_fifo(conf, 0x10);
         _reset_eps(usbdev);
@@ -1126,6 +1275,13 @@ static void _usbdev_esr(usbdev_t *dev)
             _wake_periph(conf);
             usbdev->usbdev.cb(&usbdev->usbdev, USBDEV_EVENT_RESUME);
         }
+    }
+    else if (int_status & USB_OTG_GINTMSK_OTGINT) {
+        /* not handled yet, just clear GOTGINT to clear the interrupt */
+        event = USB_OTG_GINTMSK_OTGINT;
+        int_status = _global_regs(conf)->GOTGINT;
+        _global_regs(conf)->GOTGINT |= int_status;
+        DEBUG("usbdev: OTG interrupt reg %08"PRIx32"\n", int_status);
     }
 
     _global_regs(conf)->GINTSTS |= event;
@@ -1172,6 +1328,22 @@ static void _usbdev_ep0_stall(usbdev_t *usbdev)
     /* Stall both directions, cleared automatically on SETUP received */
     _in_regs(conf, 0)->DIEPCTL |= USB_OTG_DIEPCTL_STALL;
     _out_regs(conf, 0)->DOEPCTL |= USB_OTG_DOEPCTL_STALL;
+
+#ifdef DWC2_USB_OTG_HS_ENABLED
+    if (_uses_dma(conf) && st_usbdev->ep0_out_buf) {
+        /* The STALL condition is automatically cleared by the hardware as
+         * specified in the API documentation. However, in DMA mode the
+         * reception of the next SETUP must be prepared by setting the SETUP
+         * packet counter (STUPCNT) and enabling the OUT endpoint. Otherwise
+         * the USB OTG HS core will not generate an interrupt and the USB stack
+         * cannot respond correctly to the next SETUP received. In addition,
+         * the DMA address must be reset to the buffer address of the EP0
+         * OUT handler. */
+        _out_regs(conf, 0)->DOEPDMA = (uint32_t)(intptr_t)(st_usbdev->ep0_out_buf);
+        _out_regs(conf, 0)->DOEPTSIZ |= 1 << USB_OTG_DOEPTSIZ_STUPCNT_Pos;
+        _out_regs(conf, 0)->DOEPCTL |= USB_OTG_DOEPCTL_EPENA;
+    }
+#endif
 }
 
 static void _ep_set_stall(usbdev_ep_t *ep, bool enable)
@@ -1273,20 +1445,13 @@ static int _usbdev_ep_xmit(usbdev_ep_t *ep, uint8_t *buf, size_t len)
          * controller in the peripheral
          */
 
-        /* Packet count seems not to decrement below 1 and thus is broken in
-         * combination with the TXFE irq, it does however work with control
-         * transfers and when using DMA */
-        uint32_t dieptsiz = (len & USB_OTG_DIEPTSIZ_XFRSIZ_Msk);
-        if (ep->num == 0 || _uses_dma(conf)) {
-            dieptsiz |= (1 << USB_OTG_DIEPTSIZ_PKTCNT_Pos);
-        }
-        _in_regs(conf, ep->num)->DIEPTSIZ = dieptsiz;
+        /* PKTCNT has to be set for all IN EPs to use the XFRC interrupt */
+        _in_regs(conf, ep->num)->DIEPTSIZ = (len & USB_OTG_DIEPTSIZ_XFRSIZ_Msk) |
+                                            (1 << USB_OTG_DIEPTSIZ_PKTCNT_Pos);
 
         /* Intentionally enabling this before the FIFO is filled, unmasking the
-        * interrupts after the FIFO is filled doesn't always trigger the ISR */
-        /* TX FIFO empty interrupt is only used in non-dma mode */
+         * interrupts after the FIFO is filled doesn't always trigger the ISR */
         _device_regs(conf)->DAINTMSK |= 1 << ep->num;
-        _device_regs(conf)->DIEPEMPMSK |= 1 << ep->num;
 
         _in_regs(conf, ep->num)->DIEPCTL |= USB_OTG_DIEPCTL_CNAK |
                                             USB_OTG_DIEPCTL_EPENA;
@@ -1313,6 +1478,13 @@ static int _usbdev_ep_xmit(usbdev_ep_t *ep, uint8_t *buf, size_t len)
 
         if (_uses_dma(conf)) {
             _out_regs(conf, ep->num)->DOEPDMA = (uint32_t)(intptr_t)buf;
+            /* store the buffer address of the EP0 OUT handler to use it in
+             * _usbdev_ep0_stall */
+#ifdef DWC2_USB_OTG_HS_ENABLED
+            if (ep->num == 0) {
+                usbdev->ep0_out_buf = buf;
+            }
+#endif
         }
         else {
             container_of(ep, dwc2_usb_otg_fshs_out_ep_t, ep)->out_buf = buf;
@@ -1344,42 +1516,35 @@ static void _copy_rxfifo(dwc2_usb_otg_fshs_t *usbdev, uint8_t *buf, size_t len)
     }
 }
 
-static void _read_packet(dwc2_usb_otg_fshs_out_ep_t *st_ep)
+static void _read_packet(dwc2_usb_otg_fshs_t *usbdev)
 {
-    dwc2_usb_otg_fshs_t *usbdev = (dwc2_usb_otg_fshs_t *)st_ep->ep.dev;
     const dwc2_usb_otg_fshs_config_t *conf = usbdev->config;
     /* Pop status from the receive fifo status register */
     uint32_t status = _global_regs(conf)->GRXSTSP;
 
+    unsigned epnum = (status & USB_OTG_GRXSTSP_EPNUM_Msk) >>
+                     USB_OTG_GRXSTSP_EPNUM_Pos;
     /* Packet status code */
     unsigned pkt_status = (status & USB_OTG_GRXSTSP_PKTSTS_Msk) >>
                           USB_OTG_GRXSTSP_PKTSTS_Pos;
     size_t len = (status & USB_OTG_GRXSTSP_BCNT_Msk) >>
                  USB_OTG_GRXSTSP_BCNT_Pos;
 
-    /* Packet is copied on the update status and copied on the transfer
-     * complete status */
-    if (pkt_status == DWC2_PKTSTS_DATA_UPDT ||
-        pkt_status == DWC2_PKTSTS_SETUP_UPDT) {
-#if defined(MCU_EFM32)
-        /* TODO For some reason a short delay is required here on EFM32. It has
-         * to be investigated further. A delay of 1 msec is inserted for now. */
-        ztimer_sleep(ZTIMER_MSEC, 1);
-#endif
-        _copy_rxfifo(usbdev, st_ep->out_buf, len);
-#if !defined(STM32_USB_OTG_CID_1x)
-        /* CID 2x doesn't signal SETUP_COMP on non-zero length packets, signal
-         * the TR_COMPLETE event immediately */
-        if (st_ep->ep.num == 0 && len) {
-            usbdev->usbdev.epcb(&st_ep->ep, USBDEV_EVENT_TR_COMPLETE);
-        }
-#endif  /* STM32_USB_OTG_CID_2x */
+    /* RXFLVL is only used in non-DMA mode to copy the packet from the FIFO
+     * and to set the flag to indicate the SETUP stage. */
+
+    if (pkt_status == DWC2_PKTSTS_SETUP_UPDT) {
+        /* Some versions of the USB OTG core, e.g. the GD32V USB OTG core,
+         * may generate an additional XFRC (Transfer Completed) interrupt in
+         * the SETUP stage before the STUP (SETUP phase done) interrupt. To
+         * prevent this additional interrupt from being processed accidentally,
+         * we must indicate that the SETUP stage has been started. */
+         usbdev->setup_stage = true;
     }
-    /* On zero length frames, only the COMP status is signalled and the UPDT
-     * status is skipped */
-    else if (pkt_status == DWC2_PKTSTS_XFER_COMP ||
-             pkt_status == DWC2_PKTSTS_SETUP_COMP) {
-        usbdev->usbdev.epcb(&st_ep->ep, USBDEV_EVENT_TR_COMPLETE);
+
+    if (len && !_uses_dma(conf)) {
+        /* in DMA mode, received data are directly written into memory */
+        _copy_rxfifo(usbdev, usbdev->out[epnum].out_buf, len);
     }
 }
 
@@ -1395,31 +1560,31 @@ static void _usbdev_ep_esr(usbdev_ep_t *ep)
     if (ep->dir == USB_EP_DIR_IN) {
         uint32_t status = _in_regs(conf, ep->num)->DIEPINT;
 
-        /* XFRC interrupt is used for all endpoints when DMA is enabled */
-        if (status & USB_OTG_DIEPINT_XFRC && _uses_dma(conf)) {
+        /* XFRC (Transfer Complete) interrupt is used to signal that the
+         * transfer is complete. XFRC interrupts only work if the packet
+         * count (PKTCNT) is set in DIEPTSIZ register. */
+        if (status & USB_OTG_DIEPINT_XFRC) {
             _in_regs(conf, ep->num)->DIEPINT = USB_OTG_DIEPINT_XFRC;
-            if (ep->num != 0) {
-                usbdev->usbdev.epcb(ep, USBDEV_EVENT_TR_COMPLETE);
-            }
-        }
-        else
-        /* TXFE empty interrupt is only used with DMA disabled */
-        if (status & USB_OTG_DIEPINT_TXFE) {
-            _device_regs(conf)->DIEPEMPMSK &= ~(1 << ep->num);
             usbdev->usbdev.epcb(ep, USBDEV_EVENT_TR_COMPLETE);
         }
     }
     else {
-        /* RX FIFO not empty and the endpoint matches the function argument */
-        if ((_global_regs(conf)->GINTSTS & USB_OTG_GINTSTS_RXFLVL) &&
-            (_global_regs(conf)->GRXSTSR & USB_OTG_GRXSTSP_EPNUM_Msk) == ep->num &&
-             !_uses_dma(conf)) {
-            _read_packet(container_of(ep, dwc2_usb_otg_fshs_out_ep_t, ep));
+        uint32_t status = _out_regs(conf, ep->num)->DOEPINT;
+
+        if (status & USB_OTG_DOEPINT_STUP) {
+            _out_regs(conf, ep->num)->DOEPINT = USB_OTG_DOEPINT_STUP;
+            /* Indicate that the SETUP stage has been finished */
+            usbdev->setup_stage = false;
+            usbdev->usbdev.epcb(ep, USBDEV_EVENT_TR_COMPLETE);
         }
-        /* Transfer complete seems only reliable when used with DMA */
-        else if (_out_regs(conf, ep->num)->DOEPINT & USB_OTG_DOEPINT_XFRC) {
+        else if (status & USB_OTG_DOEPINT_XFRC) {
             _out_regs(conf, ep->num)->DOEPINT = USB_OTG_DOEPINT_XFRC;
-            if (_uses_dma(conf)) {
+            /* Some versions of the USB OTG core, e.g. the GD32V USB OTG core,
+             * may generate an additional XFRC (Transfer Complete) interrupt in
+             * the SETUP stage before the STUP (SETUP phase done) interrupt is
+             * triggered. USBDEV_EVENT_TR_COMPLETE must not be generated
+             * for EP0 in this case. */
+            if (!usbdev->setup_stage || (ep->num != 0)) {
                 usbdev->usbdev.epcb(ep, USBDEV_EVENT_TR_COMPLETE);
             }
         }
@@ -1453,23 +1618,26 @@ void _isr_common(dwc2_usb_otg_fshs_t *usbdev)
 
     uint32_t status = _global_regs(conf)->GINTSTS;
 
+    _global_regs(conf)->GAHBCFG &= ~USB_OTG_GAHBCFG_GINT;
+
     if (status) {
-        if ((status & USB_OTG_GINTSTS_RXFLVL) && !_uses_dma(conf)) {
-            unsigned epnum = _global_regs(conf)->GRXSTSR &
-                             USB_OTG_GRXSTSP_EPNUM_Msk;
-            usbdev->usbdev.epcb(&usbdev->out[epnum].ep, USBDEV_EVENT_ESR);
+        if (status & USB_OTG_GINTSTS_RXFLVL) {
+            /* The RXFLVL interrupt is only enabled in non-DMA mode. It is only
+             * used to read out the RX FIFO and set the SETUP stage flasg and
+             * can therefore be handled directly in the ISR. */
+            _read_packet(usbdev);
+            _global_regs(conf)->GAHBCFG |= USB_OTG_GAHBCFG_GINT;
         }
-        else if (_global_regs(conf)->GINTSTS &
-                 (USB_OTG_GINTSTS_OEPINT | USB_OTG_GINTSTS_IEPINT)) {
+        else if (status & (USB_OTG_GINTSTS_OEPINT | USB_OTG_GINTSTS_IEPINT)) {
             _isr_ep(usbdev);
         }
         else {
             /* Global interrupt */
             usbdev->usbdev.cb(&usbdev->usbdev, USBDEV_EVENT_ESR);
         }
-        _global_regs(conf)->GAHBCFG &= ~USB_OTG_GAHBCFG_GINT;
     }
-#ifdef MCU_STM32
+
+#ifdef MODULE_CORTEXM_COMMON
     cortexm_isr_end();
 #endif
 }
@@ -1498,7 +1666,6 @@ void isr_otg_hs(void)
 
 #elif defined(MCU_ESP32)
 
-#ifdef DWC2_USB_OTG_FS_ENABLED
 void isr_otg_fs(void *arg)
 {
     (void)arg;
@@ -1508,24 +1675,23 @@ void isr_otg_fs(void *arg)
 
     _isr_common(usbdev);
 }
-#endif /* DWC2_USB_OTG_FS_ENABLED */
-
-#ifdef DWC2_USB_OTG_HS_ENABLED
-void isr_otg_hs(void *arg)
-{
-    (void)arg;
-
-    /* Take the last usbdev device from the list */
-    dwc2_usb_otg_fshs_t *usbdev = &_usbdevs[USBDEV_NUMOF - 1];
-
-    _isr_common(usbdev);
-}
-#endif /* DWC2_USB_OTG_HS_ENABLED */
 
 #elif defined(MCU_EFM32)
 
- void isr_usb(void)
+void isr_usb(void)
 {
+    /* Take the first device from the list */
+    dwc2_usb_otg_fshs_t *usbdev = &_usbdevs[0];
+
+    _isr_common(usbdev);
+}
+
+#elif defined(MCU_GD32V)
+
+void isr_otg_fs(unsigned irq)
+{
+    (void)irq;
+
     /* Take the first device from the list */
     dwc2_usb_otg_fshs_t *usbdev = &_usbdevs[0];
 

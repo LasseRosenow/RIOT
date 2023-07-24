@@ -13,7 +13,7 @@
  * @{
  *
  * @file
- * @brief       Nanocoap sock helpers
+ * @brief       nanoCoAP sock helpers
  *
  * @author      Kaspar Schleiser <kaspar@schleiser.de>
  * @author      Benjamin Valentin <benjamin.valentin@ml-pa.com>
@@ -369,9 +369,12 @@ static int _get_put_cb(void *arg, coap_pkt_t *pkt)
 
 ssize_t nanocoap_sock_get(nanocoap_sock_t *sock, const char *path, void *buf, size_t len)
 {
-    uint8_t *pktpos = buf;
+    /* buffer for CoAP header */
+    uint8_t buffer[CONFIG_NANOCOAP_BLOCK_HEADER_MAX];
+    uint8_t *pktpos = buffer;
+
     coap_pkt_t pkt = {
-        .hdr = buf,
+        .hdr = (void *)pktpos,
     };
 
     struct iovec ctx = {
@@ -540,22 +543,6 @@ ssize_t nanocoap_request(coap_pkt_t *pkt, const sock_udp_ep_t *local,
     }
 
     res = nanocoap_sock_request(&sock, pkt, len);
-    nanocoap_sock_close(&sock);
-
-    return res;
-}
-
-ssize_t nanocoap_get(const sock_udp_ep_t *remote, const char *path, void *buf, size_t len)
-{
-    int res;
-    nanocoap_sock_t sock;
-
-    res = nanocoap_sock_connect(&sock, NULL, remote);
-    if (res) {
-        return res;
-    }
-
-    res = nanocoap_sock_get(&sock, path, buf, len);
     nanocoap_sock_close(&sock);
 
     return res;
@@ -836,4 +823,37 @@ int nanocoap_server(sock_udp_ep_t *local, uint8_t *buf, size_t bufsize)
     }
 
     return 0;
+}
+
+static kernel_pid_t _coap_server_pid;
+static void *_nanocoap_server_thread(void *local)
+{
+    static uint8_t buf[CONFIG_NANOCOAP_SERVER_BUF_SIZE];
+
+    nanocoap_server(local, buf, sizeof(buf));
+
+    return NULL;
+}
+
+kernel_pid_t nanocoap_server_start(const sock_udp_ep_t *local)
+{
+    static char stack[CONFIG_NANOCOAP_SERVER_STACK_SIZE];
+
+    if (_coap_server_pid) {
+        return _coap_server_pid;
+    }
+    _coap_server_pid = thread_create(stack, sizeof(stack), THREAD_PRIORITY_MAIN - 1,
+                                     THREAD_CREATE_STACKTEST, _nanocoap_server_thread,
+                                     (void *)local, "nanoCoAP server");
+    return _coap_server_pid;
+}
+
+void auto_init_nanocoap_server(void)
+{
+    sock_udp_ep_t local = {
+        .port = COAP_PORT,
+        .family = AF_INET6,
+    };
+
+    nanocoap_server_start(&local);
 }
