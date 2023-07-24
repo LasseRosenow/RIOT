@@ -29,7 +29,7 @@ extern "C" {
 
 /* Sys namespace */
 
-extern const registry_namespace_t registry_sys;
+extern registry_namespace_t registry_sys;
 
 #ifdef __cplusplus
 }

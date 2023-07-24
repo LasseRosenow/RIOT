@@ -29,7 +29,7 @@
 
 /* Sys namespace */
 
-const registry_namespace_t registry_sys = {
+registry_namespace_t registry_sys = {
     .name = "sys",
     .description = "Sys namespace",
     .schemas = (const registry_schema_t *[]) {

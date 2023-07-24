@@ -134,7 +134,7 @@ const registry_resource_t registry_sys_rgb_led_brightnesses = {
     .resources_len = 2,
 };
 
-const registry_schema_t registry_sys_rgb_led = {
+registry_schema_t registry_sys_rgb_led = {
     .id = 0,
     .name = "rgb_led",
     .description = "",

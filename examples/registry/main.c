@@ -27,6 +27,7 @@
 #include "mtd.h"
 #include "registry.h"
 #include "registry/cli.h"
+#include "registry/namespace_sys.h"
 #include "registry/namespace_sys/rgb_led.h"
 #include "registry/storage.h"
 
@@ -113,6 +114,8 @@ static registry_storage_instance_t vfs_instance_2 = {
 
 int main(void)
 {
+    registry_register_namespace(&registry_sys);
+
     /* init schemas */
     registry_register_schema_instance(&registry_sys_rgb_led, &rgb_led_instance_0);
     registry_register_schema_instance(&registry_sys_rgb_led, &rgb_led_instance_1);

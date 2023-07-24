@@ -157,15 +157,15 @@ struct _registry_schema_t {
     const registry_schema_id_t id;                         /**< Integer representing the path id of the schema */
 #endif /* MODULE_REGISTRY_PATH */
 #if IS_ACTIVE(CONFIG_REGISTRY_ENABLE_META_NAME) || IS_ACTIVE(DOXYGEN)
-    const char * const name;                        /**< String describing the schema */
+    const char * const name;                                /**< String describing the schema */
 #endif /* CONFIG_REGISTRY_ENABLE_META_NAME */
 #if IS_ACTIVE(CONFIG_REGISTRY_ENABLE_META_DESCRIPTION) || IS_ACTIVE(DOXYGEN)
-    const char * const description;                 /**< String describing the schema with more details */
+    const char * const description;                         /**< String describing the schema with more details */
 #endif /* CONFIG_REGISTRY_ENABLE_META_DESCRIPTION */
-    const registry_namespace_t * const namespace;   /**< Configuration Namespace that the Configuration Schema belongs to */
-    clist_node_t instances;                         /**< Linked list of schema instances @ref registry_instance_t */
-    const registry_resource_t ** const resources;   /**< Array of pointers to all the configuration parameters and groups that belong to this schema */
-    const size_t resources_len;                     /**< Size of resources array */
+    const registry_namespace_t * const namespace;           /**< Configuration Namespace that the Configuration Schema belongs to */
+    clist_node_t instances;                                 /**< Linked list of schema instances @ref registry_instance_t */
+    const registry_resource_t ** const resources;           /**< Array of pointers to all the configuration parameters and groups that belong to this schema */
+    const size_t resources_len;                             /**< Size of resources array */
 
     /**
      * @brief Mapping to connect configuration parameter IDs with the address in the storage.
@@ -182,9 +182,9 @@ struct _registry_schema_t {
 };
 
 struct _registry_namespace_t {
-    clist_node_t node;                  /**< Linked list node */
+    clist_node_t node;                          /**< Linked list node */
 #if IS_USED(MODULE_REGISTRY_PATH) || IS_ACTIVE(DOXYGEN)
-    const registry_namespace_id_t id;   /**< Integer representing the path id of the namespace */
+    const registry_namespace_id_t id;           /**< Integer representing the path id of the namespace */
 #endif /* MODULE_REGISTRY_PATH */
 #if IS_ACTIVE(CONFIG_REGISTRY_ENABLE_META_NAME) || IS_ACTIVE(DOXYGEN)
     const char * const name;                    /**< String describing the configuration namespace */

@@ -35,7 +35,7 @@ extern const registry_resource_t registry_sys_rgb_led_blue;
 extern const registry_resource_t registry_sys_rgb_led_brightnesses_white;
 extern const registry_resource_t registry_sys_rgb_led_brightnesses_yellow;
 extern const registry_resource_t registry_sys_rgb_led_brightnesses;
-extern const registry_schema_t registry_sys_rgb_led;
+extern registry_schema_t registry_sys_rgb_led;
 
 typedef struct {
     clist_node_t node;
