@@ -198,7 +198,6 @@ static int load(const registry_storage_instance_t *storage,
                                 ptr++;
                                 registry_resource_id_t resource_id = strtol(ptr, &ptr, 10);
 
-                                // TODO Improve this => Make it possible to get both values with only one function call and only one path struct
                                 const registry_resource_path_t resource_path = {
                                     .namespace_id = namespace_id,
                                     .schema_id = schema_id,
