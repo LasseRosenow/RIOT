@@ -62,7 +62,7 @@ int registry_register_schema_instance(const registry_schema_t *schema,
     (*((registry_instance_t *)instance)).schema = schema;
 
     /* get instances length to determine the id of the new instance */
-    size_t count = clist_count(&schema->instances);
+    size_t count = clist_count((clist_node_t *)&schema->instances);
 
     /* set id of new instance to the instance count */
     *(registry_instance_id_t *)&instance->id = count;

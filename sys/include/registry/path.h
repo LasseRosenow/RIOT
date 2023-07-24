@@ -75,13 +75,19 @@ registry_resource_path_t registry_path_from_resource(const registry_instance_t *
                                                      const registry_resource_t *resource);
 
 /* convert from path */
-const registry_namespace_t *registry_namespace_from_path(const registry_namespace_path_t *path);
+int registry_from_namespace_path(const registry_namespace_path_t *path,
+                                 registry_namespace_t **namespace);
 
-const registry_schema_t *registry_schema_from_path(const registry_schema_path_t *path);
+int registry_from_schema_path(const registry_schema_path_t *path,
+                              registry_namespace_t **namespace, registry_schema_t **schema);
 
-const registry_instance_t *registry_instance_from_path(const registry_instance_path_t *path);
+int registry_from_instance_path(const registry_instance_path_t *path,
+                                registry_namespace_t **namespace, registry_schema_t **schema,
+                                registry_instance_t **instance);
 
-const registry_resource_t *registry_resource_from_path(const registry_resource_path_t *path);
+int registry_from_resource_path(const registry_resource_path_t *path,
+                                registry_namespace_t **namespace, registry_schema_t **schema,
+                                registry_instance_t **instance, registry_resource_t **resource);
 
 #ifdef __cplusplus
 }

@@ -198,7 +198,8 @@ static int load(const registry_storage_instance_t *storage,
                                 ptr++;
                                 registry_resource_id_t resource_id = strtol(ptr, &ptr, 10);
 
-                                registry_resource_path_t path = {
+                                // TODO Improve this => Make it possible to get both values with only one function call and only one path struct
+                                const registry_resource_path_t resource_path = {
                                     .namespace_id = namespace_id,
                                     .schema_id = schema_id,
                                     .instance_id = instance_id,
@@ -206,12 +207,13 @@ static int load(const registry_storage_instance_t *storage,
                                 };
 
                                 /* get pointer to registry internal configuration parameter */
+                                registry_instance_t *instance;
+                                registry_resource_t *resource;
+                                registry_from_resource_path(&resource_path, NULL, NULL, &instance,
+                                                            &resource);
+
                                 registry_value_t value;
-                                const registry_resource_t *parameter = registry_resource_from_path(
-                                    &path);
-                                const registry_instance_t *instance = registry_instance_from_path(
-                                    &path);
-                                registry_get(instance, parameter, &value);
+                                registry_get(instance, resource, &value);
 
                                 /* read value from file */
                                 uint8_t new_value_buf[value.buf_len];
@@ -221,7 +223,7 @@ static int load(const registry_storage_instance_t *storage,
                                 }
                                 else {
                                     /* call callback with value and path */
-                                    load_cb(instance, parameter, new_value_buf);
+                                    load_cb(instance, resource, new_value_buf);
                                 }
 
                                 /* close file */
