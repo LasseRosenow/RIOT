@@ -13,3 +13,6 @@ endif
 ifneq (,$(filter registry_%,$(USEMODULE)))
   USEMODULE += registry
 endif
+
+USEMODULE += fmt
+USEMODULE += base64

@@ -32,6 +32,7 @@
 #include "registry/util.h"
 #include "registry/path.h"
 #include "registry/storage.h"
+#include "shell.h"
 
 #include "registry/cli.h"
 
@@ -39,6 +40,9 @@
  * @brief Separator character to define hierarchy in configurations names.
  */
 #define REGISTRY_CLI_PATH_SEPARATOR    '/'
+
+// TODO move into correct place
+SHELL_COMMAND(registry, "Registry cli", registry_cli_cmd);
 
 static int _parse_string_path(const char *string_path,
                               registry_path_t *registry_path,

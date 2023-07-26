@@ -46,6 +46,10 @@
         "container.h": "c",
         "list.h": "c",
         "base64.h": "c",
-        "fmt.h": "c"
+        "fmt.h": "c",
+        "mtd.h": "c",
+        "shell.h": "c",
+        "msg.h": "c",
+        "string.h": "c"
     },
 }
