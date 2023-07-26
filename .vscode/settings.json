@@ -44,6 +44,8 @@
         "error.h": "c",
         "errno.h": "c",
         "container.h": "c",
-        "list.h": "c"
+        "list.h": "c",
+        "base64.h": "c",
+        "fmt.h": "c"
     },
 }

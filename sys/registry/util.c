@@ -36,7 +36,7 @@
 #include "registry/util.h"
 
 #if IS_ACTIVE(CONFIG_REGISTRY_USE_INT64) || defined(CONFIG_REGISTRY_USE_UINT64)
-#include <fmt.h>
+#include "fmt.h"
 #endif /* CONFIG_REGISTRY_USE_INT64 || CONFIG_REGISTRY_USE_UINT64 */
 
 void _debug_print_value(const registry_value_t *value)

@@ -42,28 +42,41 @@ extern "C" {
 #define REGISTRY_PATH_STRING_MAX_LEN   ((10 * REGISTRY_PATH_LEN) + \
                                         (REGISTRY_PATH_LEN - 1))
 
-/* Dynamic registry path */
 typedef struct {
-    const registry_namespace_id_t namespace_id;
+    registry_namespace_id_t namespace_id;
 } registry_namespace_path_t;
 
 typedef struct {
-    const registry_namespace_id_t namespace_id;
-    const registry_schema_id_t schema_id;
+    registry_namespace_id_t namespace_id;
+    registry_schema_id_t schema_id;
 } registry_schema_path_t;
 
 typedef struct {
-    const registry_namespace_id_t namespace_id;
-    const registry_schema_id_t schema_id;
-    const registry_instance_id_t instance_id;
+    registry_namespace_id_t namespace_id;
+    registry_schema_id_t schema_id;
+    registry_instance_id_t instance_id;
 } registry_instance_path_t;
 
 typedef struct {
-    const registry_namespace_id_t namespace_id;
-    const registry_schema_id_t schema_id;
-    const registry_instance_id_t instance_id;
-    const registry_resource_id_t resource_id;
+    registry_namespace_id_t namespace_id;
+    registry_schema_id_t schema_id;
+    registry_instance_id_t instance_id;
+    registry_resource_id_t resource_id;
 } registry_resource_path_t;
+
+typedef enum {
+    REGISTRY_PATH_TYPE_NAMESPACE,
+    REGISTRY_PATH_TYPE_SCHEMA,
+    REGISTRY_PATH_TYPE_INSTANCE,
+    REGISTRY_PATH_TYPE_RESOURCE,
+}registry_path_type_t;
+
+typedef union {
+    registry_namespace_path_t namespace_path;
+    registry_schema_path_t schema_path;
+    registry_instance_path_t instance_path;
+    registry_resource_path_t resource_path;
+} registry_path_t;
 
 registry_namespace_path_t registry_path_from_namespace(const registry_namespace_t *namespace);
 
