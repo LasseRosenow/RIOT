@@ -119,7 +119,7 @@ int main(void)
     registry_register_storage_src(&vfs_instance_1);
     registry_register_storage_dst(&vfs_instance_2);
 
-    /* init CLI */
+    /* init and run CLI */
     char line_buf[SHELL_DEFAULT_BUFSIZE];
     shell_run(NULL, line_buf, sizeof(line_buf));
     return 0;
