@@ -4,15 +4,15 @@
  * This file is subject to the terms and conditions of the GNU Lesser
  * General Public License v2.1. See the file LICENSE in the top level
  * directory for more details.
+ *
  */
 
 /**
- * @defgroup    sys_registry_cli RIOT Registry CLI
- * @ingroup     sys
- * @brief       RIOT Registry module providing a CLI for the RIOT Registry sys module
+ * @ingroup     sys_shell_commands
  * @{
  *
  * @file
+ * @brief       Registry shell commands
  *
  * @author      Lasse Rosenow <lasse.rosenow@haw-hamburg.de>
  *
@@ -34,15 +34,10 @@
 #include "registry/storage.h"
 #include "shell.h"
 
-#include "registry/cli.h"
-
 /**
  * @brief Separator character to define hierarchy in configurations names.
  */
 #define REGISTRY_CLI_PATH_SEPARATOR    '/'
-
-// TODO move into correct place
-SHELL_COMMAND(registry, "Registry cli", registry_cli_cmd);
 
 static int _parse_string_path(const char *string_path,
                               registry_path_t *registry_path,
@@ -170,7 +165,7 @@ static int _parse_string_path(const char *string_path,
 //     return 0;
 // }
 
-int registry_cli_cmd(int argc, char **argv)
+static int _registry(int argc, char **argv)
 {
     registry_path_t path;
     registry_path_type_t path_type;
@@ -363,3 +358,5 @@ help_error:
 
     return 1;
 }
+
+SHELL_COMMAND(registry, "Registry cli", _registry);

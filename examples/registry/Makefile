@@ -9,6 +9,7 @@ RIOTBASE ?= $(CURDIR)/../..
 
 # required modules
 USEMODULE += shell
+USEMODULE += shell_cmds_default
 
 USEMODULE += littlefs2
 USEMODULE += mtd

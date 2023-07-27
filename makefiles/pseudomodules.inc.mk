@@ -489,6 +489,7 @@ PSEUDOMODULES += shell_cmd_openwsn
 PSEUDOMODULES += shell_cmd_pm
 PSEUDOMODULES += shell_cmd_ps
 PSEUDOMODULES += shell_cmd_random
+PSEUDOMODULES += shell_cmd_registry
 PSEUDOMODULES += shell_cmd_rtc
 PSEUDOMODULES += shell_cmd_rtt
 PSEUDOMODULES += shell_cmd_saul_reg

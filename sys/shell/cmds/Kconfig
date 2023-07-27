@@ -251,6 +251,13 @@ config MODULE_SHELL_CMD_RANDOM
     depends on MODULE_SHELL_CMDS
     depends on MODULE_RANDOM
 
+config MODULE_SHELL_CMD_REGISTRY
+    bool "Command to get, set, commit, export, save and load registry values"
+    default y if MODULE_SHELL_CMDS_DEFAULT
+    depends on MODULE_SHELL_CMDS
+    depends on MODULE_REGISTRY
+    depends on MODULE_REGISTRY_PATH
+
 config MODULE_SHELL_CMD_RTC
     bool "Command to control the peripheral real time clock"
     default y if MODULE_SHELL_CMDS_DEFAULT && MODULE_PERIPH_RTC

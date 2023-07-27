@@ -1,7 +1,3 @@
-ifneq (,$(filter registry_cli%,$(USEMODULE)))
-  USEMODULE += registry_path
-endif
-
 ifneq (,$(filter registry_storage%,$(USEMODULE)))
   include $(RIOTBASE)/sys/registry/storage/Makefile.dep
 endif

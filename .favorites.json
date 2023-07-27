@@ -73,5 +73,14 @@
         "workspaceRoot": "/home/lasse/Schreibtisch/RIOT/riot-registry/RIOT",
         "workspacePath": "dist/tools/registry_gen",
         "id": "bCHZWrUJds0XDSNk"
+    },
+    {
+        "type": "File",
+        "name": "/home/lasse/Schreibtisch/RIOT/riot-registry/RIOT/sys/shell/cmds/registry.c",
+        "parent_id": null,
+        "workspaceRoot": "/home/lasse/Schreibtisch/RIOT/riot-registry/RIOT",
+        "workspacePath": "sys/shell/cmds/registry.c",
+        "id": "XrFzk8WMCxBJj5N3",
+        "label": "cli.c"
     }
 ]

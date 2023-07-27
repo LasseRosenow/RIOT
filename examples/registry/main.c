@@ -26,7 +26,6 @@
 #include "board.h"
 #include "mtd.h"
 #include "registry.h"
-#include "registry/cli.h"
 #include "registry/namespace_sys.h"
 #include "registry/namespace_sys/rgb_led.h"
 #include "registry/storage.h"
