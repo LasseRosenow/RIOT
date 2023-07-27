@@ -9,7 +9,7 @@
 /**
  * @defgroup    sys_registry_path RIOT Registry Path
  * @ingroup     sys
- * @brief       RIOT Registry Path module providing a API to access configuration parameter via a integer path
+ * @brief       RIOT Registry Path module providing an API to access configuration parameters via an integer path
  * @{
  *
  * @file

@@ -14,7 +14,6 @@ USEMODULE += shell_cmds_default
 USEMODULE += littlefs2
 USEMODULE += mtd
 
-USEMODULE +=  registry_cli
 USEMODULE +=  registry_storage_vfs
 USEMODULE +=  registry_namespace_sys_rgb_led
 
