@@ -136,7 +136,7 @@ static const registry_resource_t *_resource_lookup(const registry_schema_t *sche
 }
 
 /* convert to path */
-registry_namespace_path_t registry_path_from_namespace(const registry_namespace_t *namespace)
+registry_namespace_path_t registry_to_namespace_path(const registry_namespace_t *namespace)
 {
     assert(namespace != NULL);
 
@@ -145,7 +145,7 @@ registry_namespace_path_t registry_path_from_namespace(const registry_namespace_
     };
 }
 
-registry_schema_path_t registry_path_from_schema(const registry_schema_t *schema)
+registry_schema_path_t registry_to_schema_path(const registry_schema_t *schema)
 {
     assert(schema != NULL);
 
@@ -155,7 +155,7 @@ registry_schema_path_t registry_path_from_schema(const registry_schema_t *schema
     };
 }
 
-registry_instance_path_t registry_path_from_instance(const registry_instance_t *instance)
+registry_instance_path_t registry_to_instance_path(const registry_instance_t *instance)
 {
     assert(instance != NULL);
 
@@ -166,8 +166,8 @@ registry_instance_path_t registry_path_from_instance(const registry_instance_t *
     };
 }
 
-registry_resource_path_t registry_path_from_resource(const registry_instance_t *instance,
-                                                     const registry_resource_t *resource)
+registry_resource_path_t registry_to_resource_path(const registry_instance_t *instance,
+                                                   const registry_resource_t *resource)
 {
     assert(instance != NULL);
     assert(resource != NULL);
