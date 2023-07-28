@@ -1,0 +1,37 @@
+/*
+ * Copyright (C) 2023 HAW Hamburg
+ *
+ * This file is subject to the terms and conditions of the GNU Lesser
+ * General Public License v2.1. See the file LICENSE in the top level
+ * directory for more details.
+ */
+
+/**
+ * @defgroup    sys_registry_namespace_tests RIOT Registry Tests Namespace
+ * @ingroup     tests
+ * @brief       RIOT Registry Namespace Tests module providing common tests configuration schemas for the RIOT Registry sys module
+ * @{
+ *
+ * @file
+ *
+ * @author      Lasse Rosenow <lasse.rosenow@haw-hamburg.de>
+ */
+
+#include <stdio.h>
+
+#define ENABLE_DEBUG (0)
+#include "debug.h"
+#include "registry.h"
+
+#include "namespace_tests.h"
+
+/* Tests namespace */
+
+registry_namespace_t registry_tests = {
+    .name = "tests",
+    .description = "Tests namespace",
+    .schemas = (const registry_schema_t *[]) {
+        &registry_tests_full,
+    },
+    .schemas_len = 1,
+};

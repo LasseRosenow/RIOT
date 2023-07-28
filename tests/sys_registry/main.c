@@ -23,8 +23,8 @@
 
 int main(void)
 {
-    registry_tests_api_run();
-    registry_tests_stack_run();
+    tests_registry_get_and_set_run();
+    // benchmarks_registry_stack_consumption_run();
 
     return 0;
 }

@@ -28,7 +28,6 @@
 #include "debug.h"
 #include "kernel_defines.h"
 #include "registry.h"
-#include "registry/path.h"
 #include "registry/namespace_sys.h"
 
 #include "registry/namespace_sys/rgb_led.h"

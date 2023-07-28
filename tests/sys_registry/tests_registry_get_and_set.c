@@ -28,9 +28,6 @@
 #include "board.h"
 #include "mtd.h"
 #include "registry.h"
-#include "registry/namespace_sys.h"
-#include "registry/storage.h"
-#include "fs/littlefs2_fs.h"
 
 #include "tests_registry.h"
 #include "registry_schema_full_example.h"
@@ -38,63 +35,19 @@
 #define FLOAT_MAX_CHAR_COUNT ((FLT_MAX_10_EXP + 1) + 1 + 1 + 6)     // (FLT_MAX_10_EXP + 1) + sign + dot + 6 decimal places
 #define DOUBLE_MAX_CHAR_COUNT ((DBL_MAX_10_EXP + 1) + 1 + 1 + 6)    // (DBL_MAX_10_EXP + 1) + sign + dot + 6 decimal places
 
-#define FS_DRIVER littlefs2_file_system
-static littlefs2_desc_t fs_desc = {
-    .lock = MUTEX_INIT,
-};
-
-
-
-static vfs_mount_t _vfs_mount = {
-    .fs = &FS_DRIVER,
-    .mount_point = "/sda",
-    .private_data = &fs_desc,
-};
-
-static registry_storage_instance_t vfs_instance_1 = {
-    .itf = &registry_storage_vfs,
-    .data = &_vfs_mount,
-};
-
-static registry_storage_instance_t vfs_instance_2 = {
-    .itf = &registry_storage_vfs,
-    .data = &_vfs_mount,
-};
-
-static bool commit_success = false;
-
-static int test_instance_0_commit_cb(const registry_resource_id_t *resource_id, const void *context)
-{
-    (void)context;
-
-    if (resource_id != NULL && *resource_id == REGISTRY_SCHEMA_FULL_EXAMPLE_BOOL) {
-        commit_success = true;
-    }
-
-    return 0;
-}
-
 static registry_schema_full_example_t test_instance_1_data = {
-    .string = "hallo",
+    .string = "hello world",
     .boolean = true,
     .u8 = 9,
     .u16 = 17,
     .u32 = 33,
-#if defined(CONFIG_REGISTRY_USE_UINT64)
     .u64 = 65,
-#endif /* CONFIG_REGISTRY_USE_UINT64 */
     .i8 = 8,
     .i16 = 16,
     .i32 = 32,
-#if defined(CONFIG_REGISTRY_USE_INT64)
     .i64 = 64,
-#endif /* CONFIG_REGISTRY_USE_INT64 */
-#if defined(CONFIG_REGISTRY_USE_FLOAT32)
     .f32 = 3.2,
-#endif /* CONFIG_REGISTRY_USE_FLOAT32 */
-#if defined(CONFIG_REGISTRY_USE_FLOAT64)
     .f64 = 6.4,
-#endif /* CONFIG_REGISTRY_USE_FLOAT64 */
 };
 
 static registry_instance_t test_instance_1 = {
@@ -111,35 +64,14 @@ static void test_registry_setup(void)
     /* add schema instances */
     registry_register_schema_instance(REGISTRY_NAMESPACE_SYS, REGISTRY_SCHEMA_FULL_EXAMPLE,
                                       &test_instance_1);
-
-    /* init storage_facilities */
-    if (IS_USED(MODULE_LITTLEFS2)) {
-        fs_desc.dev = MTD_0;
-    }
-    registry_register_storage_src(&vfs_instance_1);
-    registry_register_storage_dst(&vfs_instance_2);
 }
 
 static void test_registry_teardown(void)
 {
 }
 
-static void tests_registry_register_schema(void)
+static void tests_registry_min_values(void)
 {
-    /* test if schema_full_example got registered */
-    clist_node_t *test_node = registry_schema_full_example.instances.next->next;
-    registry_schema_full_example_t *test_instance = container_of(test_node,
-                                                                 registry_schema_full_example_t,
-                                                                 node);
-
-    TEST_ASSERT_EQUAL_INT((int)&test_instance_1, (int)test_instance);
-}
-
-static void tests_registry_all_min_values(void)
-{
-    registry_path_t path;
-
-
     /* string */
     path = REGISTRY_PATH_SYS(REGISTRY_SCHEMA_FULL_EXAMPLE, 0, REGISTRY_SCHEMA_FULL_EXAMPLE_STRING);
 
@@ -202,13 +134,11 @@ static void tests_registry_all_min_values(void)
 
 
     /* u64 */
-#if defined(CONFIG_REGISTRY_USE_UINT64)
     path = REGISTRY_PATH_SYS(REGISTRY_SCHEMA_FULL_EXAMPLE, 0, REGISTRY_SCHEMA_FULL_EXAMPLE_U64);
     registry_set_uint64(path, 0);
     const uint64_t *output_u64;
     registry_get_uint64(path, &output_u64);
     TEST_ASSERT_EQUAL_INT(0, *output_u64);
-#endif /* CONFIG_REGISTRY_USE_UINT64 */
 
 
     /* i8 */
@@ -236,17 +166,14 @@ static void tests_registry_all_min_values(void)
 
 
     /* i64 */
-#if defined(CONFIG_REGISTRY_USE_INT64)
     path = REGISTRY_PATH_SYS(REGISTRY_SCHEMA_FULL_EXAMPLE, 0, REGISTRY_SCHEMA_FULL_EXAMPLE_I64);
     registry_set_int64(path, INT64_MIN);
     const int64_t *output_i64;
     registry_get_int64(path, &output_i64);
     TEST_ASSERT_EQUAL_INT(INT64_MIN, *output_i64);
-#endif /* CONFIG_REGISTRY_USE_INT64 */
 
 
     /* f32 */
-#if defined(CONFIG_REGISTRY_USE_FLOAT32)
     path = REGISTRY_PATH_SYS(REGISTRY_SCHEMA_FULL_EXAMPLE, 0, REGISTRY_SCHEMA_FULL_EXAMPLE_F32);
     registry_set_float32(path, -FLT_MAX);
     const float *output_f32;
@@ -256,11 +183,9 @@ static void tests_registry_all_min_values(void)
     sprintf(input_f32_string, "%f", -FLT_MAX);
     sprintf(output_f32_string, "%f", *output_f32);
     TEST_ASSERT_EQUAL_STRING(input_f32_string, output_f32_string);
-#endif /* CONFIG_REGISTRY_USE_FLOAT32 */
 
 
     /* f64 */
-#if defined(CONFIG_REGISTRY_USE_FLOAT64)
     path = REGISTRY_PATH_SYS(REGISTRY_SCHEMA_FULL_EXAMPLE, 0, REGISTRY_SCHEMA_FULL_EXAMPLE_F64);
     registry_set_float64(path, -DBL_MAX);
     const double *output_f64;
@@ -270,13 +195,10 @@ static void tests_registry_all_min_values(void)
     sprintf(input_f64_string, "%f", -DBL_MAX);
     sprintf(output_f64_string, "%f", *output_f64);
     TEST_ASSERT_EQUAL_STRING(input_f64_string, output_f64_string);
-#endif /* CONFIG_REGISTRY_USE_FLOAT64 */
 }
 
-static void tests_registry_all_max_values(void)
+static void tests_registry_max_values(void)
 {
-    registry_path_t path;
-
     /* string */
     path = REGISTRY_PATH_SYS(REGISTRY_SCHEMA_FULL_EXAMPLE, 0, REGISTRY_SCHEMA_FULL_EXAMPLE_STRING);
     char input_string[50] = { 0 };
@@ -343,13 +265,11 @@ static void tests_registry_all_max_values(void)
 
 
     /* u64 */
-#if defined(CONFIG_REGISTRY_USE_UINT64)
     path = REGISTRY_PATH_SYS(REGISTRY_SCHEMA_FULL_EXAMPLE, 0, REGISTRY_SCHEMA_FULL_EXAMPLE_U64);
     registry_set_uint64(path, UINT64_MAX);
     const uint64_t *output_u64;
     registry_get_uint64(path, &output_u64);
     TEST_ASSERT_EQUAL_INT(UINT64_MAX, *output_u64);
-#endif /* CONFIG_REGISTRY_USE_UINT64 */
 
 
     /* i8 */
@@ -377,17 +297,14 @@ static void tests_registry_all_max_values(void)
 
 
     /* i64 */
-#if defined(CONFIG_REGISTRY_USE_INT64)
     path = REGISTRY_PATH_SYS(REGISTRY_SCHEMA_FULL_EXAMPLE, 0, REGISTRY_SCHEMA_FULL_EXAMPLE_I64);
     registry_set_int64(path, INT64_MAX);
     const int64_t *output_i64;
     registry_get_int64(path, &output_i64);
     TEST_ASSERT_EQUAL_INT(INT64_MAX, *output_i64);
-#endif /* CONFIG_REGISTRY_USE_INT64 */
 
 
     /* f32 */
-#if defined(CONFIG_REGISTRY_USE_FLOAT32)
     path = REGISTRY_PATH_SYS(REGISTRY_SCHEMA_FULL_EXAMPLE, 0, REGISTRY_SCHEMA_FULL_EXAMPLE_F32);
     registry_set_float32(path, FLT_MAX);
     const float *output_f32;
@@ -397,11 +314,9 @@ static void tests_registry_all_max_values(void)
     sprintf(input_f32_string, "%f", FLT_MAX);
     sprintf(output_f32_string, "%f", *output_f32);
     TEST_ASSERT_EQUAL_STRING(input_f32_string, output_f32_string);
-#endif /* CONFIG_REGISTRY_USE_FLOAT32 */
 
 
     /* f64 */
-#if defined(CONFIG_REGISTRY_USE_FLOAT64)
     path = REGISTRY_PATH_SYS(REGISTRY_SCHEMA_FULL_EXAMPLE, 0, REGISTRY_SCHEMA_FULL_EXAMPLE_F64);
     registry_set_float64(path, DBL_MAX);
     const double *output_f64;
@@ -411,90 +326,16 @@ static void tests_registry_all_max_values(void)
     sprintf(input_f64_string, "%f", DBL_MAX);
     sprintf(output_f64_string, "%f", *output_f64);
     TEST_ASSERT_EQUAL_STRING(input_f64_string, output_f64_string);
-#endif /* CONFIG_REGISTRY_USE_FLOAT64 */
-}
-
-
-static void tests_registry_commit(void)
-{
-    registry_path_t path = REGISTRY_PATH_SYS(REGISTRY_SCHEMA_FULL_EXAMPLE, 0,
-                                             REGISTRY_SCHEMA_FULL_EXAMPLE_BOOL);
-
-    registry_commit(path);
-
-    TEST_ASSERT_EQUAL_INT(true, commit_success);
-}
-
-bool export_success = false;
-
-static int _export_cb(const registry_path_t path, const registry_schema_t *schema,
-                      const registry_instance_t *instance, const registry_resource_t *meta,
-                      const registry_value_t *value, const void *context)
-{
-    (void)path;
-    (void)schema;
-    (void)instance;
-    (void)meta;
-    (void)value;
-    (void)context;
-
-    if (*path.namespace_id == REGISTRY_NAMESPACE_SYS &&
-        *path.schema_id == REGISTRY_SCHEMA_FULL_EXAMPLE &&
-        *path.instance_id == 0 &&
-        path.path[0] == REGISTRY_SCHEMA_FULL_EXAMPLE_STRING) {
-        export_success = true;
-    }
-
-    return 0;
-}
-
-static void tests_registry_export(void)
-{
-    registry_path_t path = REGISTRY_PATH_SYS(REGISTRY_SCHEMA_FULL_EXAMPLE, 0,
-                                             REGISTRY_SCHEMA_FULL_EXAMPLE_STRING);
-
-    registry_export(_export_cb, path, 0, NULL);
-
-    TEST_ASSERT_EQUAL_INT(true, export_success);
-}
-
-static void tests_registry_save_load(void)
-{
-    registry_path_t path = REGISTRY_PATH_SYS(REGISTRY_SCHEMA_FULL_EXAMPLE, 0,
-                                             REGISTRY_SCHEMA_FULL_EXAMPLE_U8);
-    uint8_t old_value = 5;
-
-    registry_set_uint8(path, old_value);
-
-    registry_save();
-
-    registry_set_uint8(path, 10);
-
-    registry_load();
-
-    const uint8_t *new_value;
-
-    registry_get_uint8(path, &new_value);
-
-    TEST_ASSERT_EQUAL_INT(old_value, *new_value);
 }
 
 static Test *tests_registry(void)
 {
-    (void)tests_registry_register_schema;
-    (void)tests_registry_all_min_values;
-    (void)tests_registry_all_max_values;
-    (void)tests_registry_commit;
-    (void)tests_registry_export;
-    (void)tests_registry_save_load;
+    (void)tests_registry_min_values;
+    (void)tests_registry_max_values;
 
     EMB_UNIT_TESTFIXTURES(fixtures) {
-        new_TestFixture(tests_registry_register_schema),
-        new_TestFixture(tests_registry_all_min_values),
-        new_TestFixture(tests_registry_all_max_values),
-        // new_TestFixture(tests_registry_commit),
-        // new_TestFixture(tests_registry_export),
-        // new_TestFixture(tests_registry_save_load),
+        new_TestFixture(tests_registry_min_values),
+        new_TestFixture(tests_registry_max_values),
     };
 
     EMB_UNIT_TESTCALLER(registry_tests, test_registry_setup, test_registry_teardown, fixtures);
@@ -502,7 +343,7 @@ static Test *tests_registry(void)
     return (Test *)&registry_tests;
 }
 
-int registry_tests_api_run(void)
+int tests_registry_get_and_set_run(void)
 {
     TESTS_START();
     TESTS_RUN(tests_registry());

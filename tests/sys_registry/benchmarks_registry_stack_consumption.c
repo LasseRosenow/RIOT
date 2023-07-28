@@ -350,7 +350,7 @@ static void run_all_tests(void)
     create_test_thread(LOAD);
 }
 
-int registry_tests_stack_run(void)
+int benchmarks_registry_stack_consumption_run(void)
 {
     printf("\nRegistry: Test: Stack consumtions: START\n");
 

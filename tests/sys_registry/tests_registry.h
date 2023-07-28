@@ -24,8 +24,8 @@
 extern "C" {
 #endif
 
-int registry_tests_api_run(void);
-int registry_tests_stack_run(void);
+int tests_registry_get_and_set_run(void);
+int benchmarks_registry_stack_consumption_run(void);
 
 #ifdef __cplusplus
 }
