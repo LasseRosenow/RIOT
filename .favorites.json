@@ -73,5 +73,14 @@
         "workspacePath": "sys/shell/cmds/registry.c",
         "id": "XrFzk8WMCxBJj5N3",
         "label": "cli.c"
+    },
+    {
+        "type": "Directory",
+        "name": "/home/lasse/Schreibtisch/RIOT/riot-registry/RIOT/tests/unittests/tests-registry",
+        "parent_id": null,
+        "workspaceRoot": "/home/lasse/Schreibtisch/RIOT/riot-registry/RIOT",
+        "workspacePath": "tests/unittests/tests-registry",
+        "id": "Z1V3ej8sEwA5rFbm",
+        "label": "tests"
     }
 ]

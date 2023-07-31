@@ -82,132 +82,263 @@ static void test_registry_teardown(void)
 
 static void tests_registry_min_values(void)
 {
-    registry_value_t output_value;
+    registry_value_t output;
 
-    /* string */
-    const char input_string[] = "";
+    // TODO STRING
+    // /* string */
+    // const char input_string[] = "";
 
-    registry_set(&test_instance_1, &registry_tests_full_string, &input_string);
-    registry_get(&test_instance_1, &registry_tests_full_string, &output_value);
+    // registry_set(&test_instance_1, &registry_tests_full_string, &input_string);
+    // // registry_get(&test_instance_1, &registry_tests_full_string, &output_value);
 
-    TEST_ASSERT_EQUAL_STRING("", (char *)output_value.buf);
-
-
-    // /* bool */
-    // path = REGISTRY_PATH_SYS(REGISTRY_SCHEMA_FULL_EXAMPLE, 0, REGISTRY_SCHEMA_FULL_EXAMPLE_BOOL);
-
-    // registry_set_bool(path, false);
-
-    // const bool *bool_out;
-
-    // registry_get_bool(path, &bool_out);
-
-    // TEST_ASSERT_EQUAL_INT(false, *bool_out);
+    // TEST_ASSERT_EQUAL_STRING("", input_string);
 
 
-    // /* u8 */
-    // path = REGISTRY_PATH_SYS(REGISTRY_SCHEMA_FULL_EXAMPLE, 0, REGISTRY_SCHEMA_FULL_EXAMPLE_U8);
+    /* bool */
+    const bool input_bool = false;
 
-    // registry_set_uint8(path, 0);
+    registry_set(&test_instance_1, &registry_tests_full_boolean, &input_bool);
+    registry_get(&test_instance_1, &registry_tests_full_boolean, &output);
 
-    // const uint8_t *output_u8;
-
-    // registry_get_uint8(path, &output_u8);
-
-    // TEST_ASSERT_EQUAL_INT(0, *output_u8);
+    TEST_ASSERT_EQUAL_INT(input_bool, *(bool *)output.buf);
 
 
-    // /* u16 */
-    // path = REGISTRY_PATH_SYS(REGISTRY_SCHEMA_FULL_EXAMPLE, 0, REGISTRY_SCHEMA_FULL_EXAMPLE_U16);
+    /* u8 */
+    const uint8_t input_u8 = 0;
 
-    // registry_set_uint16(path, 0);
+    registry_set(&test_instance_1, &registry_tests_full_u8, &input_u8);
+    registry_get(&test_instance_1, &registry_tests_full_u8, &output);
 
-    // const uint16_t *output_u16;
-
-    // registry_get_uint16(path, &output_u16);
-
-    // TEST_ASSERT_EQUAL_INT(0, *output_u16);
+    TEST_ASSERT_EQUAL_INT(input_u8, *(uint8_t *)output.buf);
 
 
-    // /* u32 */
-    // path = REGISTRY_PATH_SYS(REGISTRY_SCHEMA_FULL_EXAMPLE, 0, REGISTRY_SCHEMA_FULL_EXAMPLE_U32);
+    /* u16 */
+    const uint16_t input_u16 = 0;
 
-    // registry_set_uint32(path, 0);
+    registry_set(&test_instance_1, &registry_tests_full_u16, &input_u16);
+    registry_get(&test_instance_1, &registry_tests_full_u16, &output);
 
-    // const uint32_t *output_u32;
-
-    // registry_get_uint32(path, &output_u32);
-
-    // TEST_ASSERT_EQUAL_INT(0, *output_u32);
+    TEST_ASSERT_EQUAL_INT(input_u16, *(uint16_t *)output.buf);
 
 
-    // /* u64 */
-    // path = REGISTRY_PATH_SYS(REGISTRY_SCHEMA_FULL_EXAMPLE, 0, REGISTRY_SCHEMA_FULL_EXAMPLE_U64);
-    // registry_set_uint64(path, 0);
-    // const uint64_t *output_u64;
-    // registry_get_uint64(path, &output_u64);
-    // TEST_ASSERT_EQUAL_INT(0, *output_u64);
+    /* u32 */
+    const uint32_t input_u32 = 0;
+
+    registry_set(&test_instance_1, &registry_tests_full_u32, &input_u32);
+    registry_get(&test_instance_1, &registry_tests_full_u32, &output);
+
+    TEST_ASSERT_EQUAL_INT(input_u32, *(uint32_t *)output.buf);
 
 
-    // /* i8 */
-    // path = REGISTRY_PATH_SYS(REGISTRY_SCHEMA_FULL_EXAMPLE, 0, REGISTRY_SCHEMA_FULL_EXAMPLE_I8);
-    // registry_set_int8(path, INT8_MIN);
-    // const int8_t *output_i8;
-    // registry_get_int8(path, &output_i8);
-    // TEST_ASSERT_EQUAL_INT(INT8_MIN, *output_i8);
+    /* u64 */
+    const uint64_t input_u64 = 0;
+
+    registry_set(&test_instance_1, &registry_tests_full_u64, &input_u64);
+    registry_get(&test_instance_1, &registry_tests_full_u64, &output);
+
+    TEST_ASSERT_EQUAL_INT(input_u64, *(uint64_t *)output.buf);
 
 
-    // /* i16 */
-    // path = REGISTRY_PATH_SYS(REGISTRY_SCHEMA_FULL_EXAMPLE, 0, REGISTRY_SCHEMA_FULL_EXAMPLE_I16);
-    // registry_set_int16(path, INT16_MIN);
-    // const int16_t *output_i16;
-    // registry_get_int16(path, &output_i16);
-    // TEST_ASSERT_EQUAL_INT(INT16_MIN, *output_i16);
+    /* i8 */
+    const int8_t input_i8 = INT8_MIN;
+
+    registry_set(&test_instance_1, &registry_tests_full_i8, &input_i8);
+    registry_get(&test_instance_1, &registry_tests_full_i8, &output);
+
+    TEST_ASSERT_EQUAL_INT(input_i8, *(int8_t *)output.buf);
 
 
-    // /* i32 */
-    // path = REGISTRY_PATH_SYS(REGISTRY_SCHEMA_FULL_EXAMPLE, 0, REGISTRY_SCHEMA_FULL_EXAMPLE_I32);
-    // registry_set_int32(path, INT32_MIN);
-    // const int32_t *output_i32;
-    // registry_get_int32(path, &output_i32);
-    // TEST_ASSERT_EQUAL_INT(INT32_MIN, *output_i32);
+    /* i16 */
+    const int16_t input_i16 = INT16_MIN;
+
+    registry_set(&test_instance_1, &registry_tests_full_i16, &input_i16);
+    registry_get(&test_instance_1, &registry_tests_full_i16, &output);
+
+    TEST_ASSERT_EQUAL_INT(input_i16, *(int16_t *)output.buf);
 
 
-    // /* i64 */
-    // path = REGISTRY_PATH_SYS(REGISTRY_SCHEMA_FULL_EXAMPLE, 0, REGISTRY_SCHEMA_FULL_EXAMPLE_I64);
-    // registry_set_int64(path, INT64_MIN);
-    // const int64_t *output_i64;
-    // registry_get_int64(path, &output_i64);
-    // TEST_ASSERT_EQUAL_INT(INT64_MIN, *output_i64);
+    /* i32 */
+    const int32_t input_i32 = INT32_MIN;
+
+    registry_set(&test_instance_1, &registry_tests_full_i32, &input_i32);
+    registry_get(&test_instance_1, &registry_tests_full_i32, &output);
+
+    TEST_ASSERT_EQUAL_INT(input_i32, *(int32_t *)output.buf);
 
 
-    // /* f32 */
-    // path = REGISTRY_PATH_SYS(REGISTRY_SCHEMA_FULL_EXAMPLE, 0, REGISTRY_SCHEMA_FULL_EXAMPLE_F32);
-    // registry_set_float32(path, -FLT_MAX);
-    // const float *output_f32;
-    // registry_get_float32(path, &output_f32);
-    // char input_f32_string[FLOAT_MAX_CHAR_COUNT + 1] = { 0 };
-    // char output_f32_string[FLOAT_MAX_CHAR_COUNT + 1] = { 0 };
-    // sprintf(input_f32_string, "%f", -FLT_MAX);
-    // sprintf(output_f32_string, "%f", *output_f32);
-    // TEST_ASSERT_EQUAL_STRING(input_f32_string, output_f32_string);
+    /* i64 */
+    const int64_t input_i64 = INT64_MIN;
+
+    registry_set(&test_instance_1, &registry_tests_full_i64, &input_i64);
+    registry_get(&test_instance_1, &registry_tests_full_i64, &output);
+
+    TEST_ASSERT_EQUAL_INT(input_i64, *(int64_t *)output.buf);
 
 
-    // /* f64 */
-    // path = REGISTRY_PATH_SYS(REGISTRY_SCHEMA_FULL_EXAMPLE, 0, REGISTRY_SCHEMA_FULL_EXAMPLE_F64);
-    // registry_set_float64(path, -DBL_MAX);
-    // const double *output_f64;
-    // registry_get_float64(path, &output_f64);
-    // char input_f64_string[DOUBLE_MAX_CHAR_COUNT + 1] = { 0 };
-    // char output_f64_string[DOUBLE_MAX_CHAR_COUNT + 1] = { 0 };
-    // sprintf(input_f64_string, "%f", -DBL_MAX);
-    // sprintf(output_f64_string, "%f", *output_f64);
-    // TEST_ASSERT_EQUAL_STRING(input_f64_string, output_f64_string);
+    /* f32 */
+    const float input_f32 = FLT_MIN;
+
+    registry_set(&test_instance_1, &registry_tests_full_f32, &input_f32);
+    registry_get(&test_instance_1, &registry_tests_full_f32, &output);
+
+    char input_f32_string[FLOAT_MAX_CHAR_COUNT + 1] = { 0 };
+    char output_f32_string[FLOAT_MAX_CHAR_COUNT + 1] = { 0 };
+    sprintf(input_f32_string, "%f", input_f32);
+    sprintf(output_f32_string, "%f", *(float *)output.buf);
+
+    TEST_ASSERT_EQUAL_STRING(input_f32_string, output_f32_string);
+
+
+    /* f64 */
+    const double input_f64 = DBL_MIN;
+
+    registry_set(&test_instance_1, &registry_tests_full_f64, &input_f64);
+    registry_get(&test_instance_1, &registry_tests_full_f64, &output);
+
+    char input_f64_string[DOUBLE_MAX_CHAR_COUNT + 1] = { 0 };
+    char output_f64_string[DOUBLE_MAX_CHAR_COUNT + 1] = { 0 };
+    sprintf(input_f64_string, "%f", input_f64);
+    sprintf(output_f64_string, "%f", *(double *)output.buf);
+
+    TEST_ASSERT_EQUAL_STRING(input_f64_string, output_f64_string);
+}
+
+static void tests_registry_zero_values(void)
+{
+    registry_value_t output;
+
+    // TODO STRING
+    // /* string */
+    // const char input_string[] = "";
+
+    // registry_set(&test_instance_1, &registry_tests_full_string, &input_string);
+    // // registry_get(&test_instance_1, &registry_tests_full_string, &output_value);
+
+    // TEST_ASSERT_EQUAL_STRING("", input_string);
+
+
+    /* bool */
+    const bool input_bool = 0;
+
+    registry_set(&test_instance_1, &registry_tests_full_boolean, &input_bool);
+    registry_get(&test_instance_1, &registry_tests_full_boolean, &output);
+
+    TEST_ASSERT_EQUAL_INT(input_bool, *(bool *)output.buf);
+
+
+    /* u8 */
+    const uint8_t input_u8 = 0;
+
+    registry_set(&test_instance_1, &registry_tests_full_u8, &input_u8);
+    registry_get(&test_instance_1, &registry_tests_full_u8, &output);
+
+    TEST_ASSERT_EQUAL_INT(input_u8, *(uint8_t *)output.buf);
+
+
+    /* u16 */
+    const uint16_t input_u16 = 0;
+
+    registry_set(&test_instance_1, &registry_tests_full_u16, &input_u16);
+    registry_get(&test_instance_1, &registry_tests_full_u16, &output);
+
+    TEST_ASSERT_EQUAL_INT(input_u16, *(uint16_t *)output.buf);
+
+
+    /* u32 */
+    const uint32_t input_u32 = 0;
+
+    registry_set(&test_instance_1, &registry_tests_full_u32, &input_u32);
+    registry_get(&test_instance_1, &registry_tests_full_u32, &output);
+
+    TEST_ASSERT_EQUAL_INT(input_u32, *(uint32_t *)output.buf);
+
+
+    /* u64 */
+    const uint64_t input_u64 = 0;
+
+    registry_set(&test_instance_1, &registry_tests_full_u64, &input_u64);
+    registry_get(&test_instance_1, &registry_tests_full_u64, &output);
+
+    TEST_ASSERT_EQUAL_INT(input_u64, *(uint64_t *)output.buf);
+
+
+    /* i8 */
+    const int8_t input_i8 = 0;
+
+    registry_set(&test_instance_1, &registry_tests_full_i8, &input_i8);
+    registry_get(&test_instance_1, &registry_tests_full_i8, &output);
+
+    TEST_ASSERT_EQUAL_INT(input_i8, *(int8_t *)output.buf);
+
+
+    /* i16 */
+    const int16_t input_i16 = 0;
+
+    registry_set(&test_instance_1, &registry_tests_full_i16, &input_i16);
+    registry_get(&test_instance_1, &registry_tests_full_i16, &output);
+
+    TEST_ASSERT_EQUAL_INT(input_i16, *(int16_t *)output.buf);
+
+
+    /* i32 */
+    const int32_t input_i32 = 0;
+
+    registry_set(&test_instance_1, &registry_tests_full_i32, &input_i32);
+    registry_get(&test_instance_1, &registry_tests_full_i32, &output);
+
+    TEST_ASSERT_EQUAL_INT(input_i32, *(int32_t *)output.buf);
+
+
+    /* i64 */
+    const int64_t input_i64 = 0;
+
+    registry_set(&test_instance_1, &registry_tests_full_i64, &input_i64);
+    registry_get(&test_instance_1, &registry_tests_full_i64, &output);
+
+    TEST_ASSERT_EQUAL_INT(input_i64, *(int64_t *)output.buf);
+
+
+    /* f32 */
+    const float input_f32 = 0.0;
+
+    registry_set(&test_instance_1, &registry_tests_full_f32, &input_f32);
+    registry_get(&test_instance_1, &registry_tests_full_f32, &output);
+
+    char input_f32_string[FLOAT_MAX_CHAR_COUNT + 1] = { 0 };
+    char output_f32_string[FLOAT_MAX_CHAR_COUNT + 1] = { 0 };
+    sprintf(input_f32_string, "%f", input_f32);
+    sprintf(output_f32_string, "%f", *(float *)output.buf);
+
+    TEST_ASSERT_EQUAL_STRING(input_f32_string, output_f32_string);
+
+
+    /* f64 */
+    const double input_f64 = 0.0;
+
+    registry_set(&test_instance_1, &registry_tests_full_f64, &input_f64);
+    registry_get(&test_instance_1, &registry_tests_full_f64, &output);
+
+    char input_f64_string[DOUBLE_MAX_CHAR_COUNT + 1] = { 0 };
+    char output_f64_string[DOUBLE_MAX_CHAR_COUNT + 1] = { 0 };
+    sprintf(input_f64_string, "%f", input_f64);
+    sprintf(output_f64_string, "%f", *(double *)output.buf);
+
+    TEST_ASSERT_EQUAL_STRING(input_f64_string, output_f64_string);
 }
 
 static void tests_registry_max_values(void)
 {
+    registry_value_t output;
+
+    // TODO STRING
     // /* string */
+    // const char input_string[] = "asdf";
+
+    // registry_set(&test_instance_1, &registry_tests_full_string, &input_string);
+    // // registry_get(&test_instance_1, &registry_tests_full_string, &output_value);
+
+    // TEST_ASSERT_EQUAL_STRING("", input_string);
+
     // path = REGISTRY_PATH_SYS(REGISTRY_SCHEMA_FULL_EXAMPLE, 0, REGISTRY_SCHEMA_FULL_EXAMPLE_STRING);
     // char input_string[50] = { 0 };
 
@@ -224,125 +355,120 @@ static void tests_registry_max_values(void)
     // TEST_ASSERT_EQUAL_STRING(input_string, ouput_string);
 
 
-    // /* bool */
-    // path = REGISTRY_PATH_SYS(REGISTRY_SCHEMA_FULL_EXAMPLE, 0, REGISTRY_SCHEMA_FULL_EXAMPLE_BOOL);
+    /* bool */
+    const bool input_bool = true;
 
-    // registry_set_bool(path, true);
+    registry_set(&test_instance_1, &registry_tests_full_boolean, &input_bool);
+    registry_get(&test_instance_1, &registry_tests_full_boolean, &output);
 
-    // const bool *output_bool;
-
-    // registry_get_bool(path, &output_bool);
-
-    // TEST_ASSERT_EQUAL_INT(true, *output_bool);
+    TEST_ASSERT_EQUAL_INT(input_bool, *(bool *)output.buf);
 
 
-    // /* u8 */
-    // path = REGISTRY_PATH_SYS(REGISTRY_SCHEMA_FULL_EXAMPLE, 0, REGISTRY_SCHEMA_FULL_EXAMPLE_U8);
+    /* u8 */
+    const uint8_t input_u8 = UINT8_MAX;
 
-    // registry_set_uint8(path, UINT8_MAX);
+    registry_set(&test_instance_1, &registry_tests_full_u8, &input_u8);
+    registry_get(&test_instance_1, &registry_tests_full_u8, &output);
 
-    // const uint8_t *output_u8;
-
-    // registry_get_uint8(path, &output_u8);
-
-    // TEST_ASSERT_EQUAL_INT(UINT8_MAX, *output_u8);
+    TEST_ASSERT_EQUAL_INT(input_u8, *(uint8_t *)output.buf);
 
 
-    // /* u16 */
-    // path = REGISTRY_PATH_SYS(REGISTRY_SCHEMA_FULL_EXAMPLE, 0, REGISTRY_SCHEMA_FULL_EXAMPLE_U16);
+    /* u16 */
+    const uint16_t input_u16 = UINT16_MAX;
 
-    // registry_set_uint16(path, UINT16_MAX);
+    registry_set(&test_instance_1, &registry_tests_full_u16, &input_u16);
+    registry_get(&test_instance_1, &registry_tests_full_u16, &output);
 
-    // const uint16_t *output_u16;
-
-    // registry_get_uint16(path, &output_u16);
-
-    // TEST_ASSERT_EQUAL_INT(UINT16_MAX, *output_u16);
+    TEST_ASSERT_EQUAL_INT(input_u16, *(uint16_t *)output.buf);
 
 
-    // /* u32 */
-    // path = REGISTRY_PATH_SYS(REGISTRY_SCHEMA_FULL_EXAMPLE, 0, REGISTRY_SCHEMA_FULL_EXAMPLE_U32);
+    /* u32 */
+    const uint32_t input_u32 = UINT32_MAX;
 
-    // registry_set_uint32(path, UINT32_MAX);
+    registry_set(&test_instance_1, &registry_tests_full_u32, &input_u32);
+    registry_get(&test_instance_1, &registry_tests_full_u32, &output);
 
-    // const uint32_t *output_u32;
-
-    // registry_get_uint32(path, &output_u32);
-
-    // TEST_ASSERT_EQUAL_INT(UINT32_MAX, *output_u32);
+    TEST_ASSERT_EQUAL_INT(input_u32, *(uint32_t *)output.buf);
 
 
-    // /* u64 */
-    // path = REGISTRY_PATH_SYS(REGISTRY_SCHEMA_FULL_EXAMPLE, 0, REGISTRY_SCHEMA_FULL_EXAMPLE_U64);
-    // registry_set_uint64(path, UINT64_MAX);
-    // const uint64_t *output_u64;
-    // registry_get_uint64(path, &output_u64);
-    // TEST_ASSERT_EQUAL_INT(UINT64_MAX, *output_u64);
+    /* u64 */
+    const uint64_t input_u64 = UINT64_MAX;
+
+    registry_set(&test_instance_1, &registry_tests_full_u64, &input_u64);
+    registry_get(&test_instance_1, &registry_tests_full_u64, &output);
+
+    TEST_ASSERT_EQUAL_INT(input_u64, *(uint64_t *)output.buf);
 
 
-    // /* i8 */
-    // path = REGISTRY_PATH_SYS(REGISTRY_SCHEMA_FULL_EXAMPLE, 0, REGISTRY_SCHEMA_FULL_EXAMPLE_I8);
-    // registry_set_int8(path, INT8_MAX);
-    // const int8_t *output_i8;
-    // registry_get_int8(path, &output_i8);
-    // TEST_ASSERT_EQUAL_INT(INT8_MAX, *output_i8);
+    /* i8 */
+    const int8_t input_i8 = INT8_MAX;
+
+    registry_set(&test_instance_1, &registry_tests_full_i8, &input_i8);
+    registry_get(&test_instance_1, &registry_tests_full_i8, &output);
+
+    TEST_ASSERT_EQUAL_INT(input_i8, *(int8_t *)output.buf);
 
 
-    // /* i16 */
-    // path = REGISTRY_PATH_SYS(REGISTRY_SCHEMA_FULL_EXAMPLE, 0, REGISTRY_SCHEMA_FULL_EXAMPLE_I16);
-    // registry_set_int16(path, INT16_MAX);
-    // const int16_t *output_i16;
-    // registry_get_int16(path, &output_i16);
-    // TEST_ASSERT_EQUAL_INT(INT16_MAX, *output_i16);
+    /* i16 */
+    const int16_t input_i16 = INT16_MAX;
+
+    registry_set(&test_instance_1, &registry_tests_full_i16, &input_i16);
+    registry_get(&test_instance_1, &registry_tests_full_i16, &output);
+
+    TEST_ASSERT_EQUAL_INT(input_i16, *(int16_t *)output.buf);
 
 
-    // /* i32 */
-    // path = REGISTRY_PATH_SYS(REGISTRY_SCHEMA_FULL_EXAMPLE, 0, REGISTRY_SCHEMA_FULL_EXAMPLE_I32);
-    // registry_set_int32(path, INT32_MAX);
-    // const int32_t *output_i32;
-    // registry_get_int32(path, &output_i32);
-    // TEST_ASSERT_EQUAL_INT(INT32_MAX, *output_i32);
+    /* i32 */
+    const int32_t input_i32 = INT32_MAX;
+
+    registry_set(&test_instance_1, &registry_tests_full_i32, &input_i32);
+    registry_get(&test_instance_1, &registry_tests_full_i32, &output);
+
+    TEST_ASSERT_EQUAL_INT(input_i32, *(int32_t *)output.buf);
 
 
-    // /* i64 */
-    // path = REGISTRY_PATH_SYS(REGISTRY_SCHEMA_FULL_EXAMPLE, 0, REGISTRY_SCHEMA_FULL_EXAMPLE_I64);
-    // registry_set_int64(path, INT64_MAX);
-    // const int64_t *output_i64;
-    // registry_get_int64(path, &output_i64);
-    // TEST_ASSERT_EQUAL_INT(INT64_MAX, *output_i64);
+    /* i64 */
+    const int64_t input_i64 = INT64_MAX;
+
+    registry_set(&test_instance_1, &registry_tests_full_i64, &input_i64);
+    registry_get(&test_instance_1, &registry_tests_full_i64, &output);
+
+    TEST_ASSERT_EQUAL_INT(input_i64, *(int64_t *)output.buf);
 
 
-    // /* f32 */
-    // path = REGISTRY_PATH_SYS(REGISTRY_SCHEMA_FULL_EXAMPLE, 0, REGISTRY_SCHEMA_FULL_EXAMPLE_F32);
-    // registry_set_float32(path, FLT_MAX);
-    // const float *output_f32;
-    // registry_get_float32(path, &output_f32);
-    // char input_f32_string[FLOAT_MAX_CHAR_COUNT + 1] = { 0 };
-    // char output_f32_string[FLOAT_MAX_CHAR_COUNT + 1] = { 0 };
-    // sprintf(input_f32_string, "%f", FLT_MAX);
-    // sprintf(output_f32_string, "%f", *output_f32);
-    // TEST_ASSERT_EQUAL_STRING(input_f32_string, output_f32_string);
+    /* f32 */
+    const float input_f32 = FLT_MAX;
+
+    registry_set(&test_instance_1, &registry_tests_full_f32, &input_f32);
+    registry_get(&test_instance_1, &registry_tests_full_f32, &output);
+
+    char input_f32_string[FLOAT_MAX_CHAR_COUNT + 1] = { 0 };
+    char output_f32_string[FLOAT_MAX_CHAR_COUNT + 1] = { 0 };
+    sprintf(input_f32_string, "%f", input_f32);
+    sprintf(output_f32_string, "%f", *(float *)output.buf);
+
+    TEST_ASSERT_EQUAL_STRING(input_f32_string, output_f32_string);
 
 
-    // /* f64 */
-    // path = REGISTRY_PATH_SYS(REGISTRY_SCHEMA_FULL_EXAMPLE, 0, REGISTRY_SCHEMA_FULL_EXAMPLE_F64);
-    // registry_set_float64(path, DBL_MAX);
-    // const double *output_f64;
-    // registry_get_float64(path, &output_f64);
-    // char input_f64_string[DOUBLE_MAX_CHAR_COUNT + 1] = { 0 };
-    // char output_f64_string[DOUBLE_MAX_CHAR_COUNT + 1] = { 0 };
-    // sprintf(input_f64_string, "%f", DBL_MAX);
-    // sprintf(output_f64_string, "%f", *output_f64);
-    // TEST_ASSERT_EQUAL_STRING(input_f64_string, output_f64_string);
+    /* f64 */
+    const double input_f64 = DBL_MAX;
+
+    registry_set(&test_instance_1, &registry_tests_full_f64, &input_f64);
+    registry_get(&test_instance_1, &registry_tests_full_f64, &output);
+
+    char input_f64_string[DOUBLE_MAX_CHAR_COUNT + 1] = { 0 };
+    char output_f64_string[DOUBLE_MAX_CHAR_COUNT + 1] = { 0 };
+    sprintf(input_f64_string, "%f", input_f64);
+    sprintf(output_f64_string, "%f", *(double *)output.buf);
+
+    TEST_ASSERT_EQUAL_STRING(input_f64_string, output_f64_string);
 }
 
 Test *tests_registry_get_set_tests(void)
 {
-    (void)tests_registry_min_values;
-    (void)tests_registry_max_values;
-
     EMB_UNIT_TESTFIXTURES(fixtures) {
         new_TestFixture(tests_registry_min_values),
+        new_TestFixture(tests_registry_zero_values),
         new_TestFixture(tests_registry_max_values),
     };
 
