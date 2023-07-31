@@ -35,6 +35,8 @@
 #define FLOAT_MAX_CHAR_COUNT ((FLT_MAX_10_EXP + 1) + 1 + 1 + 6)     // (FLT_MAX_10_EXP + 1) + sign + dot + 6 decimal places
 #define DOUBLE_MAX_CHAR_COUNT ((DBL_MAX_10_EXP + 1) + 1 + 1 + 6)    // (DBL_MAX_10_EXP + 1) + sign + dot + 6 decimal places
 
+#if IS_USED(MODULE_REGISTRY_NAMESPACE_TESTS_FULL) || IS_ACTIVE(DOXYGEN)
+
 static registry_tests_full_instance_t test_instance_1_data = {
     .string = "hello world",
     .boolean = true,
@@ -476,5 +478,7 @@ Test *tests_registry_get_set_tests(void)
 
     return (Test *)&registry_tests;
 }
+
+#endif
 
 /** @} */

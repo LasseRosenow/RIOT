@@ -32,7 +32,9 @@ registry_namespace_t registry_tests = {
     .name = "tests",
     .description = "Tests namespace",
     .schemas = (const registry_schema_t *[]) {
+#if IS_USED(MODULE_REGISTRY_NAMESPACE_TESTS_FULL)
         &registry_tests_full,
+#endif
     },
     .schemas_len = 1,
 };

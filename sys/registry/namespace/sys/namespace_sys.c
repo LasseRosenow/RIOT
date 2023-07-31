@@ -34,7 +34,9 @@ registry_namespace_t registry_sys = {
     .name = "sys",
     .description = "Sys namespace",
     .schemas = (const registry_schema_t *[]) {
+#if IS_USED(MODULE_REGISTRY_NAMESPACE_SYS_RGB_LED)
         &registry_sys_rgb_led,
+#endif
     },
     .schemas_len = 1,
 };
