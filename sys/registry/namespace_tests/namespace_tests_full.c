@@ -28,7 +28,8 @@
 #include "debug.h"
 #include "kernel_defines.h"
 #include "registry.h"
-#include "namespace_tests.h"
+#include "registry/namespace/tests.h"
+#include "registry/namespace/tests/full.h"
 
 #if IS_USED(MODULE_REGISTRY_NAMESPACE_TESTS_FULL) || IS_ACTIVE(DOXYGEN)
 
@@ -153,7 +154,7 @@ const registry_resource_t registry_tests_full_u32 = {
     .resources_len = 0,
 };
 
-const registry_resource_t registry_tests_u64 = {
+const registry_resource_t registry_tests_full_u64 = {
     .id = 5,
     .name = "u64",
     .description = "",
@@ -193,7 +194,7 @@ const registry_resource_t registry_tests_full_i32 = {
     .resources_len = 0,
 };
 
-const registry_resource_t registry_tests_i64 = {
+const registry_resource_t registry_tests_full_i64 = {
     .id = 5,
     .name = "i64",
     .description = "",
@@ -213,7 +214,7 @@ const registry_resource_t registry_tests_full_f32 = {
     .resources_len = 0,
 };
 
-const registry_resource_t registry_tests_f64 = {
+const registry_resource_t registry_tests_full_f64 = {
     .id = 5,
     .name = "f64",
     .description = "",

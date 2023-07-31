@@ -24,8 +24,10 @@
 extern "C" {
 #endif
 
-int tests_registry_get_and_set_run(void);
-int benchmarks_registry_stack_consumption_run(void);
+/**
+ * @brief The entry point of this test suite.
+ */
+void tests_registry(void);
 
 #ifdef __cplusplus
 }

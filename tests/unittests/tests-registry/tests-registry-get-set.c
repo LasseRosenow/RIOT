@@ -7,11 +7,10 @@
  */
 
 /**
- * @defgroup    unittests
- * @brief       Unittests for the ``registry`` module
  * @{
  *
  * @file
+ * @brief       Unittests for registry_get, registry_set
  *
  * @author      Lasse Rosenow <lasse.rosenow@haw-hamburg.de>
  */
@@ -29,7 +28,7 @@
 #include "mtd.h"
 #include "registry.h"
 
-#include "tests_registry.h"
+#include "tests-registry.h"
 #include "registry/namespace/tests.h"
 #include "registry/namespace/tests/full.h"
 
@@ -337,7 +336,7 @@ static void tests_registry_max_values(void)
     // TEST_ASSERT_EQUAL_STRING(input_f64_string, output_f64_string);
 }
 
-static Test *tests_registry(void)
+Test *tests_registry_get_set_tests(void)
 {
     (void)tests_registry_min_values;
     (void)tests_registry_max_values;
@@ -350,14 +349,6 @@ static Test *tests_registry(void)
     EMB_UNIT_TESTCALLER(registry_tests, test_registry_setup, test_registry_teardown, fixtures);
 
     return (Test *)&registry_tests;
-}
-
-int tests_registry_get_and_set_run(void)
-{
-    TESTS_START();
-    TESTS_RUN(tests_registry());
-    TESTS_END();
-    return 0;
 }
 
 /** @} */

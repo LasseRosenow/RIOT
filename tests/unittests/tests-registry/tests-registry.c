@@ -7,24 +7,22 @@
  */
 
 /**
- * @ingroup     tests
  * @{
  *
  * @file
- * @brief       Runtime configuration management
+ * @brief       Unittest entry point for the Registry test group
  *
  * @author      Lasse Rosenow <lasse.rosenow@haw-hamburg.de>
- *
- * @}
  */
 
-#include <stdio.h>
-#include "tests_registry.h"
+#include "embUnit/embUnit.h"
 
-int main(void)
+#include "tests-registry.h"
+
+Test *tests_registry_get_set_tests(void);
+
+void tests_registry(void)
 {
-    tests_registry_get_and_set_run();
-    // benchmarks_registry_stack_consumption_run();
-
-    return 0;
+    TESTS_RUN(tests_registry_get_set_tests());
 }
+/** @} */
