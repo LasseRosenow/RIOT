@@ -23,7 +23,8 @@
 #include "debug.h"
 #include "registry.h"
 
-#include "namespace_tests.h"
+#include "registry/namespace/tests.h"
+#include "registry/namespace/tests/full.h"
 
 /* Tests namespace */
 

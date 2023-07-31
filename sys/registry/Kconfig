@@ -34,6 +34,7 @@ config MODULE_REGISTRY_PATH
     bool "Access configuration parameters via an integer path"
 
 rsource "namespace_sys/Kconfig"
+rsource "namespace_tests/Kconfig"
 rsource "storage/Kconfig"
 
 endif # MODULE_REGISTRY
