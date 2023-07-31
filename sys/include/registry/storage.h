@@ -31,7 +31,7 @@ extern "C" {
  * interface
  */
 typedef int (*load_cb_t)(const registry_instance_t *instance, const registry_resource_t *parameter,
-                         const void *buf);
+                         const void *buf, const size_t buf_len);
 
 typedef struct _registry_storage_t registry_storage_t;
 

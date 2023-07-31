@@ -223,7 +223,7 @@ static int load(const registry_storage_instance_t *storage,
                                 }
                                 else {
                                     /* call callback with value and path */
-                                    load_cb(instance, resource, new_value_buf);
+                                    load_cb(instance, resource, new_value_buf, value.buf_len);
                                 }
 
                                 /* close file */

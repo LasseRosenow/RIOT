@@ -95,7 +95,7 @@ int registry_get(const registry_instance_t *instance, const registry_resource_t 
 }
 
 int registry_set(const registry_instance_t *instance, const registry_resource_t *parameter,
-                 const void *buf)
+                 const void *buf, const size_t buf_len)
 {
     assert(instance != NULL);
     assert(parameter != NULL);
@@ -107,8 +107,12 @@ int registry_set(const registry_instance_t *instance, const registry_resource_t 
 
     parameter->schema->mapping(parameter->id, instance, &intern_val, &intern_val_len);
 
+    if (buf_len > intern_val_len) {
+        return -EINVAL;
+    }
+
     /* call handler to apply the new value to the correct parameter in the instance of the schema */
-    memcpy(intern_val, buf, intern_val_len);
+    memcpy(intern_val, buf, buf_len);
 
     return 0;
 }

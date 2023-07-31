@@ -240,7 +240,7 @@ static int _registry(int argc, char **argv)
                 value.buf = new_value_buf;
 
                 /* set the new value in the registry */
-                registry_set(instance, resource, value.buf);
+                registry_set(instance, resource, value.buf, value.buf_len);
                 return 0;
             }
         }

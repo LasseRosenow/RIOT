@@ -48,7 +48,6 @@
   - oder commit_cb generell automatisch ein lock. eig. gute idee
 
 - [ ] Generated Typed API
-
   - sys namespace struct with fields pointing to each sys schema
   - schema contains fields that contain functions for set get commit export
   - a commit function of a group contains .commit() calls for all its direct children etc.

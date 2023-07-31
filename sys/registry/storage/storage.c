@@ -52,9 +52,9 @@ void registry_register_storage_dst(const registry_storage_instance_t *dst)
 /* registry_load */
 static int _registry_load_cb(const registry_instance_t *instance,
                              const registry_resource_t *parameter,
-                             const void *buf)
+                             const void *buf, const size_t buf_len)
 {
-    return registry_set(instance, parameter, &buf);
+    return registry_set(instance, parameter, &buf, buf_len);
 }
 
 int registry_load(void)

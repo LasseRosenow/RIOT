@@ -233,10 +233,11 @@ int registry_get(const registry_instance_t *instance, const registry_resource_t 
  * @param[in] instance Pointer to the configuration schema instance.
  * @param[in] parameter Pointer to the configuration parameter.
  * @param[in] buf Pointer to the new value for the configuration parameter.
+ * @param[in] buf_len Length of the buffer.
  * @return 0 on success, non-zero on failure
  */
 int registry_set(const registry_instance_t *instance, const registry_resource_t *parameter,
-                 const void *buf);
+                 const void *buf, const size_t buf_len);
 
 /**
  * @brief Commits every configuration parameter.
