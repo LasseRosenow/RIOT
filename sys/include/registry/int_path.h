@@ -78,6 +78,7 @@ typedef union {
     registry_resource_int_path_t resource_path;
 } registry_int_path_t;
 
+/* to int path */
 registry_namespace_int_path_t registry_to_namespace_int_path(const registry_namespace_t *namespace);
 
 registry_schema_int_path_t registry_to_schema_int_path(const registry_schema_t *schema);
@@ -87,7 +88,7 @@ registry_instance_int_path_t registry_to_instance_int_path(const registry_instan
 registry_resource_int_path_t registry_to_resource_int_path(const registry_instance_t *instance,
                                                            const registry_resource_t *resource);
 
-/* convert from path */
+/* from int path */
 int registry_from_namespace_int_path(const registry_namespace_int_path_t *path,
                                      registry_namespace_t **namespace);
 
