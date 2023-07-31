@@ -7,7 +7,7 @@
 
 menuconfig MODULE_REGISTRY_NAMESPACE_SYS
     bool "REGISTRY_NAMESPACE_SYS"
-    depends on MODULE_REGISTRY
+    depends on MODULE_REGISTRY_NAMESPACE
     help
         Namespace Sys module providing common sys configuration schemas for the RIOT Registry sys module.
 

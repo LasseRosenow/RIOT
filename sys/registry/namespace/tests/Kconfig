@@ -7,7 +7,7 @@
 
 menuconfig MODULE_REGISTRY_NAMESPACE_TESTS
     bool "REGISTRY_NAMESPACE_TESTS"
-    depends on MODULE_REGISTRY
+    depends on MODULE_REGISTRY_NAMESPACE
     help
         Namespace Tests module providing common testing configuration schemas for the RIOT Registry sys module.
 

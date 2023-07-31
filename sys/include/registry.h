@@ -32,7 +32,7 @@ extern "C" {
 // TODO REMOVE THIS START
 #define CONFIG_REGISTRY_ENABLE_META_DESCRIPTION 1
 #define CONFIG_REGISTRY_ENABLE_META_NAME 1
-#define MODULE_REGISTRY_PATH 1
+#define MODULE_REGISTRY_INT_PATH 1
 #define CONFIG_REGISTRY_USE_UINT64 1
 #define CONFIG_REGISTRY_USE_INT64 1
 #define CONFIG_REGISTRY_USE_FLOAT32 1
@@ -109,9 +109,9 @@ typedef const enum {
  */
 struct _registry_instance_t {
     clist_node_t node;                  /**< Linked list node */
-#if IS_USED(MODULE_REGISTRY_PATH) || IS_ACTIVE(DOXYGEN)
+#if IS_USED(MODULE_REGISTRY_INT_PATH) || IS_ACTIVE(DOXYGEN)
     const registry_instance_id_t id;    /**< Integer representing the path id of the schema instance */
-#endif /* MODULE_REGISTRY_PATH */
+#endif /* MODULE_REGISTRY_INT_PATH */
 #if IS_ACTIVE(CONFIG_REGISTRY_ENABLE_META_NAME) || IS_ACTIVE(DOXYGEN)
     const char * const name;            /**< String describing the instance */
 #endif /* CONFIG_REGISTRY_ENABLE_META_NAME */
@@ -134,9 +134,9 @@ struct _registry_instance_t {
 };
 
 struct _registry_resource_t {
-#if IS_USED(MODULE_REGISTRY_PATH) || IS_ACTIVE(DOXYGEN)
+#if IS_USED(MODULE_REGISTRY_INT_PATH) || IS_ACTIVE(DOXYGEN)
     const registry_resource_id_t id;                         /**< Integer representing the path id of the configuration resource */
-#endif /* MODULE_REGISTRY_PATH */
+#endif /* MODULE_REGISTRY_INT_PATH */
 #if IS_ACTIVE(CONFIG_REGISTRY_ENABLE_META_NAME) || IS_ACTIVE(DOXYGEN)
     const char * const name;                        /**< String describing the configuration resource */
 #endif /* CONFIG_REGISTRY_ENABLE_META_NAME */
@@ -153,9 +153,9 @@ struct _registry_resource_t {
  * @brief Schema containing available configuration parameters.
  */
 struct _registry_schema_t {
-#if IS_USED(MODULE_REGISTRY_PATH) || IS_ACTIVE(DOXYGEN)
+#if IS_USED(MODULE_REGISTRY_INT_PATH) || IS_ACTIVE(DOXYGEN)
     const registry_schema_id_t id;                         /**< Integer representing the path id of the schema */
-#endif /* MODULE_REGISTRY_PATH */
+#endif /* MODULE_REGISTRY_INT_PATH */
 #if IS_ACTIVE(CONFIG_REGISTRY_ENABLE_META_NAME) || IS_ACTIVE(DOXYGEN)
     const char * const name;                                /**< String describing the schema */
 #endif /* CONFIG_REGISTRY_ENABLE_META_NAME */
@@ -183,9 +183,9 @@ struct _registry_schema_t {
 
 struct _registry_namespace_t {
     clist_node_t node;                          /**< Linked list node */
-#if IS_USED(MODULE_REGISTRY_PATH) || IS_ACTIVE(DOXYGEN)
+#if IS_USED(MODULE_REGISTRY_INT_PATH) || IS_ACTIVE(DOXYGEN)
     const registry_namespace_id_t id;           /**< Integer representing the path id of the namespace */
-#endif /* MODULE_REGISTRY_PATH */
+#endif /* MODULE_REGISTRY_INT_PATH */
 #if IS_ACTIVE(CONFIG_REGISTRY_ENABLE_META_NAME) || IS_ACTIVE(DOXYGEN)
     const char * const name;                    /**< String describing the configuration namespace */
 #endif /* CONFIG_REGISTRY_ENABLE_META_NAME */

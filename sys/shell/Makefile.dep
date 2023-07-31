@@ -254,7 +254,7 @@ ifneq (,$(filter shell_cmd_random_cmd,$(USEMODULE)))
 endif
 ifneq (,$(filter shell_cmd_registry,$(USEMODULE)))
   USEMODULE += registry
-  USEMODULE += registry_path
+  USEMODULE += registry_int_path
 endif
 ifneq (,$(filter shell_cmd_rtc,$(USEMODULE)))
   FEATURES_REQUIRED_ANY += periph_rtc|periph_rtt

@@ -30,7 +30,7 @@
 #include "debug.h"
 #include "registry.h"
 #include "registry/util.h"
-#include "registry/path.h"
+#include "registry/int_path.h"
 #include "registry/storage.h"
 #include "shell.h"
 
@@ -40,8 +40,8 @@
 #define REGISTRY_CLI_PATH_SEPARATOR    '/'
 
 static int _parse_string_path(const char *string_path,
-                              registry_path_t *registry_path,
-                              registry_path_type_t *registry_path_type)
+                              registry_int_path_t *registry_path,
+                              registry_int_path_type_t *registry_path_type)
 {
     char *ptr = (char *)string_path;
 
@@ -53,10 +53,10 @@ static int _parse_string_path(const char *string_path,
     registry_namespace_id_t namespace_id = strtol(ptr, &ptr, 10);
 
     if (*ptr == '\0') {
-        registry_path->namespace_path = (registry_namespace_path_t) {
+        registry_path->namespace_path = (registry_namespace_int_path_t) {
             .namespace_id = namespace_id,
         };
-        *registry_path_type = REGISTRY_PATH_TYPE_NAMESPACE;
+        *registry_path_type = REGISTRY_INT_PATH_TYPE_NAMESPACE;
         return 0;
     }
 
@@ -64,11 +64,11 @@ static int _parse_string_path(const char *string_path,
     registry_schema_id_t schema_id = strtol(ptr, &ptr, 10);
 
     if (*ptr == '\0') {
-        registry_path->schema_path = (registry_schema_path_t) {
+        registry_path->schema_path = (registry_schema_int_path_t) {
             .namespace_id = namespace_id,
             .schema_id = schema_id,
         };
-        *registry_path_type = REGISTRY_PATH_TYPE_SCHEMA;
+        *registry_path_type = REGISTRY_INT_PATH_TYPE_SCHEMA;
         return 0;
     }
 
@@ -76,12 +76,12 @@ static int _parse_string_path(const char *string_path,
     registry_instance_id_t instance_id = strtol(ptr, &ptr, 10);
 
     if (*ptr == '\0') {
-        registry_path->instance_path = (registry_instance_path_t) {
+        registry_path->instance_path = (registry_instance_int_path_t) {
             .namespace_id = namespace_id,
             .schema_id = schema_id,
             .instance_id = instance_id,
         };
-        *registry_path_type = REGISTRY_PATH_TYPE_INSTANCE;
+        *registry_path_type = REGISTRY_INT_PATH_TYPE_INSTANCE;
         return 0;
     }
 
@@ -89,13 +89,13 @@ static int _parse_string_path(const char *string_path,
     registry_resource_id_t resource_id = strtol(ptr, &ptr, 10);
 
     if (*ptr == '\0') {
-        registry_path->resource_path = (registry_resource_path_t) {
+        registry_path->resource_path = (registry_resource_int_path_t) {
             .namespace_id = namespace_id,
             .schema_id = schema_id,
             .instance_id = instance_id,
             .resource_id = resource_id,
         };
-        *registry_path_type = REGISTRY_PATH_TYPE_RESOURCE;
+        *registry_path_type = REGISTRY_INT_PATH_TYPE_RESOURCE;
         return 0;
     }
 
@@ -167,8 +167,8 @@ static int _parse_string_path(const char *string_path,
 
 static int _registry(int argc, char **argv)
 {
-    registry_path_t path;
-    registry_path_type_t path_type;
+    registry_int_path_t path;
+    registry_int_path_type_t path_type;
     registry_namespace_t *namespace;
     registry_schema_t *schema;
     registry_instance_t *instance;
@@ -186,13 +186,13 @@ static int _registry(int argc, char **argv)
             return 1;
         }
 
-        if (path_type != REGISTRY_PATH_TYPE_RESOURCE) {
+        if (path_type != REGISTRY_INT_PATH_TYPE_RESOURCE) {
             return -EINVAL;
         }
 
         /* get instance and resource (parameter) of the path */
         int res =
-            registry_from_resource_path(&path.resource_path, NULL, NULL, &instance, &resource);
+            registry_from_resource_int_path(&path.resource_path, NULL, NULL, &instance, &resource);
         if (res == 0) {
             res = registry_get(instance, resource, &value);
 
@@ -219,13 +219,13 @@ static int _registry(int argc, char **argv)
             return 1;
         }
 
-        if (path_type != REGISTRY_PATH_TYPE_RESOURCE) {
+        if (path_type != REGISTRY_INT_PATH_TYPE_RESOURCE) {
             return -EINVAL;
         }
 
         /* get instance and resource (parameter) of the path */
         int res =
-            registry_from_resource_path(&path.resource_path, NULL, NULL, &instance, &resource);
+            registry_from_resource_int_path(&path.resource_path, NULL, NULL, &instance, &resource);
         if (res == 0) {
             /* get value from the registry, to know its correct type and size */
             res = registry_get(instance, resource, &value);
@@ -256,25 +256,25 @@ static int _registry(int argc, char **argv)
 
         /* get data of the path */
         int res =
-            registry_from_resource_path(&path.resource_path, &namespace, &schema, &instance,
-                                        &resource);
+            registry_from_resource_int_path(&path.resource_path, &namespace, &schema, &instance,
+                                            &resource);
 
         /* commit depending on the path type */
         if (res == 0) {
             switch (path_type) {
-            case REGISTRY_PATH_TYPE_NAMESPACE:
+            case REGISTRY_INT_PATH_TYPE_NAMESPACE:
                 registry_commit_namespace(namespace);
                 break;
 
-            case REGISTRY_PATH_TYPE_SCHEMA:
+            case REGISTRY_INT_PATH_TYPE_SCHEMA:
                 registry_commit_schema(schema);
                 break;
 
-            case REGISTRY_PATH_TYPE_INSTANCE:
+            case REGISTRY_INT_PATH_TYPE_INSTANCE:
                 registry_commit_instance(instance);
                 break;
 
-            case REGISTRY_PATH_TYPE_RESOURCE:
+            case REGISTRY_INT_PATH_TYPE_RESOURCE:
                 if (resource->type == REGISTRY_TYPE_GROUP) {
                     registry_commit_group(instance, resource);
                 }

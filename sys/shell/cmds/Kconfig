@@ -256,7 +256,7 @@ config MODULE_SHELL_CMD_REGISTRY
     default y if MODULE_SHELL_CMDS_DEFAULT
     depends on MODULE_SHELL_CMDS
     depends on MODULE_REGISTRY
-    depends on MODULE_REGISTRY_PATH
+    depends on MODULE_REGISTRY_INT_PATH
 
 config MODULE_SHELL_CMD_RTC
     bool "Command to control the peripheral real time clock"

@@ -7,9 +7,9 @@
  */
 
 /**
- * @defgroup    sys_registry_path RIOT Registry Path
+ * @defgroup    sys_registry_int_path RIOT Registry Int Path
  * @ingroup     sys
- * @brief       RIOT Registry Path module providing a API to access configuration parameter via a integer path
+ * @brief       RIOT Registry Int Path module providing a API to access configuration parameter via an integer path
  * @{
  *
  * @file
@@ -31,7 +31,7 @@
 #include "registry/util.h"
 #include "registry/error.h"
 
-#include "registry/path.h"
+#include "registry/int_path.h"
 
 static const registry_namespace_t *_namespace_lookup(const registry_namespace_id_t namespace_id)
 {
@@ -136,43 +136,43 @@ static const registry_resource_t *_resource_lookup(const registry_schema_t *sche
 }
 
 /* convert to path */
-registry_namespace_path_t registry_to_namespace_path(const registry_namespace_t *namespace)
+registry_namespace_int_path_t registry_to_namespace_int_path(const registry_namespace_t *namespace)
 {
     assert(namespace != NULL);
 
-    return (registry_namespace_path_t) {
+    return (registry_namespace_int_path_t) {
                .namespace_id = namespace->id,
     };
 }
 
-registry_schema_path_t registry_to_schema_path(const registry_schema_t *schema)
+registry_schema_int_path_t registry_to_schema_int_path(const registry_schema_t *schema)
 {
     assert(schema != NULL);
 
-    return (registry_schema_path_t) {
+    return (registry_schema_int_path_t) {
                .namespace_id = schema->namespace->id,
                .schema_id = schema->id,
     };
 }
 
-registry_instance_path_t registry_to_instance_path(const registry_instance_t *instance)
+registry_instance_int_path_t registry_to_instance_int_path(const registry_instance_t *instance)
 {
     assert(instance != NULL);
 
-    return (registry_instance_path_t) {
+    return (registry_instance_int_path_t) {
                .namespace_id = instance->schema->namespace->id,
                .schema_id = instance->schema->id,
                .instance_id = instance->id,
     };
 }
 
-registry_resource_path_t registry_to_resource_path(const registry_instance_t *instance,
-                                                   const registry_resource_t *resource)
+registry_resource_int_path_t registry_to_resource_int_path(const registry_instance_t *instance,
+                                                           const registry_resource_t *resource)
 {
     assert(instance != NULL);
     assert(resource != NULL);
 
-    return (registry_resource_path_t) {
+    return (registry_resource_int_path_t) {
                .namespace_id = instance->schema->namespace->id,
                .schema_id = instance->schema->id,
                .instance_id = instance->id,
@@ -181,8 +181,8 @@ registry_resource_path_t registry_to_resource_path(const registry_instance_t *in
 }
 
 /* convert from path */
-int registry_from_namespace_path(const registry_namespace_path_t *path,
-                                 registry_namespace_t **namespace)
+int registry_from_namespace_int_path(const registry_namespace_int_path_t *path,
+                                     registry_namespace_t **namespace)
 {
     assert(path != NULL);
 
@@ -193,8 +193,8 @@ int registry_from_namespace_path(const registry_namespace_path_t *path,
     return 0;
 }
 
-int registry_from_schema_path(const registry_schema_path_t *path,
-                              registry_namespace_t **namespace, registry_schema_t **schema)
+int registry_from_schema_int_path(const registry_schema_int_path_t *path,
+                                  registry_namespace_t **namespace, registry_schema_t **schema)
 {
     assert(path != NULL);
 
@@ -209,9 +209,9 @@ int registry_from_schema_path(const registry_schema_path_t *path,
     return 0;
 }
 
-int registry_from_instance_path(const registry_instance_path_t *path,
-                                registry_namespace_t **namespace, registry_schema_t **schema,
-                                registry_instance_t **instance)
+int registry_from_instance_int_path(const registry_instance_int_path_t *path,
+                                    registry_namespace_t **namespace, registry_schema_t **schema,
+                                    registry_instance_t **instance)
 {
     assert(path != NULL);
 
@@ -230,9 +230,9 @@ int registry_from_instance_path(const registry_instance_path_t *path,
     return 0;
 }
 
-int registry_from_resource_path(const registry_resource_path_t *path,
-                                registry_namespace_t **namespace, registry_schema_t **schema,
-                                registry_instance_t **instance, registry_resource_t **resource)
+int registry_from_resource_int_path(const registry_resource_int_path_t *path,
+                                    registry_namespace_t **namespace, registry_schema_t **schema,
+                                    registry_instance_t **instance, registry_resource_t **resource)
 {
     assert(path != NULL);
 

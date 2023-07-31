@@ -7,7 +7,7 @@
  */
 
 /**
- * @defgroup    sys_registry_path_storage_vfs RIOT Registry Path Storage: VFS
+ * @defgroup    sys_registry_int_path_storage_vfs RIOT Registry Path Storage: VFS
  * @ingroup     sys
  * @brief       RIOT Registry Path Storage VFS, allows using the RIOT VFS module as a RIOT Registry data storage.
  * @{
@@ -31,7 +31,7 @@
 #include "kernel_defines.h"
 #include "vfs.h"
 #include "ps.h"
-#include "registry/path.h"
+#include "registry/int_path.h"
 
 #include "registry/storage.h"
 
@@ -113,7 +113,7 @@ static int load(const registry_storage_instance_t *storage,
     _mount(mount);
 
     /* create dir path */
-    char string_path[REGISTRY_PATH_STRING_MAX_LEN];
+    char string_path[REGISTRY_INT_PATH_STRING_MAX_LEN];
 
     sprintf(string_path, "%s", mount->mount_point);
 
@@ -128,8 +128,8 @@ static int load(const registry_storage_instance_t *storage,
         vfs_dirent_t dir_entry;
 
         size_t i = 0;
-        int last_dir_entry_positions[REGISTRY_PATH_LEN] = { -1 };
-        size_t last_dir_string_path_lens[REGISTRY_PATH_LEN] = { 0 };
+        int last_dir_entry_positions[REGISTRY_INT_PATH_LEN] = { -1 };
+        size_t last_dir_string_path_lens[REGISTRY_INT_PATH_LEN] = { 0 };
         int res = 0;
         bool exit_folder_iteration = false;
 
@@ -141,7 +141,7 @@ static int load(const registry_storage_instance_t *storage,
 
                 if (dir_entry_position > last_dir_entry_positions[i]) {
                     last_dir_entry_positions[i] = dir_entry_position;
-                    for (size_t j = i + 1; j < REGISTRY_PATH_LEN; j++) {
+                    for (size_t j = i + 1; j < REGISTRY_INT_PATH_LEN; j++) {
                         last_dir_entry_positions[j] = -1;
                     }
 
@@ -198,7 +198,7 @@ static int load(const registry_storage_instance_t *storage,
                                 ptr++;
                                 registry_resource_id_t resource_id = strtol(ptr, &ptr, 10);
 
-                                const registry_resource_path_t resource_path = {
+                                const registry_resource_int_path_t resource_path = {
                                     .namespace_id = namespace_id,
                                     .schema_id = schema_id,
                                     .instance_id = instance_id,
@@ -208,8 +208,9 @@ static int load(const registry_storage_instance_t *storage,
                                 /* get pointer to registry internal configuration parameter */
                                 registry_instance_t *instance;
                                 registry_resource_t *resource;
-                                registry_from_resource_path(&resource_path, NULL, NULL, &instance,
-                                                            &resource);
+                                registry_from_resource_int_path(&resource_path, NULL, NULL,
+                                                                &instance,
+                                                                &resource);
 
                                 registry_value_t value;
                                 registry_get(instance, resource, &value);
@@ -286,9 +287,9 @@ static int save(const registry_storage_instance_t *storage,
     _mount(mount);
 
     /* create dir path */
-    registry_resource_path_t path = registry_to_resource_path(instance, parameter);
+    registry_resource_int_path_t path = registry_to_resource_int_path(instance, parameter);
 
-    char string_path[REGISTRY_PATH_STRING_MAX_LEN];
+    char string_path[REGISTRY_INT_PATH_STRING_MAX_LEN];
 
     sprintf(string_path, "%s", mount->mount_point);
 
