@@ -82,3 +82,8 @@ DAS BASIS EXPORT/COMMIT IST NUR AUF INSTANCE LEVEL!!!
 ## Lasse discussed with himself
 
 - Vielleicht ist es eine gute idee, einfach verschiedene registry_path_t zu haben. z.B. registry_schema_path_t und registry_resource_path_t. und dann ohne Nullable fields halt
+
+## 31. Juli 2023
+
+- Use XFA() to automatically add schemas to a namespace on compile time
+- Use XFA() to automatically add namespaces to the registry on compile time
