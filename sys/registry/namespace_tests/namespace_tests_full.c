@@ -8,7 +8,7 @@
 
 /**
  * @defgroup    sys_registry_namespace_tests_full RIOT Registry Schema: Full
- * @ingroup     tests
+ * @ingroup     sys
  * @brief       RIOT Registry Full Schema representing all possible data types of the riot registry
  * @{
  *
@@ -30,7 +30,7 @@
 #include "registry.h"
 #include "namespace_tests.h"
 
-#if IS_USED(MODULE_REGISTRY_NAMESPACE_SYS_RGB_LED) || IS_ACTIVE(DOXYGEN)
+#if IS_USED(MODULE_REGISTRY_NAMESPACE_TESTS_FULL) || IS_ACTIVE(DOXYGEN)
 
 /* Mapping */
 static void mapping(const registry_resource_id_t parameter_id, const registry_instance_t *instance,
@@ -40,29 +40,64 @@ static void mapping(const registry_resource_id_t parameter_id, const registry_in
         (registry_tests_full_instance_t *)instance->data;
 
     switch (parameter_id) {
-    case registry_tests_full_RED:
-        *val = &_instance->red;
-        *val_len = sizeof(_instance->red);
+    case REGISTRY_TESTS_FULL_STRING:
+        *val = &_instance->string;
+        *val_len = sizeof(_instance->string);
         break;
 
-    case registry_tests_full_GREEN:
-        *val = &_instance->green;
-        *val_len = sizeof(_instance->green);
+    case REGISTRY_TESTS_FULL_BOOLEAN:
+        *val = &_instance->boolean;
+        *val_len = sizeof(_instance->boolean);
         break;
 
-    case registry_tests_full_BLUE:
-        *val = &_instance->blue;
-        *val_len = sizeof(_instance->blue);
+    case REGISTRY_TESTS_FULL_U8:
+        *val = &_instance->u8;
+        *val_len = sizeof(_instance->u8);
         break;
 
-    case registry_tests_full_BRIGHTNESSES_WHITE:
-        *val = &_instance->white;
-        *val_len = sizeof(_instance->white);
+    case REGISTRY_TESTS_FULL_U16:
+        *val = &_instance->u16;
+        *val_len = sizeof(_instance->u16);
         break;
 
-    case registry_tests_full_BRIGHTNESSES_YELLOW:
-        *val = &_instance->yellow;
-        *val_len = sizeof(_instance->yellow);
+    case REGISTRY_TESTS_FULL_U32:
+        *val = &_instance->u32;
+        *val_len = sizeof(_instance->u32);
+        break;
+
+    case REGISTRY_TESTS_FULL_U64:
+        *val = &_instance->u64;
+        *val_len = sizeof(_instance->u64);
+        break;
+
+    case REGISTRY_TESTS_FULL_I8:
+        *val = &_instance->i8;
+        *val_len = sizeof(_instance->i8);
+        break;
+
+    case REGISTRY_TESTS_FULL_I16:
+        *val = &_instance->i16;
+        *val_len = sizeof(_instance->i16);
+        break;
+
+    case REGISTRY_TESTS_FULL_I32:
+        *val = &_instance->i32;
+        *val_len = sizeof(_instance->i32);
+        break;
+
+    case REGISTRY_TESTS_FULL_I64:
+        *val = &_instance->i64;
+        *val_len = sizeof(_instance->i64);
+        break;
+
+    case REGISTRY_TESTS_FULL_F32:
+        *val = &_instance->f32;
+        *val_len = sizeof(_instance->f32);
+        break;
+
+    case REGISTRY_TESTS_FULL_F64:
+        *val = &_instance->f64;
+        *val_len = sizeof(_instance->f64);
         break;
     }
 }
@@ -83,7 +118,7 @@ const registry_resource_t registry_tests_full_boolean = {
     .name = "boolean",
     .description = "",
     .schema = &registry_tests_full,
-    .type = REGISTRY_TYPE_BOOLEAN,
+    .type = REGISTRY_TYPE_BOOL,
     .resources = NULL,
     .resources_len = 0,
 };

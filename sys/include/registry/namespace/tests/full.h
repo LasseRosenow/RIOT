@@ -7,9 +7,9 @@
  */
 
 /**
- * @defgroup    sys_registry_namespace_tests RIOT Registry Tests Namespace
- * @ingroup     tests
- * @brief       RIOT Registry Namespace Tests module providing common tests configuration schemas for the RIOT Registry sys module
+ * @defgroup    sys_registry_namespace_tests_full RIOT Registry Schema: Full
+ * @ingroup     sys
+ * @brief       RIOT Registry Full Schema representing all possible data types of the riot registry
  * @{
  *
  * @file
@@ -17,8 +17,8 @@
  * @author      Lasse Rosenow <lasse.rosenow@haw-hamburg.de>
  */
 
-#ifndef REGISTRY_NAMESPACE_TESTS_H
-#define REGISTRY_NAMESPACE_TESTS_H
+#ifndef REGISTRY_NAMESPACE_TESTS_FULL_H
+#define REGISTRY_NAMESPACE_TESTS_FULL_H
 
 #ifdef __cplusplus
 extern "C" {
@@ -26,11 +26,7 @@ extern "C" {
 
 #include "registry.h"
 
-/* Tests namespace */
-
-extern registry_namespace_t registry_tests;
-
-/* RGB-LED */
+/* FULL */
 #if IS_USED(MODULE_REGISTRY_NAMESPACE_TESTS_FULL) || IS_ACTIVE(DOXYGEN)
 
 extern const registry_resource_t registry_tests_full_string;
@@ -68,21 +64,21 @@ typedef struct {
 } registry_tests_full_instance_t;
 
 typedef enum {
-    REGISTRY_SCHEMA_FULL_EXAMPLE_STRING,
-    REGISTRY_SCHEMA_FULL_EXAMPLE_BOOLEAN,
+    REGISTRY_TESTS_FULL_STRING,
+    REGISTRY_TESTS_FULL_BOOLEAN,
 
-    REGISTRY_SCHEMA_FULL_EXAMPLE_U8,
-    REGISTRY_SCHEMA_FULL_EXAMPLE_U16,
-    REGISTRY_SCHEMA_FULL_EXAMPLE_U32,
-    REGISTRY_SCHEMA_FULL_EXAMPLE_U64,
+    REGISTRY_TESTS_FULL_U8,
+    REGISTRY_TESTS_FULL_U16,
+    REGISTRY_TESTS_FULL_U32,
+    REGISTRY_TESTS_FULL_U64,
 
-    REGISTRY_SCHEMA_FULL_EXAMPLE_I8,
-    REGISTRY_SCHEMA_FULL_EXAMPLE_I16,
-    REGISTRY_SCHEMA_FULL_EXAMPLE_I32,
-    REGISTRY_SCHEMA_FULL_EXAMPLE_I64,
+    REGISTRY_TESTS_FULL_I8,
+    REGISTRY_TESTS_FULL_I16,
+    REGISTRY_TESTS_FULL_I32,
+    REGISTRY_TESTS_FULL_I64,
 
-    REGISTRY_SCHEMA_FULL_EXAMPLE_F32,
-    REGISTRY_SCHEMA_FULL_EXAMPLE_F64,
+    REGISTRY_TESTS_FULL_F32,
+    REGISTRY_TESTS_FULL_F64,
 
 } registry_tests_full_indices_t;
 
@@ -92,5 +88,5 @@ typedef enum {
 }
 #endif
 
-#endif /* REGISTRY_NAMESPACE_TESTS_H */
+#endif /* REGISTRY_NAMESPACE_SYS_RGB_LED_H */
 /** @} */

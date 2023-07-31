@@ -25,7 +25,8 @@
 #include "debug.h"
 #include "registry.h"
 
-#include "registry/namespace_sys.h"
+#include "registry/namespace/sys.h"
+#include "registry/namespace/sys/rgb_led.h"
 
 /* Sys namespace */
 

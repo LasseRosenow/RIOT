@@ -25,7 +25,6 @@ extern "C" {
 #endif
 
 #include "registry.h"
-#include "registry/namespace_sys/rgb_led.h"
 
 /* Sys namespace */
 

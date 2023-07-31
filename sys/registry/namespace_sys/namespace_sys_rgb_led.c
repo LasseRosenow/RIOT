@@ -28,9 +28,9 @@
 #include "debug.h"
 #include "kernel_defines.h"
 #include "registry.h"
-#include "registry/namespace_sys.h"
+#include "registry/namespace/sys.h"
 
-#include "registry/namespace_sys/rgb_led.h"
+#include "registry/namespace/sys/rgb_led.h"
 
 #if IS_USED(MODULE_REGISTRY_NAMESPACE_SYS_RGB_LED) || IS_ACTIVE(DOXYGEN)
 

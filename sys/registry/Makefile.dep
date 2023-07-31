@@ -6,6 +6,10 @@ ifneq (,$(filter registry_namespace_sys%,$(USEMODULE)))
   include $(RIOTBASE)/sys/registry/namespace_sys/Makefile.dep
 endif
 
+ifneq (,$(filter registry_namespace_tests%,$(USEMODULE)))
+  include $(RIOTBASE)/sys/registry/namespace_tests/Makefile.dep
+endif
+
 ifneq (,$(filter registry_%,$(USEMODULE)))
   USEMODULE += registry
 endif

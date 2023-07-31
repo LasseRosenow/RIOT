@@ -54,6 +54,8 @@
         "tests_registry.h": "c",
         "namespace_tests.h": "c",
         "cstdlib": "c",
-        "stdlib.h": "c"
+        "stdlib.h": "c",
+        "sys.h": "c",
+        "full.h": "c"
     },
 }

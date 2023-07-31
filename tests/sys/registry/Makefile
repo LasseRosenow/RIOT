@@ -1,11 +1,11 @@
-include ../Makefile.tests_common
+include ../Makefile.sys_common
 
 # required modules
 USEMODULE += littlefs2
 USEMODULE += mtd
 USEMODULE += vfs
 
-USEMODULE += registry_schema_rgb_led
-USEMODULE += registry_storage_vfs
+USEMODULE +=  registry_namespace_tests_full
+# USEMODULE += registry_storage_vfs
 
 include $(RIOTBASE)/Makefile.include

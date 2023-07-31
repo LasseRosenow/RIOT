@@ -26,8 +26,8 @@
 #include "board.h"
 #include "mtd.h"
 #include "registry.h"
-#include "registry/namespace_sys.h"
-#include "registry/namespace_sys/rgb_led.h"
+#include "registry/namespace/sys.h"
+#include "registry/namespace/sys/rgb_led.h"
 #include "registry/storage.h"
 
 int rgb_led_instance_0_commit_cb(const registry_commit_cb_scope_t scope,
