@@ -32,6 +32,10 @@ extern "C" {
 // TODO REMOVE THIS START
 #define CONFIG_REGISTRY_ENABLE_META_DESCRIPTION 1
 #define CONFIG_REGISTRY_ENABLE_META_NAME 1
+#define CONFIG_REGISTRY_ENABLE_ALLOWED_VALUES_CHECK 1
+#define CONFIG_REGISTRY_ENABLE_FORBIDDEN_VALUES_CHECK 1
+#define CONFIG_REGISTRY_ENABLE_MIN_VALUE_CHECK 1
+#define CONFIG_REGISTRY_ENABLE_MAX_VALUE_CHECK 1
 #define MODULE_REGISTRY_INT_PATH 1
 #define CONFIG_REGISTRY_USE_UINT64 1
 #define CONFIG_REGISTRY_USE_INT64 1
@@ -133,100 +137,239 @@ struct _registry_instance_t {
     void *context; /**< Optional context used by the instance */
 };
 
+#if IS_ACTIVE(CONFIG_REGISTRY_ENABLE_ALLOWED_VALUES_CHECK) || \
+    IS_ACTIVE(CONFIG_REGISTRY_ENABLE_FORBIDDEN_VALUES_CHECK) || \
+    IS_ACTIVE(CONFIG_REGISTRY_ENABLE_MIN_VALUE_CHECK) || \
+    IS_ACTIVE(CONFIG_REGISTRY_ENABLE_MAX_VALUE_CHECK) || \
+    IS_ACTIVE(DOXYGEN)
+
+typedef struct {
+#if IS_ACTIVE(CONFIG_REGISTRY_ENABLE_ALLOWED_VALUES_CHECK) || IS_ACTIVE(DOXYGEN)
+    const void **allowed_values;
+#endif /* CONFIG_REGISTRY_ENABLE_ALLOWED_VALUES_CHECK */
+#if IS_ACTIVE(CONFIG_REGISTRY_ENABLE_FORBIDDEN_VALUES_CHECK) || IS_ACTIVE(DOXYGEN)
+    const void **forbidden_values;
+#endif /* CONFIG_REGISTRY_ENABLE_FORBIDDEN_VALUES_CHECK */
+} registry_parameter_constraints_opaque_t;
+
+typedef struct {
+#if IS_ACTIVE(CONFIG_REGISTRY_ENABLE_ALLOWED_VALUES_CHECK) || IS_ACTIVE(DOXYGEN)
+    const char **allowed_values;
+#endif /* CONFIG_REGISTRY_ENABLE_ALLOWED_VALUES_CHECK */
+#if IS_ACTIVE(CONFIG_REGISTRY_ENABLE_FORBIDDEN_VALUES_CHECK) || IS_ACTIVE(DOXYGEN)
+    const char **forbidden_values;
+#endif /* CONFIG_REGISTRY_ENABLE_FORBIDDEN_VALUES_CHECK */
+} registry_parameter_constraints_string_t;
+
+#if IS_ACTIVE(CONFIG_REGISTRY_ENABLE_MIN_VALUE_CHECK) || \
+    IS_ACTIVE(CONFIG_REGISTRY_ENABLE_MAX_VALUE_CHECK) || \
+    IS_ACTIVE(DOXYGEN)
+
+typedef void *registry_parameter_constraints_bool_t;
+
+typedef struct {
+#if IS_ACTIVE(CONFIG_REGISTRY_ENABLE_ALLOWED_VALUES_CHECK) || IS_ACTIVE(DOXYGEN)
+    const uint8_t *allowed_values;
+#endif /* CONFIG_REGISTRY_ENABLE_ALLOWED_VALUES_CHECK */
+#if IS_ACTIVE(CONFIG_REGISTRY_ENABLE_FORBIDDEN_VALUES_CHECK) || IS_ACTIVE(DOXYGEN)
+    const uint8_t *forbidden_values;
+#endif /* CONFIG_REGISTRY_ENABLE_FORBIDDEN_VALUES_CHECK */
+#if IS_ACTIVE(CONFIG_REGISTRY_ENABLE_MIN_VALUE_CHECK) || IS_ACTIVE(DOXYGEN)
+    const uint8_t *min_value;
+#endif /* CONFIG_REGISTRY_ENABLE_MIN_VALUE_CHECK */
+#if IS_ACTIVE(CONFIG_REGISTRY_ENABLE_MAX_VALUE_CHECK) || IS_ACTIVE(DOXYGEN)
+    const uint8_t *max_value;
+#endif /* CONFIG_REGISTRY_ENABLE_MAX_VALUE_CHECK */
+} registry_parameter_constraints_uint8_t;
+
+typedef struct {
+#if IS_ACTIVE(CONFIG_REGISTRY_ENABLE_ALLOWED_VALUES_CHECK) || IS_ACTIVE(DOXYGEN)
+    const uint16_t *allowed_values;
+#endif /* CONFIG_REGISTRY_ENABLE_ALLOWED_VALUES_CHECK */
+#if IS_ACTIVE(CONFIG_REGISTRY_ENABLE_FORBIDDEN_VALUES_CHECK) || IS_ACTIVE(DOXYGEN)
+    const uint16_t *forbidden_values;
+#endif /* CONFIG_REGISTRY_ENABLE_FORBIDDEN_VALUES_CHECK */
+#if IS_ACTIVE(CONFIG_REGISTRY_ENABLE_MIN_VALUE_CHECK) || IS_ACTIVE(DOXYGEN)
+    const uint16_t *min_value;
+#endif /* CONFIG_REGISTRY_ENABLE_MIN_VALUE_CHECK */
+#if IS_ACTIVE(CONFIG_REGISTRY_ENABLE_MAX_VALUE_CHECK) || IS_ACTIVE(DOXYGEN)
+    const uint16_t *max_value;
+#endif /* CONFIG_REGISTRY_ENABLE_MAX_VALUE_CHECK */
+} registry_parameter_constraints_uint16_t;
+
+typedef struct {
+#if IS_ACTIVE(CONFIG_REGISTRY_ENABLE_ALLOWED_VALUES_CHECK) || IS_ACTIVE(DOXYGEN)
+    const uint32_t *allowed_values;
+#endif /* CONFIG_REGISTRY_ENABLE_ALLOWED_VALUES_CHECK */
+#if IS_ACTIVE(CONFIG_REGISTRY_ENABLE_FORBIDDEN_VALUES_CHECK) || IS_ACTIVE(DOXYGEN)
+    const uint32_t *forbidden_values;
+#endif /* CONFIG_REGISTRY_ENABLE_FORBIDDEN_VALUES_CHECK */
+#if IS_ACTIVE(CONFIG_REGISTRY_ENABLE_MIN_VALUE_CHECK) || IS_ACTIVE(DOXYGEN)
+    const uint32_t *min_value;
+#endif /* CONFIG_REGISTRY_ENABLE_MIN_VALUE_CHECK */
+#if IS_ACTIVE(CONFIG_REGISTRY_ENABLE_MAX_VALUE_CHECK) || IS_ACTIVE(DOXYGEN)
+    const uint32_t *max_value;
+#endif /* CONFIG_REGISTRY_ENABLE_MAX_VALUE_CHECK */
+} registry_parameter_constraints_uint32_t;
+
+#if IS_ACTIVE(CONFIG_REGISTRY_USE_UINT64) || IS_ACTIVE(DOXYGEN)
+typedef struct {
+#if IS_ACTIVE(CONFIG_REGISTRY_ENABLE_ALLOWED_VALUES_CHECK) || IS_ACTIVE(DOXYGEN)
+    const uint64_t *allowed_values;
+#endif /* CONFIG_REGISTRY_ENABLE_ALLOWED_VALUES_CHECK */
+#if IS_ACTIVE(CONFIG_REGISTRY_ENABLE_FORBIDDEN_VALUES_CHECK) || IS_ACTIVE(DOXYGEN)
+    const uint64_t *forbidden_values;
+#endif /* CONFIG_REGISTRY_ENABLE_FORBIDDEN_VALUES_CHECK */
+#if IS_ACTIVE(CONFIG_REGISTRY_ENABLE_MIN_VALUE_CHECK) || IS_ACTIVE(DOXYGEN)
+    const uint64_t *min_value;
+#endif /* CONFIG_REGISTRY_ENABLE_MIN_VALUE_CHECK */
+#if IS_ACTIVE(CONFIG_REGISTRY_ENABLE_MAX_VALUE_CHECK) || IS_ACTIVE(DOXYGEN)
+    const uint64_t *max_value;
+#endif /* CONFIG_REGISTRY_ENABLE_MAX_VALUE_CHECK */
+} registry_parameter_constraints_uint64_t;
+#endif /* CONFIG_REGISTRY_USE_UINT64 */
+
+typedef struct {
+#if IS_ACTIVE(CONFIG_REGISTRY_ENABLE_ALLOWED_VALUES_CHECK) || IS_ACTIVE(DOXYGEN)
+    const int8_t *allowed_values;
+#endif /* CONFIG_REGISTRY_ENABLE_ALLOWED_VALUES_CHECK */
+#if IS_ACTIVE(CONFIG_REGISTRY_ENABLE_FORBIDDEN_VALUES_CHECK) || IS_ACTIVE(DOXYGEN)
+    const int8_t *forbidden_values;
+#endif /* CONFIG_REGISTRY_ENABLE_FORBIDDEN_VALUES_CHECK */
+#if IS_ACTIVE(CONFIG_REGISTRY_ENABLE_MIN_VALUE_CHECK) || IS_ACTIVE(DOXYGEN)
+    const int8_t *min_value;
+#endif /* CONFIG_REGISTRY_ENABLE_MIN_VALUE_CHECK */
+#if IS_ACTIVE(CONFIG_REGISTRY_ENABLE_MAX_VALUE_CHECK) || IS_ACTIVE(DOXYGEN)
+    const int8_t *max_value;
+#endif /* CONFIG_REGISTRY_ENABLE_MAX_VALUE_CHECK */
+} registry_parameter_constraints_int8_t;
+
+typedef struct {
+#if IS_ACTIVE(CONFIG_REGISTRY_ENABLE_ALLOWED_VALUES_CHECK) || IS_ACTIVE(DOXYGEN)
+    const int16_t *allowed_values;
+#endif /* CONFIG_REGISTRY_ENABLE_ALLOWED_VALUES_CHECK */
+#if IS_ACTIVE(CONFIG_REGISTRY_ENABLE_FORBIDDEN_VALUES_CHECK) || IS_ACTIVE(DOXYGEN)
+    const int16_t *forbidden_values;
+#endif /* CONFIG_REGISTRY_ENABLE_FORBIDDEN_VALUES_CHECK */
+#if IS_ACTIVE(CONFIG_REGISTRY_ENABLE_MIN_VALUE_CHECK) || IS_ACTIVE(DOXYGEN)
+    const int16_t *min_value;
+#endif /* CONFIG_REGISTRY_ENABLE_MIN_VALUE_CHECK */
+#if IS_ACTIVE(CONFIG_REGISTRY_ENABLE_MAX_VALUE_CHECK) || IS_ACTIVE(DOXYGEN)
+    const int16_t *max_value;
+#endif /* CONFIG_REGISTRY_ENABLE_MAX_VALUE_CHECK */
+} registry_parameter_constraints_int16_t;
+
+typedef struct {
+#if IS_ACTIVE(CONFIG_REGISTRY_ENABLE_ALLOWED_VALUES_CHECK) || IS_ACTIVE(DOXYGEN)
+    const int32_t *allowed_values;
+#endif /* CONFIG_REGISTRY_ENABLE_ALLOWED_VALUES_CHECK */
+#if IS_ACTIVE(CONFIG_REGISTRY_ENABLE_FORBIDDEN_VALUES_CHECK) || IS_ACTIVE(DOXYGEN)
+    const int32_t *forbidden_values;
+#endif /* CONFIG_REGISTRY_ENABLE_FORBIDDEN_VALUES_CHECK */
+#if IS_ACTIVE(CONFIG_REGISTRY_ENABLE_MIN_VALUE_CHECK) || IS_ACTIVE(DOXYGEN)
+    const int32_t *min_value;
+#endif /* CONFIG_REGISTRY_ENABLE_MIN_VALUE_CHECK */
+#if IS_ACTIVE(CONFIG_REGISTRY_ENABLE_MAX_VALUE_CHECK) || IS_ACTIVE(DOXYGEN)
+    const int32_t *max_value;
+#endif /* CONFIG_REGISTRY_ENABLE_MAX_VALUE_CHECK */
+} registry_parameter_constraints_int32_t;
+
+#if IS_ACTIVE(CONFIG_REGISTRY_USE_INT64) || IS_ACTIVE(DOXYGEN)
+typedef struct {
+#if IS_ACTIVE(CONFIG_REGISTRY_ENABLE_ALLOWED_VALUES_CHECK) || IS_ACTIVE(DOXYGEN)
+    const int64_t *allowed_values;
+#endif /* CONFIG_REGISTRY_ENABLE_ALLOWED_VALUES_CHECK */
+#if IS_ACTIVE(CONFIG_REGISTRY_ENABLE_FORBIDDEN_VALUES_CHECK) || IS_ACTIVE(DOXYGEN)
+    const int64_t *forbidden_values;
+#endif /* CONFIG_REGISTRY_ENABLE_FORBIDDEN_VALUES_CHECK */
+#if IS_ACTIVE(CONFIG_REGISTRY_ENABLE_MIN_VALUE_CHECK) || IS_ACTIVE(DOXYGEN)
+    const int64_t *min_value;
+#endif /* CONFIG_REGISTRY_ENABLE_MIN_VALUE_CHECK */
+#if IS_ACTIVE(CONFIG_REGISTRY_ENABLE_MAX_VALUE_CHECK) || IS_ACTIVE(DOXYGEN)
+    const int64_t *max_value;
+#endif /* CONFIG_REGISTRY_ENABLE_MAX_VALUE_CHECK */
+} registry_parameter_constraints_int64_t;
+#endif /* CONFIG_REGISTRY_USE_INT64 */
+
+#if IS_ACTIVE(CONFIG_REGISTRY_USE_FLOAT32) || IS_ACTIVE(DOXYGEN)
+typedef struct {
+#if IS_ACTIVE(CONFIG_REGISTRY_ENABLE_ALLOWED_VALUES_CHECK) || IS_ACTIVE(DOXYGEN)
+    const float *allowed_values;
+#endif /* CONFIG_REGISTRY_ENABLE_ALLOWED_VALUES_CHECK */
+#if IS_ACTIVE(CONFIG_REGISTRY_ENABLE_FORBIDDEN_VALUES_CHECK) || IS_ACTIVE(DOXYGEN)
+    const float *forbidden_values;
+#endif /* CONFIG_REGISTRY_ENABLE_FORBIDDEN_VALUES_CHECK */
+#if IS_ACTIVE(CONFIG_REGISTRY_ENABLE_MIN_VALUE_CHECK) || IS_ACTIVE(DOXYGEN)
+    const float *min_value;
+#endif /* CONFIG_REGISTRY_ENABLE_MIN_VALUE_CHECK */
+#if IS_ACTIVE(CONFIG_REGISTRY_ENABLE_MAX_VALUE_CHECK) || IS_ACTIVE(DOXYGEN)
+    const float *max_value;
+#endif /* CONFIG_REGISTRY_ENABLE_MAX_VALUE_CHECK */
+} registry_parameter_constraints_float32_t;
+#endif /* CONFIG_REGISTRY_USE_FLOAT32 */
+
+#if IS_ACTIVE(CONFIG_REGISTRY_USE_FLOAT64) || IS_ACTIVE(DOXYGEN)
+typedef struct {
+#if IS_ACTIVE(CONFIG_REGISTRY_ENABLE_ALLOWED_VALUES_CHECK) || IS_ACTIVE(DOXYGEN)
+    const double *allowed_values;
+#endif /* CONFIG_REGISTRY_ENABLE_ALLOWED_VALUES_CHECK */
+#if IS_ACTIVE(CONFIG_REGISTRY_ENABLE_FORBIDDEN_VALUES_CHECK) || IS_ACTIVE(DOXYGEN)
+    const double *forbidden_values;
+#endif /* CONFIG_REGISTRY_ENABLE_FORBIDDEN_VALUES_CHECK */
+#if IS_ACTIVE(CONFIG_REGISTRY_ENABLE_MIN_VALUE_CHECK) || IS_ACTIVE(DOXYGEN)
+    const double *min_value;
+#endif /* CONFIG_REGISTRY_ENABLE_MIN_VALUE_CHECK */
+#if IS_ACTIVE(CONFIG_REGISTRY_ENABLE_MAX_VALUE_CHECK) || IS_ACTIVE(DOXYGEN)
+    const double *max_value;
+#endif /* CONFIG_REGISTRY_ENABLE_MAX_VALUE_CHECK */
+} registry_parameter_constraints_float64_t;
+#endif /* CONFIG_REGISTRY_USE_FLOAT64 */
+
+#endif /* CONFIG_REGISTRY_ENABLE_MIN_VALUE_CHECK || CONFIG_REGISTRY_ENABLE_MAX_VALUE_CHECK */
+#endif \
+    /* CONFIG_REGISTRY_ENABLE_ALLOWED_VALUES_CHECK || CONFIG_REGISTRY_ENABLE_FORBIDDEN_VALUES_CHECK || CONFIG_REGISTRY_ENABLE_MIN_VALUE_CHECK || CONFIG_REGISTRY_ENABLE_MAX_VALUE_CHECK */
+
 typedef struct {
     const registry_resource_t ** const resources;   /**< Array of pointers to all the configuration parameters and groups that belong to this group */
     const size_t resources_len;                     /**< Size of resources array */
 } registry_group_t;
 
 typedef struct {
-    const char **allowed_values;
-    const char **forbidden_values;
-} registry_parameter_string_t;
-
-typedef struct {
-    const void **allowed_values;
-    const void **forbidden_values;
-} registry_parameter_opaque_t;
-
-typedef void *registry_parameter_bool_t;
-
-typedef struct {
-    const uint8_t *allowed_values;
-    const uint8_t *forbidden_values;
-    const uint8_t *min_value;
-    const uint8_t *max_value;
-} registry_parameter_uint8_t;
-
-typedef struct {
-    const uint16_t *allowed_values;
-    const uint16_t *forbidden_values;
-    const uint16_t *min_value;
-    const uint16_t *max_value;
-} registry_parameter_uint16_t;
-
-typedef struct {
-    const uint32_t *allowed_values;
-    const uint32_t *forbidden_values;
-    const uint32_t *min_value;
-    const uint32_t *max_value;
-} registry_parameter_uint32_t;
-
+#if IS_ACTIVE(CONFIG_REGISTRY_ENABLE_ALLOWED_VALUES_CHECK) || \
+    IS_ACTIVE(CONFIG_REGISTRY_ENABLE_FORBIDDEN_VALUES_CHECK) || \
+    IS_ACTIVE(CONFIG_REGISTRY_ENABLE_MIN_VALUE_CHECK) || \
+    IS_ACTIVE(CONFIG_REGISTRY_ENABLE_MAX_VALUE_CHECK) || \
+    IS_ACTIVE(DOXYGEN)
+    const union {
+        const registry_parameter_constraints_opaque_t opaque;
+        const registry_parameter_constraints_string_t string;
+#if IS_ACTIVE(CONFIG_REGISTRY_ENABLE_MIN_VALUE_CHECK) || \
+        IS_ACTIVE(CONFIG_REGISTRY_ENABLE_MAX_VALUE_CHECK) || \
+        IS_ACTIVE(DOXYGEN)
+        const registry_parameter_constraints_bool_t boolean;
+        const registry_parameter_constraints_uint8_t uint8;
+        const registry_parameter_constraints_uint16_t uint16;
+        const registry_parameter_constraints_uint32_t uint32;
 #if IS_ACTIVE(CONFIG_REGISTRY_USE_UINT64) || IS_ACTIVE(DOXYGEN)
-typedef struct {
-    const uint64_t *allowed_values;
-    const uint64_t *forbidden_values;
-    const uint64_t *min_value;
-    const uint64_t *max_value;
-} registry_parameter_uint64_t;
+        const registry_parameter_constraints_uint64_t uint64;
 #endif /* CONFIG_REGISTRY_USE_UINT64 */
-
-typedef struct {
-    const int8_t *allowed_values;
-    const int8_t *forbidden_values;
-    const int8_t *min_value;
-    const int8_t *max_value;
-} registry_parameter_int8_t;
-
-typedef struct {
-    const int16_t *allowed_values;
-    const int16_t *forbidden_values;
-    const int16_t *min_value;
-    const int16_t *max_value;
-} registry_parameter_int16_t;
-
-typedef struct {
-    const int32_t *allowed_values;
-    const int32_t *forbidden_values;
-    const int32_t *min_value;
-    const int32_t *max_value;
-} registry_parameter_int32_t;
-
+        const registry_parameter_constraints_int8_t int8;
+        const registry_parameter_constraints_int16_t int16;
+        const registry_parameter_constraints_int32_t int32;
 #if IS_ACTIVE(CONFIG_REGISTRY_USE_INT64) || IS_ACTIVE(DOXYGEN)
-typedef struct {
-    const int64_t *allowed_values;
-    const int64_t *forbidden_values;
-    const int64_t *min_value;
-    const int64_t *max_value;
-} registry_parameter_int64_t;
+        const registry_parameter_constraints_int64_t int64;
 #endif /* CONFIG_REGISTRY_USE_INT64 */
-
 #if IS_ACTIVE(CONFIG_REGISTRY_USE_FLOAT32) || IS_ACTIVE(DOXYGEN)
-typedef struct {
-    const float *allowed_values;
-    const float *forbidden_values;
-    const float *min_value;
-    const float *max_value;
-} registry_parameter_float32_t;
+        const registry_parameter_constraints_float32_t float32;
 #endif /* CONFIG_REGISTRY_USE_FLOAT32 */
-
 #if IS_ACTIVE(CONFIG_REGISTRY_USE_FLOAT64) || IS_ACTIVE(DOXYGEN)
-typedef struct {
-    const double *allowed_values;
-    const double *forbidden_values;
-    const double *min_value;
-    const double *max_value;
-} registry_parameter_float64_t;
+        const registry_parameter_constraints_float64_t float64;
 #endif /* CONFIG_REGISTRY_USE_FLOAT64 */
+#endif /* CONFIG_REGISTRY_ENABLE_MIN_VALUE_CHECK || CONFIG_REGISTRY_ENABLE_MAX_VALUE_CHECK */
+    } constraints;                                                /**< Constraints of the parameter value */
+#endif \
+    /* CONFIG_REGISTRY_ENABLE_ALLOWED_VALUES_CHECK || CONFIG_REGISTRY_ENABLE_FORBIDDEN_VALUES_CHECK || CONFIG_REGISTRY_ENABLE_MIN_VALUE_CHECK || CONFIG_REGISTRY_ENABLE_MAX_VALUE_CHECK */
+} registry_parameter_t;
 
 struct _registry_resource_t {
 #if IS_USED(MODULE_REGISTRY_INT_PATH) || IS_ACTIVE(DOXYGEN)
@@ -242,27 +385,7 @@ struct _registry_resource_t {
     const registry_type_t type;                             /**< Type of the configuration resource (group or parameter type) */
     const union {
         const registry_group_t group;
-        const registry_parameter_string_t string;
-        const registry_parameter_bool_t boolean;
-        const registry_parameter_opaque_t opaque;
-        const registry_parameter_uint8_t uint8;
-        const registry_parameter_uint16_t uint16;
-        const registry_parameter_uint32_t uint32;
-#if IS_ACTIVE(CONFIG_REGISTRY_USE_UINT64) || IS_ACTIVE(DOXYGEN)
-        const registry_parameter_uint64_t uint64;
-#endif /* CONFIG_REGISTRY_USE_UINT64 */
-        const registry_parameter_int8_t int8;
-        const registry_parameter_int16_t int16;
-        const registry_parameter_int32_t int32;
-#if IS_ACTIVE(CONFIG_REGISTRY_USE_INT64) || IS_ACTIVE(DOXYGEN)
-        const registry_parameter_int64_t int64;
-#endif /* CONFIG_REGISTRY_USE_INT64 */
-#if IS_ACTIVE(CONFIG_REGISTRY_USE_FLOAT32) || IS_ACTIVE(DOXYGEN)
-        const registry_parameter_float32_t float32;
-#endif /* CONFIG_REGISTRY_USE_FLOAT32 */
-#if IS_ACTIVE(CONFIG_REGISTRY_USE_FLOAT64) || IS_ACTIVE(DOXYGEN)
-        const registry_parameter_float64_t float64;
-#endif /* CONFIG_REGISTRY_USE_FLOAT64 */
+        const registry_parameter_t parameter;
     } props;                                                /**< Additional properties based on the resource type */
 };
 

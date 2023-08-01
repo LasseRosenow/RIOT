@@ -46,6 +46,9 @@ extern registry_schema_t registry_tests_full;
 typedef struct {
     clist_node_t node;
 
+    struct {
+        uint8_t value;
+    } opaque;
     char string[50];
     bool boolean;
 
@@ -64,6 +67,7 @@ typedef struct {
 } registry_tests_full_instance_t;
 
 typedef enum {
+    REGISTRY_TESTS_FULL_OPAQUE,
     REGISTRY_TESTS_FULL_STRING,
     REGISTRY_TESTS_FULL_BOOLEAN,
 
@@ -79,7 +83,6 @@ typedef enum {
 
     REGISTRY_TESTS_FULL_F32,
     REGISTRY_TESTS_FULL_F64,
-
 } registry_tests_full_indices_t;
 
 #endif
