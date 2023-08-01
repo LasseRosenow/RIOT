@@ -51,7 +51,7 @@ void registry_register_storage_dst(const registry_storage_instance_t *dst)
 
 /* registry_load */
 static int _registry_load_cb(const registry_instance_t *instance,
-                             const registry_resource_t *parameter,
+                             const registry_parameter_t *parameter,
                              const void *buf, const size_t buf_len)
 {
     return registry_set(instance, parameter, &buf, buf_len);
@@ -185,7 +185,7 @@ int registry_save_instance(const registry_instance_t *instance)
     return res;
 }
 
-int registry_save_group(const registry_instance_t *instance, const registry_resource_t *group)
+int registry_save_group(const registry_instance_t *instance, const registry_group_t *group)
 {
     int res;
 
@@ -207,7 +207,7 @@ int registry_save_group(const registry_instance_t *instance, const registry_reso
 }
 
 int registry_save_parameter(const registry_instance_t *instance,
-                            const registry_resource_t *parameter)
+                            const registry_parameter_t *parameter)
 {
     int res;
 

@@ -30,7 +30,7 @@ extern "C" {
  * @brief Prototype of a callback function for the load action of a storage
  * interface
  */
-typedef int (*load_cb_t)(const registry_instance_t *instance, const registry_resource_t *parameter,
+typedef int (*load_cb_t)(const registry_instance_t *instance, const registry_parameter_t *parameter,
                          const void *buf, const size_t buf_len);
 
 typedef struct _registry_storage_t registry_storage_t;
@@ -79,7 +79,7 @@ struct _registry_storage_t {
      */
     int (*save)(const registry_storage_instance_t *storage,
                 const registry_instance_t *instance,
-                const registry_resource_t *parameter,
+                const registry_parameter_t *parameter,
                 const registry_value_t *value);
 
     /**
@@ -137,10 +137,10 @@ int registry_save_schema(const registry_schema_t *schema);
 
 int registry_save_instance(const registry_instance_t *instance);
 
-int registry_save_group(const registry_instance_t *instance, const registry_resource_t *group);
+int registry_save_group(const registry_instance_t *instance, const registry_group_t *group);
 
 int registry_save_parameter(const registry_instance_t *instance,
-                            const registry_resource_t *parameter);
+                            const registry_parameter_t *parameter);
 
 /* heap */
 #if IS_USED(MODULE_REGISTRY_STORAGE_HEAP) || IS_ACTIVE(DOXYGEN)

@@ -37,14 +37,14 @@ static int load(const registry_storage_instance_t *storage,
                 const load_cb_t load_cb);
 static int save(const registry_storage_instance_t *storage,
                 const registry_instance_t *instance,
-                const registry_resource_t *parameter,
+                const registry_parameter_t *parameter,
                 const registry_value_t *value);
 
 typedef struct {
     registry_namespace_t *namespace;
     registry_schema_t *schema;
     registry_instance_t *instance;
-    registry_resource_t *parameter;
+    registry_parameter_t *parameter;
     void *buf;
     size_t buf_len;
 } heap_storage_t;
@@ -73,7 +73,7 @@ static int load(const registry_storage_instance_t *storage,
 
 static int save(const registry_storage_instance_t *storage,
                 const registry_instance_t *instance,
-                const registry_resource_t *parameter,
+                const registry_parameter_t *parameter,
                 const registry_value_t *value)
 {
     (void)storage;

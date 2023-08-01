@@ -29,12 +29,12 @@ extern "C" {
 /* RGB-LED */
 #if IS_USED(MODULE_REGISTRY_NAMESPACE_SYS_RGB_LED) || IS_ACTIVE(DOXYGEN)
 
-extern const registry_resource_t registry_sys_rgb_led_red;
-extern const registry_resource_t registry_sys_rgb_led_green;
-extern const registry_resource_t registry_sys_rgb_led_blue;
-extern const registry_resource_t registry_sys_rgb_led_brightnesses_white;
-extern const registry_resource_t registry_sys_rgb_led_brightnesses_yellow;
-extern const registry_resource_t registry_sys_rgb_led_brightnesses;
+extern const registry_parameter_t registry_sys_rgb_led_red;
+extern const registry_parameter_t registry_sys_rgb_led_green;
+extern const registry_parameter_t registry_sys_rgb_led_blue;
+extern const registry_parameter_t registry_sys_rgb_led_brightnesses_white;
+extern const registry_parameter_t registry_sys_rgb_led_brightnesses_yellow;
+extern const registry_group_t registry_sys_rgb_led_brightnesses;
 extern registry_schema_t registry_sys_rgb_led;
 
 typedef struct {

@@ -29,18 +29,18 @@ extern "C" {
 /* FULL */
 #if IS_USED(MODULE_REGISTRY_NAMESPACE_TESTS_FULL) || IS_ACTIVE(DOXYGEN)
 
-extern const registry_resource_t registry_tests_full_string;
-extern const registry_resource_t registry_tests_full_boolean;
-extern const registry_resource_t registry_tests_full_u8;
-extern const registry_resource_t registry_tests_full_u16;
-extern const registry_resource_t registry_tests_full_u32;
-extern const registry_resource_t registry_tests_full_u64;
-extern const registry_resource_t registry_tests_full_i8;
-extern const registry_resource_t registry_tests_full_i16;
-extern const registry_resource_t registry_tests_full_i32;
-extern const registry_resource_t registry_tests_full_i64;
-extern const registry_resource_t registry_tests_full_f32;
-extern const registry_resource_t registry_tests_full_f64;
+extern const registry_parameter_t registry_tests_full_string;
+extern const registry_parameter_t registry_tests_full_boolean;
+extern const registry_parameter_t registry_tests_full_u8;
+extern const registry_parameter_t registry_tests_full_u16;
+extern const registry_parameter_t registry_tests_full_u32;
+extern const registry_parameter_t registry_tests_full_u64;
+extern const registry_parameter_t registry_tests_full_i8;
+extern const registry_parameter_t registry_tests_full_i16;
+extern const registry_parameter_t registry_tests_full_i32;
+extern const registry_parameter_t registry_tests_full_i64;
+extern const registry_parameter_t registry_tests_full_f32;
+extern const registry_parameter_t registry_tests_full_f64;
 extern registry_schema_t registry_tests_full;
 
 typedef struct {

@@ -37,7 +37,7 @@ extern "C" {
  * @brief Maximum length of a configuration path as a string.
  *
  * A path is an uint32_t and uint32_t MAX has 10 digits.
- * We also need to include the seperator. One additional char between each number.
+ * We also need to include the separator. One additional char between each number.
  */
 #define REGISTRY_INT_PATH_STRING_MAX_LEN   ((10 * REGISTRY_INT_PATH_LEN) + \
                                             (REGISTRY_INT_PATH_LEN - 1))
@@ -61,21 +61,30 @@ typedef struct {
     registry_namespace_id_t namespace_id;
     registry_schema_id_t schema_id;
     registry_instance_id_t instance_id;
-    registry_resource_id_t resource_id;
-} registry_resource_int_path_t;
+    registry_group_id_t group_id;
+} registry_group_int_path_t;
+
+typedef struct {
+    registry_namespace_id_t namespace_id;
+    registry_schema_id_t schema_id;
+    registry_instance_id_t instance_id;
+    registry_parameter_id_t parameter_id;
+} registry_parameter_int_path_t;
 
 typedef enum {
     REGISTRY_INT_PATH_TYPE_NAMESPACE,
     REGISTRY_INT_PATH_TYPE_SCHEMA,
     REGISTRY_INT_PATH_TYPE_INSTANCE,
-    REGISTRY_INT_PATH_TYPE_RESOURCE,
+    REGISTRY_INT_PATH_TYPE_GROUP,
+    REGISTRY_INT_PATH_TYPE_PARAMETER,
 }registry_int_path_type_t;
 
 typedef union {
     registry_namespace_int_path_t namespace_path;
     registry_schema_int_path_t schema_path;
     registry_instance_int_path_t instance_path;
-    registry_resource_int_path_t resource_path;
+    registry_group_int_path_t group_path;
+    registry_parameter_int_path_t parameter_path;
 } registry_int_path_t;
 
 /* to int path */
@@ -85,8 +94,11 @@ registry_schema_int_path_t registry_to_schema_int_path(const registry_schema_t *
 
 registry_instance_int_path_t registry_to_instance_int_path(const registry_instance_t *instance);
 
-registry_resource_int_path_t registry_to_resource_int_path(const registry_instance_t *instance,
-                                                           const registry_resource_t *resource);
+registry_group_int_path_t registry_to_group_int_path(const registry_instance_t *instance,
+                                                     const registry_group_t *group);
+
+registry_parameter_int_path_t registry_to_parameter_int_path(const registry_instance_t *instance,
+                                                             const registry_parameter_t *parameter);
 
 /* from int path */
 int registry_from_namespace_int_path(const registry_namespace_int_path_t *path,
@@ -99,9 +111,14 @@ int registry_from_instance_int_path(const registry_instance_int_path_t *path,
                                     registry_namespace_t **namespace, registry_schema_t **schema,
                                     registry_instance_t **instance);
 
-int registry_from_resource_int_path(const registry_resource_int_path_t *path,
-                                    registry_namespace_t **namespace, registry_schema_t **schema,
-                                    registry_instance_t **instance, registry_resource_t **resource);
+int registry_from_group_int_path(const registry_group_int_path_t *path,
+                                 registry_namespace_t **namespace, registry_schema_t **schema,
+                                 registry_instance_t **instance, registry_group_t **group);
+
+int registry_from_parameter_int_path(const registry_parameter_int_path_t *path,
+                                     registry_namespace_t **namespace, registry_schema_t **schema,
+                                     registry_instance_t **instance,
+                                     registry_parameter_t **parameter);
 
 #ifdef __cplusplus
 }

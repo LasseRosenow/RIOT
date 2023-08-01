@@ -39,7 +39,7 @@ static int load(const registry_storage_instance_t *storage,
                 const load_cb_t load_cb);
 static int save(const registry_storage_instance_t *storage,
                 const registry_instance_t *instance,
-                const registry_resource_t *parameter,
+                const registry_parameter_t *parameter,
                 const registry_value_t *value);
 
 registry_storage_t registry_storage_vfs = {
@@ -196,24 +196,23 @@ static int load(const registry_storage_instance_t *storage,
                                 ptr++;
                                 registry_instance_id_t instance_id = strtol(ptr, &ptr, 10);
                                 ptr++;
-                                registry_resource_id_t resource_id = strtol(ptr, &ptr, 10);
+                                registry_parameter_id_t parameter_id = strtol(ptr, &ptr, 10);
 
-                                const registry_resource_int_path_t resource_path = {
+                                const registry_parameter_int_path_t resource_path = {
                                     .namespace_id = namespace_id,
                                     .schema_id = schema_id,
                                     .instance_id = instance_id,
-                                    .resource_id = resource_id,
+                                    .parameter_id = parameter_id,
                                 };
 
                                 /* get pointer to registry internal configuration parameter */
                                 registry_instance_t *instance;
-                                registry_resource_t *resource;
-                                registry_from_resource_int_path(&resource_path, NULL, NULL,
-                                                                &instance,
-                                                                &resource);
+                                registry_parameter_t *parameter;
+                                registry_from_parameter_int_path(&resource_path, NULL, NULL,
+                                                                 &instance, &parameter);
 
                                 registry_value_t value;
-                                registry_get(instance, resource, &value);
+                                registry_get(instance, parameter, &value);
 
                                 /* read value from file */
                                 uint8_t new_value_buf[value.buf_len];
@@ -223,7 +222,7 @@ static int load(const registry_storage_instance_t *storage,
                                 }
                                 else {
                                     /* call callback with value and path */
-                                    load_cb(instance, resource, new_value_buf, value.buf_len);
+                                    load_cb(instance, parameter, new_value_buf, value.buf_len);
                                 }
 
                                 /* close file */
@@ -278,7 +277,7 @@ static int load(const registry_storage_instance_t *storage,
 
 static int save(const registry_storage_instance_t *storage,
                 const registry_instance_t *instance,
-                const registry_resource_t *parameter,
+                const registry_parameter_t *parameter,
                 const registry_value_t *value)
 {
     vfs_mount_t *mount = storage->data;
@@ -287,7 +286,7 @@ static int save(const registry_storage_instance_t *storage,
     _mount(mount);
 
     /* create dir path */
-    registry_resource_int_path_t path = registry_to_resource_int_path(instance, parameter);
+    registry_parameter_int_path_t path = registry_to_parameter_int_path(instance, parameter);
 
     char string_path[REGISTRY_INT_PATH_STRING_MAX_LEN];
 
@@ -315,7 +314,7 @@ static int save(const registry_storage_instance_t *storage,
     }
 
     /* open file */
-    _string_path_append_item(string_path, path.resource_id);
+    _string_path_append_item(string_path, path.parameter_id);
 
     int fd = vfs_open(string_path, O_CREAT | O_RDWR, 0);
 

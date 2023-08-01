@@ -92,46 +92,63 @@ static const registry_instance_t *_instance_lookup(const registry_schema_t *sche
     return NULL;
 }
 
-static const registry_resource_t *_internal_resource_lookup(const registry_resource_t **resources,
-                                                            size_t resources_len,
-                                                            const registry_resource_id_t resource_id)
+static const registry_group_t *_internal_group_lookup(const registry_group_t *group,
+                                                      const registry_group_id_t group_id)
 {
-    const registry_resource_t *resource;
-
-    for (size_t i = 0; i < resources_len; i++) {
-        resource = resources[i];
-
-        if (resource->id == resource_id) {
-            return resource;
+    for (size_t i = 0; i < group->groups_len; i++) {
+        if (group->groups[i]->id == group_id) {
+            return group->groups[i];
         }
-        else if (resource->type == REGISTRY_TYPE_GROUP) {
-            return _internal_resource_lookup(resource->props.group.resources,
-                                             resource->props.group.resources_len,
-                                             resource_id);
+        else if (group->groups[i]->groups_len > 0) {
+            _internal_group_lookup(group->groups[i], group_id);
         }
     }
 
     return NULL;
 }
 
-static const registry_resource_t *_resource_lookup(const registry_schema_t *schema,
-                                                   const registry_resource_id_t resource_id)
+static const registry_group_t *_group_lookup(const registry_schema_t *schema,
+                                             const registry_group_id_t group_id)
 {
-    const registry_resource_t *resource;
-    const registry_resource_t **resources = schema->resources;
-    size_t resources_len = schema->resources_len;
-
-    for (size_t i = 0; i < resources_len; i++) {
-        resource = resources[i];
-
-        if (resource->id == resource_id) {
-            return resource;
+    for (size_t i = 0; i < schema->groups_len; i++) {
+        if (schema->groups[i]->id == group_id) {
+            return schema->groups[i];
         }
-        else if (resource->type == REGISTRY_TYPE_GROUP) {
-            return _internal_resource_lookup(resource->props.group.resources,
-                                             resource->props.group.resources_len,
-                                             resource_id);
+        else if (schema->groups[i]->groups_len > 0) {
+            _internal_group_lookup(schema->groups[i], group_id);
         }
+    }
+
+    return NULL;
+}
+
+static const registry_parameter_t *_internal_parameter_lookup(const registry_group_t *group,
+                                                              const registry_parameter_id_t parameter_id)
+{
+    for (size_t i = 0; i < group->parameters_len; i++) {
+        if (group->parameters[i]->id == parameter_id) {
+            return group->parameters[i];
+        }
+    }
+
+    for (size_t i = 0; i < group->groups_len; i++) {
+        return _internal_parameter_lookup(group->groups[i], parameter_id);
+    }
+
+    return NULL;
+}
+
+static const registry_parameter_t *_parameter_lookup(const registry_schema_t *schema,
+                                                     const registry_parameter_id_t parameter_id)
+{
+    for (size_t i = 0; i < schema->parameters_len; i++) {
+        if (schema->parameters[i]->id == parameter_id) {
+            return schema->parameters[i];
+        }
+    }
+
+    for (size_t i = 0; i < schema->groups_len; i++) {
+        return _internal_parameter_lookup(schema->groups[i], parameter_id);
     }
 
     return NULL;
@@ -168,17 +185,31 @@ registry_instance_int_path_t registry_to_instance_int_path(const registry_instan
     };
 }
 
-registry_resource_int_path_t registry_to_resource_int_path(const registry_instance_t *instance,
-                                                           const registry_resource_t *resource)
+registry_group_int_path_t registry_to_group_int_path(const registry_instance_t *instance,
+                                                     const registry_group_t *group)
 {
     assert(instance != NULL);
-    assert(resource != NULL);
+    assert(group != NULL);
 
-    return (registry_resource_int_path_t) {
+    return (registry_group_int_path_t) {
                .namespace_id = instance->schema->namespace->id,
                .schema_id = instance->schema->id,
                .instance_id = instance->id,
-               .resource_id = resource->id,
+               .group_id = group->id,
+    };
+}
+
+registry_parameter_int_path_t registry_to_parameter_int_path(const registry_instance_t *instance,
+                                                             const registry_parameter_t *parameter)
+{
+    assert(instance != NULL);
+    assert(parameter != NULL);
+
+    return (registry_parameter_int_path_t) {
+               .namespace_id = instance->schema->namespace->id,
+               .schema_id = instance->schema->id,
+               .instance_id = instance->id,
+               .parameter_id = parameter->id,
     };
 }
 
@@ -232,9 +263,9 @@ int registry_from_instance_int_path(const registry_instance_int_path_t *path,
     return 0;
 }
 
-int registry_from_resource_int_path(const registry_resource_int_path_t *path,
-                                    registry_namespace_t **namespace, registry_schema_t **schema,
-                                    registry_instance_t **instance, registry_resource_t **resource)
+int registry_from_group_int_path(const registry_group_int_path_t *path,
+                                 registry_namespace_t **namespace, registry_schema_t **schema,
+                                 registry_instance_t **instance, registry_group_t **group)
 {
     assert(path != NULL);
 
@@ -250,8 +281,34 @@ int registry_from_resource_int_path(const registry_resource_int_path_t *path,
         *instance = (registry_instance_t *)_instance_lookup(*schema, path->instance_id);
     }
 
-    if (resource != NULL) {
-        *resource = (registry_resource_t *)_resource_lookup(*schema, path->resource_id);
+    if (group != NULL) {
+        *group = (registry_group_t *)_group_lookup(*schema, path->group_id);
+    }
+
+    return 0;
+}
+
+int registry_from_parameter_int_path(const registry_parameter_int_path_t *path,
+                                     registry_namespace_t **namespace, registry_schema_t **schema,
+                                     registry_instance_t **instance,
+                                     registry_parameter_t **parameter)
+{
+    assert(path != NULL);
+
+    if (namespace != NULL) {
+        *namespace = (registry_namespace_t *)_namespace_lookup(path->namespace_id);
+    }
+
+    if (schema != NULL) {
+        *schema = (registry_schema_t *)_schema_lookup(*namespace, path->schema_id);
+    }
+
+    if (instance != NULL) {
+        *instance = (registry_instance_t *)_instance_lookup(*schema, path->instance_id);
+    }
+
+    if (parameter != NULL) {
+        *parameter = (registry_parameter_t *)_parameter_lookup(*schema, path->parameter_id);
     }
 
     return 0;

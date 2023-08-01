@@ -47,11 +47,14 @@ typedef uint8_t registry_namespace_id_t;
 typedef uint32_t registry_schema_id_t;
 typedef uint16_t registry_instance_id_t;
 typedef uint16_t registry_resource_id_t;
+typedef registry_resource_id_t registry_group_id_t;
+typedef registry_resource_id_t registry_parameter_id_t;
 
 typedef struct _registry_namespace_t registry_namespace_t;
 typedef struct _registry_schema_t registry_schema_t;
 typedef struct _registry_instance_t registry_instance_t;
-typedef struct _registry_resource_t registry_resource_t;
+typedef struct _registry_group_t registry_group_t;
+typedef struct _registry_parameter_t registry_parameter_t;
 
 /**
  * @brief Data types of the registry
@@ -329,12 +332,35 @@ typedef struct {
 #endif \
     /* CONFIG_REGISTRY_ENABLE_ALLOWED_VALUES_CHECK || CONFIG_REGISTRY_ENABLE_FORBIDDEN_VALUES_CHECK || CONFIG_REGISTRY_ENABLE_MIN_VALUE_CHECK || CONFIG_REGISTRY_ENABLE_MAX_VALUE_CHECK */
 
-typedef struct {
-    const registry_resource_t ** const resources;   /**< Array of pointers to all the configuration parameters and groups that belong to this group */
-    const size_t resources_len;                     /**< Size of resources array */
-} registry_group_t;
+struct _registry_group_t {
+#if IS_USED(MODULE_REGISTRY_INT_PATH) || IS_ACTIVE(DOXYGEN)
+    const registry_group_id_t id;                   /**< Integer representing the path id of the configuration group */
+#endif /* MODULE_REGISTRY_INT_PATH */
+#if IS_ACTIVE(CONFIG_REGISTRY_ENABLE_META_NAME) || IS_ACTIVE(DOXYGEN)
+    const char * const name;                        /**< String describing the configuration group */
+#endif /* CONFIG_REGISTRY_ENABLE_META_NAME */
+#if IS_ACTIVE(CONFIG_REGISTRY_ENABLE_META_DESCRIPTION) || IS_ACTIVE(DOXYGEN)
+    const char * const description;                 /**< String describing the configuration group with more details */
+#endif /* CONFIG_REGISTRY_ENABLE_META_DESCRIPTION */
+    const registry_schema_t * const schema;         /**< Configuration Schema that the configuration group belongs to */
+    const registry_group_t ** const groups;         /**< Array of pointers to all the configuration groups that belong to this group */
+    const size_t groups_len;                        /**< Size of groups array */
+    const registry_parameter_t ** const parameters; /**< Array of pointers to all the configuration parameters that belong to this group */
+    const size_t parameters_len;                    /**< Size of parameters array */
+};
 
-typedef struct {
+struct _registry_parameter_t {
+#if IS_USED(MODULE_REGISTRY_INT_PATH) || IS_ACTIVE(DOXYGEN)
+    const registry_parameter_id_t id;                       /**< Integer representing the path id of the configuration parameter */
+#endif /* MODULE_REGISTRY_INT_PATH */
+#if IS_ACTIVE(CONFIG_REGISTRY_ENABLE_META_NAME) || IS_ACTIVE(DOXYGEN)
+    const char * const name;                                /**< String describing the configuration parameter */
+#endif /* CONFIG_REGISTRY_ENABLE_META_NAME */
+#if IS_ACTIVE(CONFIG_REGISTRY_ENABLE_META_DESCRIPTION) || IS_ACTIVE(DOXYGEN)
+    const char * const description;                         /**< String describing the configuration parameter with more details */
+#endif /* CONFIG_REGISTRY_ENABLE_META_DESCRIPTION */
+    const registry_schema_t * const schema;                 /**< Configuration Schema that the configuration parameter belongs to */
+    const registry_type_t type;                             /**< Type of the configuration parameter */
 #if IS_ACTIVE(CONFIG_REGISTRY_ENABLE_ALLOWED_VALUES_CHECK) || \
     IS_ACTIVE(CONFIG_REGISTRY_ENABLE_FORBIDDEN_VALUES_CHECK) || \
     IS_ACTIVE(CONFIG_REGISTRY_ENABLE_MIN_VALUE_CHECK) || \
@@ -366,27 +392,9 @@ typedef struct {
         const registry_parameter_constraints_float64_t float64;
 #endif /* CONFIG_REGISTRY_USE_FLOAT64 */
 #endif /* CONFIG_REGISTRY_ENABLE_MIN_VALUE_CHECK || CONFIG_REGISTRY_ENABLE_MAX_VALUE_CHECK */
-    } constraints;                                                /**< Constraints of the parameter value */
+    } constraints;                                          /**< Constraints of the parameter value */
 #endif \
     /* CONFIG_REGISTRY_ENABLE_ALLOWED_VALUES_CHECK || CONFIG_REGISTRY_ENABLE_FORBIDDEN_VALUES_CHECK || CONFIG_REGISTRY_ENABLE_MIN_VALUE_CHECK || CONFIG_REGISTRY_ENABLE_MAX_VALUE_CHECK */
-} registry_parameter_t;
-
-struct _registry_resource_t {
-#if IS_USED(MODULE_REGISTRY_INT_PATH) || IS_ACTIVE(DOXYGEN)
-    const registry_resource_id_t id;                        /**< Integer representing the path id of the configuration resource */
-#endif /* MODULE_REGISTRY_INT_PATH */
-#if IS_ACTIVE(CONFIG_REGISTRY_ENABLE_META_NAME) || IS_ACTIVE(DOXYGEN)
-    const char * const name;                                /**< String describing the configuration resource */
-#endif /* CONFIG_REGISTRY_ENABLE_META_NAME */
-#if IS_ACTIVE(CONFIG_REGISTRY_ENABLE_META_DESCRIPTION) || IS_ACTIVE(DOXYGEN)
-    const char * const description;                         /**< String describing the configuration resource with more details */
-#endif /* CONFIG_REGISTRY_ENABLE_META_DESCRIPTION */
-    const registry_schema_t * const schema;                 /**< Configuration Schema that the configuration resource belongs to */
-    const registry_type_t type;                             /**< Type of the configuration resource (group or parameter type) */
-    const union {
-        const registry_group_t group;
-        const registry_parameter_t parameter;
-    } props;                                                /**< Additional properties based on the resource type */
 };
 
 /**
@@ -394,7 +402,7 @@ struct _registry_resource_t {
  */
 struct _registry_schema_t {
 #if IS_USED(MODULE_REGISTRY_INT_PATH) || IS_ACTIVE(DOXYGEN)
-    const registry_schema_id_t id;                         /**< Integer representing the path id of the schema */
+    const registry_schema_id_t id;                          /**< Integer representing the path id of the schema */
 #endif /* MODULE_REGISTRY_INT_PATH */
 #if IS_ACTIVE(CONFIG_REGISTRY_ENABLE_META_NAME) || IS_ACTIVE(DOXYGEN)
     const char * const name;                                /**< String describing the schema */
@@ -404,8 +412,10 @@ struct _registry_schema_t {
 #endif /* CONFIG_REGISTRY_ENABLE_META_DESCRIPTION */
     const registry_namespace_t * const namespace;           /**< Configuration Namespace that the Configuration Schema belongs to */
     clist_node_t instances;                                 /**< Linked list of schema instances @ref registry_instance_t */
-    const registry_resource_t ** const resources;           /**< Array of pointers to all the configuration parameters and groups that belong to this schema */
-    const size_t resources_len;                             /**< Size of resources array */
+    const registry_group_t ** const groups;                 /**< Array of pointers to all the configuration groups that belong to this schema */
+    const size_t groups_len;                                /**< Size of groups array */
+    const registry_parameter_t ** const parameters;         /**< Array of pointers to all the configuration parameters that belong to this schema */
+    const size_t parameters_len;                            /**< Size of parameters array */
 
     /**
      * @brief Mapping to connect configuration parameter IDs with the address in the storage.
@@ -415,7 +425,7 @@ struct _registry_schema_t {
      * @param[in] val Pointer to buffer containing the new value
      * @param[in] val_len Pointer to length of the buffer to store the current value
      */
-    void(*const mapping)(const registry_resource_id_t parameter_id,
+    void(*const mapping)(const registry_parameter_id_t parameter_id,
                          const registry_instance_t *instance,
                          void **val,
                          size_t *val_len);
@@ -463,7 +473,7 @@ int registry_register_schema_instance(const registry_schema_t *schema,
  * @param[out] value Pointer to a uninitialized @ref registry_value_t struct.
  * @return 0 on success, non-zero on failure
  */
-int registry_get(const registry_instance_t *instance, const registry_resource_t *parameter,
+int registry_get(const registry_instance_t *instance, const registry_parameter_t *parameter,
                  registry_value_t *value);
 
 /**
@@ -476,7 +486,7 @@ int registry_get(const registry_instance_t *instance, const registry_resource_t 
  * @param[in] buf_len Length of the buffer.
  * @return 0 on success, non-zero on failure
  */
-int registry_set(const registry_instance_t *instance, const registry_resource_t *parameter,
+int registry_set(const registry_instance_t *instance, const registry_parameter_t *parameter,
                  const void *buf, const size_t buf_len);
 
 /**
@@ -511,7 +521,7 @@ int registry_commit_instance(const registry_instance_t *instance);
  * @param[in] instance Pointer to the configuration schema instance of the configuration group.
  * @param[in] group Pointer to the configuration group.
  */
-int registry_commit_group(const registry_instance_t *instance, const registry_resource_t *group);
+int registry_commit_group(const registry_instance_t *instance, const registry_group_t *group);
 
 /**
  * @brief Commits the given configuration parameter.
@@ -520,15 +530,15 @@ int registry_commit_group(const registry_instance_t *instance, const registry_re
  * @param[in] parameter Pointer to the configuration parameter.
  */
 int registry_commit_parameter(const registry_instance_t *instance,
-                              const registry_resource_t *parameter);
+                              const registry_parameter_t *parameter);
 
 typedef const union {
     const registry_namespace_t *namespace;
     const registry_schema_t *schema;
     const registry_instance_t *instance;
-    const registry_resource_t *group;
+    const registry_group_t *group;
     const struct {
-        const registry_resource_t *data;
+        const registry_parameter_t *data;
         const registry_instance_t *instance;
     } parameter;
 } registry_export_cb_data_t;
@@ -618,7 +628,7 @@ int registry_export_instance(const registry_instance_t *instance,
  * to show the exact match plus its children ... plus n levels of children)
  * @param[in] context Context that will be passed to @p export_cb
  */
-int registry_export_group(const registry_instance_t *instance, const registry_resource_t *group,
+int registry_export_group(const registry_instance_t *instance, const registry_group_t *group,
                           const registry_export_cb_t export_cb, const uint8_t recursion_depth,
                           const void *context);
 
@@ -632,7 +642,7 @@ int registry_export_group(const registry_instance_t *instance, const registry_re
  * @param[in] context Context that will be passed to @p export_cb
  */
 int registry_export_parameter(const registry_instance_t *instance,
-                              const registry_resource_t *parameter,
+                              const registry_parameter_t *parameter,
                               const registry_export_cb_t export_cb, const void *context);
 
 #ifdef __cplusplus
