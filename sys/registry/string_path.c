@@ -57,11 +57,20 @@ int registry_to_instance_string_path(const registry_instance_t *instance, char *
     return 0;
 }
 
-int registry_to_resource_string_path(const registry_instance_t *instance,
-                                     const registry_resource_t *resource, char *path)
+int registry_to_group_string_path(const registry_instance_t *instance,
+                                  const registry_group_t *group, char *path)
 {
     (void)instance;
-    (void)resource;
+    (void)group;
+    (void)path;
+    return 0;
+}
+
+int registry_to_parameter_string_path(const registry_instance_t *instance,
+                                      const registry_parameter_t *parameter, char *path)
+{
+    (void)instance;
+    (void)parameter;
     (void)path;
     return 0;
 }
@@ -95,15 +104,29 @@ int registry_from_instance_string_path(const char *path,
     return 0;
 }
 
-int registry_from_resource_string_path(const char *path,
-                                       registry_namespace_t **namespace, registry_schema_t **schema,
-                                       registry_instance_t **instance,
-                                       registry_resource_t **resource)
+int registry_from_group_string_path(const char *path,
+                                    registry_namespace_t **namespace, registry_schema_t **schema,
+                                    registry_instance_t **instance,
+                                    registry_group_t **group)
 {
     (void)path;
     (void)namespace;
     (void)schema;
     (void)instance;
-    (void)resource;
+    (void)group;
+    return 0;
+}
+
+int registry_from_parameter_string_path(const char *path,
+                                        registry_namespace_t **namespace,
+                                        registry_schema_t **schema,
+                                        registry_instance_t **instance,
+                                        registry_parameter_t **parameter)
+{
+    (void)path;
+    (void)namespace;
+    (void)schema;
+    (void)instance;
+    (void)parameter;
     return 0;
 }

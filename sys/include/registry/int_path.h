@@ -29,7 +29,7 @@ extern "C" {
 /**
  * @brief Maximum length of a configuration path.
  *
- * Path: namespace_id / schema_id / instance_id / resource_id
+ * Path: namespace_id / schema_id / instance_id / (group_id | parameter_id)
  */
 #define REGISTRY_INT_PATH_LEN 4
 

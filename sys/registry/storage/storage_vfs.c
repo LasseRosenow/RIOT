@@ -198,7 +198,7 @@ static int load(const registry_storage_instance_t *storage,
                                 ptr++;
                                 registry_parameter_id_t parameter_id = strtol(ptr, &ptr, 10);
 
-                                const registry_parameter_int_path_t resource_path = {
+                                const registry_parameter_int_path_t parameter_path = {
                                     .namespace_id = namespace_id,
                                     .schema_id = schema_id,
                                     .instance_id = instance_id,
@@ -208,7 +208,7 @@ static int load(const registry_storage_instance_t *storage,
                                 /* get pointer to registry internal configuration parameter */
                                 registry_instance_t *instance;
                                 registry_parameter_t *parameter;
-                                registry_from_parameter_int_path(&resource_path, NULL, NULL,
+                                registry_from_parameter_int_path(&parameter_path, NULL, NULL,
                                                                  &instance, &parameter);
 
                                 registry_value_t value;

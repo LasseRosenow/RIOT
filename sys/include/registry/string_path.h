@@ -33,24 +33,28 @@ int registry_to_schema_string_path(const registry_schema_t *schema, char *path);
 
 int registry_to_instance_string_path(const registry_instance_t *instance, char *path);
 
-int registry_to_resource_string_path(const registry_instance_t *instance,
-                                     const registry_resource_t *resource, char *path);
+int registry_to_group_string_path(const registry_instance_t *instance,
+                                  const registry_group_t *group, char *path);
+
+int registry_to_parameter_string_path(const registry_instance_t *instance,
+                                      const registry_parameter_t *parameter, char *path);
 
 /* from string_path */
-int registry_from_namespace_string_path(const char *path,
-                                        registry_namespace_t **namespace);
+int registry_from_namespace_string_path(const char *path, registry_namespace_t **namespace);
 
-int registry_from_schema_string_path(const char *path,
-                                     registry_namespace_t **namespace, registry_schema_t **schema);
+int registry_from_schema_string_path(const char *path, registry_namespace_t **namespace,
+                                     registry_schema_t **schema);
 
-int registry_from_instance_string_path(const char *path,
-                                       registry_namespace_t **namespace, registry_schema_t **schema,
-                                       registry_instance_t **instance);
+int registry_from_instance_string_path(const char *path, registry_namespace_t **namespace,
+                                       registry_schema_t **schema, registry_instance_t **instance);
 
-int registry_from_resource_string_path(const char *path,
-                                       registry_namespace_t **namespace, registry_schema_t **schema,
-                                       registry_instance_t **instance,
-                                       registry_resource_t **resource);
+int registry_from_group_string_path(const char *path, registry_namespace_t **namespace,
+                                    registry_schema_t **schema, registry_instance_t **instance,
+                                    registry_group_t **group);
+
+int registry_from_parameter_string_path(const char *path, registry_namespace_t **namespace,
+                                        registry_schema_t **schema, registry_instance_t **instance,
+                                        registry_parameter_t **parameter);
 
 #ifdef __cplusplus
 }

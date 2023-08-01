@@ -26,7 +26,6 @@ extern "C" {
 
 typedef const enum {
     REGISTRY_ERROR_NONE = 1000,
-    REGISTRY_ERROR_RESOURCE_TYPE_GROUP,
     REGISTRY_ERROR_NO_DST_STORAGE,
 } registry_error_t;
 
