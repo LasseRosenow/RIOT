@@ -105,7 +105,8 @@ static const registry_resource_t *_internal_resource_lookup(const registry_resou
             return resource;
         }
         else if (resource->type == REGISTRY_TYPE_GROUP) {
-            return _internal_resource_lookup(resource->resources, resource->resources_len,
+            return _internal_resource_lookup(resource->props.group.resources,
+                                             resource->props.group.resources_len,
                                              resource_id);
         }
     }
@@ -127,7 +128,8 @@ static const registry_resource_t *_resource_lookup(const registry_schema_t *sche
             return resource;
         }
         else if (resource->type == REGISTRY_TYPE_GROUP) {
-            return _internal_resource_lookup(resource->resources, resource->resources_len,
+            return _internal_resource_lookup(resource->props.group.resources,
+                                             resource->props.group.resources_len,
                                              resource_id);
         }
     }

@@ -76,8 +76,12 @@ const registry_resource_t registry_sys_rgb_led_red = {
     .description = "",
     .schema = &registry_sys_rgb_led,
     .type = REGISTRY_TYPE_UINT8,
-    .resources = NULL,
-    .resources_len = 0,
+    .props.uint8 = {
+        .allowed_values = NULL,
+        .forbidden_values = NULL,
+        .min_value = NULL,
+        .max_value = NULL,
+    },
 };
 
 const registry_resource_t registry_sys_rgb_led_green = {
@@ -86,8 +90,12 @@ const registry_resource_t registry_sys_rgb_led_green = {
     .description = "",
     .schema = &registry_sys_rgb_led,
     .type = REGISTRY_TYPE_UINT8,
-    .resources = NULL,
-    .resources_len = 0,
+    .props.uint8 = {
+        .allowed_values = NULL,
+        .forbidden_values = NULL,
+        .min_value = NULL,
+        .max_value = NULL,
+    },
 };
 
 const registry_resource_t registry_sys_rgb_led_blue = {
@@ -96,8 +104,12 @@ const registry_resource_t registry_sys_rgb_led_blue = {
     .description = "",
     .schema = &registry_sys_rgb_led,
     .type = REGISTRY_TYPE_UINT8,
-    .resources = NULL,
-    .resources_len = 0,
+    .props.uint8 = {
+        .allowed_values = NULL,
+        .forbidden_values = NULL,
+        .min_value = NULL,
+        .max_value = NULL,
+    },
 };
 
 const registry_resource_t registry_sys_rgb_led_brightnesses_white = {
@@ -106,8 +118,12 @@ const registry_resource_t registry_sys_rgb_led_brightnesses_white = {
     .description = "",
     .schema = &registry_sys_rgb_led,
     .type = REGISTRY_TYPE_UINT8,
-    .resources = NULL,
-    .resources_len = 0,
+    .props.uint8 = {
+        .allowed_values = NULL,
+        .forbidden_values = NULL,
+        .min_value = NULL,
+        .max_value = NULL,
+    },
 };
 
 const registry_resource_t registry_sys_rgb_led_brightnesses_yellow = {
@@ -116,8 +132,12 @@ const registry_resource_t registry_sys_rgb_led_brightnesses_yellow = {
     .description = "",
     .schema = &registry_sys_rgb_led,
     .type = REGISTRY_TYPE_UINT8,
-    .resources = NULL,
-    .resources_len = 0,
+    .props.uint8 = {
+        .allowed_values = NULL,
+        .forbidden_values = NULL,
+        .min_value = NULL,
+        .max_value = NULL,
+    },
 };
 
 const registry_resource_t registry_sys_rgb_led_brightnesses = {
@@ -126,11 +146,13 @@ const registry_resource_t registry_sys_rgb_led_brightnesses = {
     .description = "",
     .schema = &registry_sys_rgb_led,
     .type = REGISTRY_TYPE_GROUP,
-    .resources = (const registry_resource_t *[]) {
-        &registry_sys_rgb_led_brightnesses_white,
-        &registry_sys_rgb_led_brightnesses_yellow,
+    .props.group = {
+        .resources = (const registry_resource_t *[]) {
+            &registry_sys_rgb_led_brightnesses_white,
+            &registry_sys_rgb_led_brightnesses_yellow,
+        },
+        .resources_len = 2,
     },
-    .resources_len = 2,
 };
 
 registry_schema_t registry_sys_rgb_led = {

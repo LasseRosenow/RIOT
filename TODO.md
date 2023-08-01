@@ -19,8 +19,8 @@
   - Readme.md
 
 - [ ] XFA()
-  - Use XFA() to automatically add schemas to a namespace on compile time
-  - Use XFA() to automatically add namespaces to the registry on compile time
+  - [ ] Use XFA() to automatically add schemas to a namespace on compile time
+  - [ ] Use XFA() to automatically add namespaces to the registry on compile time
 
 - [ ] Add min-value, max-value and allowed values
   - With a flag to disable for extremely constrained devices

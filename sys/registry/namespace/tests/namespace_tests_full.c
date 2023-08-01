@@ -110,8 +110,10 @@ const registry_resource_t registry_tests_full_string = {
     .description = "",
     .schema = &registry_tests_full,
     .type = REGISTRY_TYPE_STRING,
-    .resources = NULL,
-    .resources_len = 0,
+    .props.string = {
+        .allowed_values = NULL,
+        .forbidden_values = NULL,
+    },
 };
 
 const registry_resource_t registry_tests_full_boolean = {
@@ -120,8 +122,7 @@ const registry_resource_t registry_tests_full_boolean = {
     .description = "",
     .schema = &registry_tests_full,
     .type = REGISTRY_TYPE_BOOL,
-    .resources = NULL,
-    .resources_len = 0,
+    .props.boolean = NULL,
 };
 
 const registry_resource_t registry_tests_full_u8 = {
@@ -130,8 +131,12 @@ const registry_resource_t registry_tests_full_u8 = {
     .description = "",
     .schema = &registry_tests_full,
     .type = REGISTRY_TYPE_UINT8,
-    .resources = NULL,
-    .resources_len = 0,
+    .props.uint8 = {
+        .allowed_values = NULL,
+        .forbidden_values = NULL,
+        .min_value = NULL,
+        .max_value = NULL,
+    },
 };
 
 const registry_resource_t registry_tests_full_u16 = {
@@ -140,8 +145,12 @@ const registry_resource_t registry_tests_full_u16 = {
     .description = "",
     .schema = &registry_tests_full,
     .type = REGISTRY_TYPE_UINT16,
-    .resources = NULL,
-    .resources_len = 0,
+    .props.uint16 = {
+        .allowed_values = NULL,
+        .forbidden_values = NULL,
+        .min_value = NULL,
+        .max_value = NULL,
+    },
 };
 
 const registry_resource_t registry_tests_full_u32 = {
@@ -150,8 +159,12 @@ const registry_resource_t registry_tests_full_u32 = {
     .description = "",
     .schema = &registry_tests_full,
     .type = REGISTRY_TYPE_UINT32,
-    .resources = NULL,
-    .resources_len = 0,
+    .props.uint32 = {
+        .allowed_values = NULL,
+        .forbidden_values = NULL,
+        .min_value = NULL,
+        .max_value = NULL,
+    },
 };
 
 const registry_resource_t registry_tests_full_u64 = {
@@ -160,8 +173,12 @@ const registry_resource_t registry_tests_full_u64 = {
     .description = "",
     .schema = &registry_tests_full,
     .type = REGISTRY_TYPE_UINT64,
-    .resources = NULL,
-    .resources_len = 0,
+    .props.uint64 = {
+        .allowed_values = NULL,
+        .forbidden_values = NULL,
+        .min_value = NULL,
+        .max_value = NULL,
+    },
 };
 
 const registry_resource_t registry_tests_full_i8 = {
@@ -170,8 +187,12 @@ const registry_resource_t registry_tests_full_i8 = {
     .description = "",
     .schema = &registry_tests_full,
     .type = REGISTRY_TYPE_INT8,
-    .resources = NULL,
-    .resources_len = 0,
+    .props.int8 = {
+        .allowed_values = NULL,
+        .forbidden_values = NULL,
+        .min_value = NULL,
+        .max_value = NULL,
+    },
 };
 
 const registry_resource_t registry_tests_full_i16 = {
@@ -180,8 +201,12 @@ const registry_resource_t registry_tests_full_i16 = {
     .description = "",
     .schema = &registry_tests_full,
     .type = REGISTRY_TYPE_INT16,
-    .resources = NULL,
-    .resources_len = 0,
+    .props.int16 = {
+        .allowed_values = NULL,
+        .forbidden_values = NULL,
+        .min_value = NULL,
+        .max_value = NULL,
+    },
 };
 
 const registry_resource_t registry_tests_full_i32 = {
@@ -190,8 +215,12 @@ const registry_resource_t registry_tests_full_i32 = {
     .description = "",
     .schema = &registry_tests_full,
     .type = REGISTRY_TYPE_INT32,
-    .resources = NULL,
-    .resources_len = 0,
+    .props.int32 = {
+        .allowed_values = NULL,
+        .forbidden_values = NULL,
+        .min_value = NULL,
+        .max_value = NULL,
+    },
 };
 
 const registry_resource_t registry_tests_full_i64 = {
@@ -200,8 +229,12 @@ const registry_resource_t registry_tests_full_i64 = {
     .description = "",
     .schema = &registry_tests_full,
     .type = REGISTRY_TYPE_INT64,
-    .resources = NULL,
-    .resources_len = 0,
+    .props.int64 = {
+        .allowed_values = NULL,
+        .forbidden_values = NULL,
+        .min_value = NULL,
+        .max_value = NULL,
+    },
 };
 
 const registry_resource_t registry_tests_full_f32 = {
@@ -210,8 +243,12 @@ const registry_resource_t registry_tests_full_f32 = {
     .description = "",
     .schema = &registry_tests_full,
     .type = REGISTRY_TYPE_FLOAT32,
-    .resources = NULL,
-    .resources_len = 0,
+    .props.float32 = {
+        .allowed_values = NULL,
+        .forbidden_values = NULL,
+        .min_value = NULL,
+        .max_value = NULL,
+    },
 };
 
 const registry_resource_t registry_tests_full_f64 = {
@@ -220,8 +257,12 @@ const registry_resource_t registry_tests_full_f64 = {
     .description = "",
     .schema = &registry_tests_full,
     .type = REGISTRY_TYPE_FLOAT64,
-    .resources = NULL,
-    .resources_len = 0,
+    .props.float64 = {
+        .allowed_values = NULL,
+        .forbidden_values = NULL,
+        .min_value = NULL,
+        .max_value = NULL,
+    },
 };
 
 registry_schema_t registry_tests_full = {

@@ -385,8 +385,8 @@ int registry_export_group(const registry_instance_t *instance, const registry_re
 
         int _rc = rc;
 
-        for (size_t i = 0; i < group->resources_len; i++) {
-            const registry_resource_t *child = group->resources[i];
+        for (size_t i = 0; i < group->props.group.resources_len; i++) {
+            const registry_resource_t *child = group->props.group.resources[i];
 
             if (child->type == REGISTRY_TYPE_GROUP) {
                 _rc =
