@@ -64,8 +64,7 @@ typedef struct _registry_parameter_t registry_parameter_t;
  * as they bloat the code size.
  */
 typedef enum {
-    REGISTRY_TYPE_NONE  = 0,        /**< No type specified */
-    REGISTRY_TYPE_GROUP = 1,        /**< GROUP contains parameters */
+    REGISTRY_TYPE_NONE = 0,         /**< No type specified */
 
     REGISTRY_TYPE_OPAQUE,           /**< OPAQUE */
     REGISTRY_TYPE_STRING,           /**< String */

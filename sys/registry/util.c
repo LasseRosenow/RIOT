@@ -44,7 +44,6 @@ void _debug_print_value(const registry_value_t *value)
     if (ENABLE_DEBUG) {
         switch (value->type) {
         case REGISTRY_TYPE_NONE: break;
-        case REGISTRY_TYPE_GROUP: break;
         case REGISTRY_TYPE_OPAQUE: {
             DEBUG("opaque (hex): ");
             for (size_t i = 0; i < value->buf_len; i++) {
@@ -94,8 +93,7 @@ int registry_util_convert_str_to_value(const char *src, void *dest, const size_t
     }
 
     switch (dest_type) {
-    case REGISTRY_TYPE_NONE:
-    case REGISTRY_TYPE_GROUP: {
+    case REGISTRY_TYPE_NONE: {
         return -EINVAL;
     }
 
@@ -195,8 +193,7 @@ int registry_util_convert_value_to_str(const registry_value_t *src, char *dest,
     size_t str_len;
 
     switch (src->type) {
-    case REGISTRY_TYPE_NONE:
-    case REGISTRY_TYPE_GROUP: {
+    case REGISTRY_TYPE_NONE: {
         return -EINVAL;
     }
 
