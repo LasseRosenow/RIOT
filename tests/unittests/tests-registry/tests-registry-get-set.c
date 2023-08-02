@@ -490,12 +490,26 @@ static void tests_registry_max_values(void)
     TEST_ASSERT_EQUAL_STRING(input_f64_string, output_f64_string);
 }
 
+static void tests_registry_constraints(void)
+{
+    // TODO
+
+    // /* u8 */
+    // const uint8_t input_u8 = UINT8_MAX;
+
+    // registry_set(&test_instance_1, &registry_tests_full_u8, &input_u8, sizeof(input_u8));
+    // registry_get(&test_instance_1, &registry_tests_full_u8, &output);
+
+    // TEST_ASSERT_EQUAL_INT(input_u8, *(uint8_t *)output.buf);
+}
+
 Test *tests_registry_get_set_tests(void)
 {
     EMB_UNIT_TESTFIXTURES(fixtures) {
         new_TestFixture(tests_registry_min_values),
         new_TestFixture(tests_registry_zero_values),
         new_TestFixture(tests_registry_max_values),
+        new_TestFixture(tests_registry_constraints),
     };
 
     EMB_UNIT_TESTCALLER(registry_tests, test_registry_setup, test_registry_teardown, fixtures);
