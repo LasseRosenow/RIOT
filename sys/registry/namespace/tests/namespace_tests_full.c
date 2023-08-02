@@ -41,6 +41,11 @@ static void mapping(const registry_parameter_id_t parameter_id, const registry_i
         (registry_tests_full_instance_t *)instance->data;
 
     switch (parameter_id) {
+    case REGISTRY_TESTS_FULL_OPAQUE:
+        *val = &_instance->opaque;
+        *val_len = sizeof(_instance->opaque);
+        break;
+
     case REGISTRY_TESTS_FULL_STRING:
         *val = &_instance->string;
         *val_len = sizeof(_instance->string);
@@ -105,7 +110,7 @@ static void mapping(const registry_parameter_id_t parameter_id, const registry_i
 
 /* Schema */
 const registry_parameter_t registry_tests_full_opaque = {
-    .id = 0,
+    .id = REGISTRY_TESTS_FULL_OPAQUE,
     .name = "opaque",
     .description = "",
     .schema = &registry_tests_full,
@@ -121,7 +126,7 @@ const registry_parameter_t registry_tests_full_opaque = {
 };
 
 const registry_parameter_t registry_tests_full_string = {
-    .id = 0,
+    .id = REGISTRY_TESTS_FULL_STRING,
     .name = "string",
     .description = "",
     .schema = &registry_tests_full,
@@ -137,7 +142,7 @@ const registry_parameter_t registry_tests_full_string = {
 };
 
 const registry_parameter_t registry_tests_full_boolean = {
-    .id = 1,
+    .id = REGISTRY_TESTS_FULL_BOOLEAN,
     .name = "boolean",
     .description = "",
     .schema = &registry_tests_full,
@@ -146,7 +151,7 @@ const registry_parameter_t registry_tests_full_boolean = {
 };
 
 const registry_parameter_t registry_tests_full_u8 = {
-    .id = 2,
+    .id = REGISTRY_TESTS_FULL_U8,
     .name = "u8",
     .description = "",
     .schema = &registry_tests_full,
@@ -168,7 +173,7 @@ const registry_parameter_t registry_tests_full_u8 = {
 };
 
 const registry_parameter_t registry_tests_full_u16 = {
-    .id = 3,
+    .id = REGISTRY_TESTS_FULL_U16,
     .name = "u16",
     .description = "",
     .schema = &registry_tests_full,
@@ -190,7 +195,7 @@ const registry_parameter_t registry_tests_full_u16 = {
 };
 
 const registry_parameter_t registry_tests_full_u32 = {
-    .id = 4,
+    .id = REGISTRY_TESTS_FULL_U32,
     .name = "u32",
     .description = "",
     .schema = &registry_tests_full,
@@ -212,7 +217,7 @@ const registry_parameter_t registry_tests_full_u32 = {
 };
 
 const registry_parameter_t registry_tests_full_u64 = {
-    .id = 5,
+    .id = REGISTRY_TESTS_FULL_U64,
     .name = "u64",
     .description = "",
     .schema = &registry_tests_full,
@@ -234,7 +239,7 @@ const registry_parameter_t registry_tests_full_u64 = {
 };
 
 const registry_parameter_t registry_tests_full_i8 = {
-    .id = 2,
+    .id = REGISTRY_TESTS_FULL_I8,
     .name = "i8",
     .description = "",
     .schema = &registry_tests_full,
@@ -256,7 +261,7 @@ const registry_parameter_t registry_tests_full_i8 = {
 };
 
 const registry_parameter_t registry_tests_full_i16 = {
-    .id = 3,
+    .id = REGISTRY_TESTS_FULL_I16,
     .name = "i16",
     .description = "",
     .schema = &registry_tests_full,
@@ -278,7 +283,7 @@ const registry_parameter_t registry_tests_full_i16 = {
 };
 
 const registry_parameter_t registry_tests_full_i32 = {
-    .id = 4,
+    .id = REGISTRY_TESTS_FULL_I32,
     .name = "i32",
     .description = "",
     .schema = &registry_tests_full,
@@ -300,7 +305,7 @@ const registry_parameter_t registry_tests_full_i32 = {
 };
 
 const registry_parameter_t registry_tests_full_i64 = {
-    .id = 5,
+    .id = REGISTRY_TESTS_FULL_I64,
     .name = "i64",
     .description = "",
     .schema = &registry_tests_full,
@@ -322,7 +327,7 @@ const registry_parameter_t registry_tests_full_i64 = {
 };
 
 const registry_parameter_t registry_tests_full_f32 = {
-    .id = 4,
+    .id = REGISTRY_TESTS_FULL_F32,
     .name = "f32",
     .description = "",
     .schema = &registry_tests_full,
@@ -344,7 +349,7 @@ const registry_parameter_t registry_tests_full_f32 = {
 };
 
 const registry_parameter_t registry_tests_full_f64 = {
-    .id = 5,
+    .id = REGISTRY_TESTS_FULL_F64,
     .name = "f64",
     .description = "",
     .schema = &registry_tests_full,

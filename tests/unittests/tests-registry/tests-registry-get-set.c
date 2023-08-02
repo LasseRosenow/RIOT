@@ -86,6 +86,18 @@ static void tests_registry_min_values(void)
 {
     registry_value_t output;
 
+    /* opaque */
+    const registry_tests_full_instance_opaque_t input_opaque = {
+        .value = 0,
+    };
+
+    registry_set(&test_instance_1, &registry_tests_full_opaque, &input_opaque,
+                 sizeof(input_opaque));
+    registry_get(&test_instance_1, &registry_tests_full_opaque, &output);
+
+    TEST_ASSERT_EQUAL_INT(input_opaque.value,
+                          ((registry_tests_full_instance_opaque_t *)output.buf)->value);
+
     /* string */
     const char input_string[] = "";
 
@@ -208,6 +220,19 @@ static void tests_registry_zero_values(void)
 {
     registry_value_t output;
 
+    /* opaque */
+    const registry_tests_full_instance_opaque_t input_opaque = {
+        .value = 0,
+    };
+
+    registry_set(&test_instance_1, &registry_tests_full_opaque, &input_opaque,
+                 sizeof(input_opaque));
+    registry_get(&test_instance_1, &registry_tests_full_opaque, &output);
+
+    TEST_ASSERT_EQUAL_INT(input_opaque.value,
+                          ((registry_tests_full_instance_opaque_t *)output.buf)->value);
+
+
     /* string */
     const char input_string[] = "";
 
@@ -329,6 +354,19 @@ static void tests_registry_zero_values(void)
 static void tests_registry_max_values(void)
 {
     registry_value_t output;
+
+    /* opaque */
+    const registry_tests_full_instance_opaque_t input_opaque = {
+        .value = UINT8_MAX,
+    };
+
+    registry_set(&test_instance_1, &registry_tests_full_opaque, &input_opaque,
+                 sizeof(input_opaque));
+    registry_get(&test_instance_1, &registry_tests_full_opaque, &output);
+
+    TEST_ASSERT_EQUAL_INT(input_opaque.value,
+                          ((registry_tests_full_instance_opaque_t *)output.buf)->value);
+
 
     /* string */
     char input_string[sizeof(test_instance_1_data.string)] = { 0 };

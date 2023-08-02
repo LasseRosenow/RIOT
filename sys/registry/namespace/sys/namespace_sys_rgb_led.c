@@ -71,7 +71,7 @@ static void mapping(const registry_parameter_id_t parameter_id, const registry_i
 
 /* Schema */
 const registry_parameter_t registry_sys_rgb_led_red = {
-    .id = 0,
+    .id = REGISTRY_SYS_RGB_LED_RED,
     .name = "red",
     .description = "",
     .schema = &registry_sys_rgb_led,
@@ -93,7 +93,7 @@ const registry_parameter_t registry_sys_rgb_led_red = {
 };
 
 const registry_parameter_t registry_sys_rgb_led_green = {
-    .id = 1,
+    .id = REGISTRY_SYS_RGB_LED_GREEN,
     .name = "green",
     .description = "",
     .schema = &registry_sys_rgb_led,
@@ -115,7 +115,7 @@ const registry_parameter_t registry_sys_rgb_led_green = {
 };
 
 const registry_parameter_t registry_sys_rgb_led_blue = {
-    .id = 2,
+    .id = REGISTRY_SYS_RGB_LED_BLUE,
     .name = "blue",
     .description = "",
     .schema = &registry_sys_rgb_led,
@@ -137,7 +137,7 @@ const registry_parameter_t registry_sys_rgb_led_blue = {
 };
 
 const registry_parameter_t registry_sys_rgb_led_brightnesses_white = {
-    .id = 4,
+    .id = REGISTRY_SYS_RGB_LED_BRIGHTNESSES_WHITE,
     .name = "white",
     .description = "",
     .schema = &registry_sys_rgb_led,
@@ -159,7 +159,7 @@ const registry_parameter_t registry_sys_rgb_led_brightnesses_white = {
 };
 
 const registry_parameter_t registry_sys_rgb_led_brightnesses_yellow = {
-    .id = 5,
+    .id = REGISTRY_SYS_RGB_LED_BRIGHTNESSES_YELLOW,
     .name = "yellow",
     .description = "",
     .schema = &registry_sys_rgb_led,
@@ -181,7 +181,7 @@ const registry_parameter_t registry_sys_rgb_led_brightnesses_yellow = {
 };
 
 const registry_group_t registry_sys_rgb_led_brightnesses = {
-    .id = 3,
+    .id = REGISTRY_SYS_RGB_LED_BRIGHTNESSES,
     .name = "brightnesses",
     .description = "",
     .schema = &registry_sys_rgb_led,

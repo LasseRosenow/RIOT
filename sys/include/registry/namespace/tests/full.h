@@ -29,6 +29,7 @@ extern "C" {
 /* FULL */
 #if IS_USED(MODULE_REGISTRY_NAMESPACE_TESTS_FULL) || IS_ACTIVE(DOXYGEN)
 
+extern const registry_parameter_t registry_tests_full_opaque;
 extern const registry_parameter_t registry_tests_full_string;
 extern const registry_parameter_t registry_tests_full_boolean;
 extern const registry_parameter_t registry_tests_full_u8;
@@ -44,11 +45,13 @@ extern const registry_parameter_t registry_tests_full_f64;
 extern registry_schema_t registry_tests_full;
 
 typedef struct {
+    uint8_t value;
+} registry_tests_full_instance_opaque_t;
+
+typedef struct {
     clist_node_t node;
 
-    struct {
-        uint8_t value;
-    } opaque;
+    registry_tests_full_instance_opaque_t opaque;
     char string[50];
     bool boolean;
 
