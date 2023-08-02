@@ -23,7 +23,9 @@
   - [ ] Use XFA() to automatically add namespaces to the registry on compile time
 
 - [ ] Add min-value, max-value and allowed values
-  - With a flag to disable for extremely constrained devices
+  - [x] implementation
+  - [x] With a flag to disable for extremely constrained devices
+  - [ ] add tests
 
 - [ ] Initial values
   - dafür sorgen, dass klar ist, dass schema instances von modules initialisiert werden müssen
