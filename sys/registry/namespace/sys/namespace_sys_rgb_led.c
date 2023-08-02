@@ -79,9 +79,11 @@ const registry_parameter_t registry_sys_rgb_led_red = {
     .constraints.uint8 = {
 #if IS_ACTIVE(CONFIG_REGISTRY_ENABLE_ALLOWED_VALUES_CHECK) || IS_ACTIVE(DOXYGEN)
         .allowed_values = NULL,
+        .allowed_values_len = 0,
 #endif /* CONFIG_REGISTRY_ENABLE_ALLOWED_VALUES_CHECK */
 #if IS_ACTIVE(CONFIG_REGISTRY_ENABLE_FORBIDDEN_VALUES_CHECK) || IS_ACTIVE(DOXYGEN)
         .forbidden_values = NULL,
+        .forbidden_values_len = 0,
 #endif /* CONFIG_REGISTRY_ENABLE_FORBIDDEN_VALUES_CHECK */
 #if IS_ACTIVE(CONFIG_REGISTRY_ENABLE_MIN_VALUE_CHECK) || IS_ACTIVE(DOXYGEN)
         .min_value = NULL,
@@ -101,9 +103,11 @@ const registry_parameter_t registry_sys_rgb_led_green = {
     .constraints.uint8 = {
 #if IS_ACTIVE(CONFIG_REGISTRY_ENABLE_ALLOWED_VALUES_CHECK) || IS_ACTIVE(DOXYGEN)
         .allowed_values = NULL,
+        .allowed_values_len = 0,
 #endif /* CONFIG_REGISTRY_ENABLE_ALLOWED_VALUES_CHECK */
 #if IS_ACTIVE(CONFIG_REGISTRY_ENABLE_FORBIDDEN_VALUES_CHECK) || IS_ACTIVE(DOXYGEN)
         .forbidden_values = NULL,
+        .forbidden_values_len = 0,
 #endif /* CONFIG_REGISTRY_ENABLE_FORBIDDEN_VALUES_CHECK */
 #if IS_ACTIVE(CONFIG_REGISTRY_ENABLE_MIN_VALUE_CHECK) || IS_ACTIVE(DOXYGEN)
         .min_value = NULL,
@@ -123,9 +127,11 @@ const registry_parameter_t registry_sys_rgb_led_blue = {
     .constraints.uint8 = {
 #if IS_ACTIVE(CONFIG_REGISTRY_ENABLE_ALLOWED_VALUES_CHECK) || IS_ACTIVE(DOXYGEN)
         .allowed_values = NULL,
+        .allowed_values_len = 0,
 #endif /* CONFIG_REGISTRY_ENABLE_ALLOWED_VALUES_CHECK */
 #if IS_ACTIVE(CONFIG_REGISTRY_ENABLE_FORBIDDEN_VALUES_CHECK) || IS_ACTIVE(DOXYGEN)
         .forbidden_values = NULL,
+        .forbidden_values_len = 0,
 #endif /* CONFIG_REGISTRY_ENABLE_FORBIDDEN_VALUES_CHECK */
 #if IS_ACTIVE(CONFIG_REGISTRY_ENABLE_MIN_VALUE_CHECK) || IS_ACTIVE(DOXYGEN)
         .min_value = NULL,
@@ -145,9 +151,11 @@ const registry_parameter_t registry_sys_rgb_led_brightnesses_white = {
     .constraints.uint8 = {
 #if IS_ACTIVE(CONFIG_REGISTRY_ENABLE_ALLOWED_VALUES_CHECK) || IS_ACTIVE(DOXYGEN)
         .allowed_values = NULL,
+        .allowed_values_len = 0,
 #endif /* CONFIG_REGISTRY_ENABLE_ALLOWED_VALUES_CHECK */
 #if IS_ACTIVE(CONFIG_REGISTRY_ENABLE_FORBIDDEN_VALUES_CHECK) || IS_ACTIVE(DOXYGEN)
         .forbidden_values = NULL,
+        .forbidden_values_len = 0,
 #endif /* CONFIG_REGISTRY_ENABLE_FORBIDDEN_VALUES_CHECK */
 #if IS_ACTIVE(CONFIG_REGISTRY_ENABLE_MIN_VALUE_CHECK) || IS_ACTIVE(DOXYGEN)
         .min_value = NULL,
@@ -167,9 +175,11 @@ const registry_parameter_t registry_sys_rgb_led_brightnesses_yellow = {
     .constraints.uint8 = {
 #if IS_ACTIVE(CONFIG_REGISTRY_ENABLE_ALLOWED_VALUES_CHECK) || IS_ACTIVE(DOXYGEN)
         .allowed_values = NULL,
+        .allowed_values_len = 0,
 #endif /* CONFIG_REGISTRY_ENABLE_ALLOWED_VALUES_CHECK */
 #if IS_ACTIVE(CONFIG_REGISTRY_ENABLE_FORBIDDEN_VALUES_CHECK) || IS_ACTIVE(DOXYGEN)
         .forbidden_values = NULL,
+        .forbidden_values_len = 0,
 #endif /* CONFIG_REGISTRY_ENABLE_FORBIDDEN_VALUES_CHECK */
 #if IS_ACTIVE(CONFIG_REGISTRY_ENABLE_MIN_VALUE_CHECK) || IS_ACTIVE(DOXYGEN)
         .min_value = NULL,

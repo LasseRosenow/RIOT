@@ -148,18 +148,22 @@ struct _registry_instance_t {
 typedef struct {
 #if IS_ACTIVE(CONFIG_REGISTRY_ENABLE_ALLOWED_VALUES_CHECK) || IS_ACTIVE(DOXYGEN)
     const void **allowed_values;
+    size_t allowed_values_len;
 #endif /* CONFIG_REGISTRY_ENABLE_ALLOWED_VALUES_CHECK */
 #if IS_ACTIVE(CONFIG_REGISTRY_ENABLE_FORBIDDEN_VALUES_CHECK) || IS_ACTIVE(DOXYGEN)
     const void **forbidden_values;
+    size_t forbidden_values_len;
 #endif /* CONFIG_REGISTRY_ENABLE_FORBIDDEN_VALUES_CHECK */
 } registry_parameter_constraints_opaque_t;
 
 typedef struct {
 #if IS_ACTIVE(CONFIG_REGISTRY_ENABLE_ALLOWED_VALUES_CHECK) || IS_ACTIVE(DOXYGEN)
     const char **allowed_values;
+    size_t allowed_values_len;
 #endif /* CONFIG_REGISTRY_ENABLE_ALLOWED_VALUES_CHECK */
 #if IS_ACTIVE(CONFIG_REGISTRY_ENABLE_FORBIDDEN_VALUES_CHECK) || IS_ACTIVE(DOXYGEN)
     const char **forbidden_values;
+    size_t forbidden_values_len;
 #endif /* CONFIG_REGISTRY_ENABLE_FORBIDDEN_VALUES_CHECK */
 } registry_parameter_constraints_string_t;
 
@@ -172,9 +176,11 @@ typedef void *registry_parameter_constraints_bool_t;
 typedef struct {
 #if IS_ACTIVE(CONFIG_REGISTRY_ENABLE_ALLOWED_VALUES_CHECK) || IS_ACTIVE(DOXYGEN)
     const uint8_t *allowed_values;
+    size_t allowed_values_len;
 #endif /* CONFIG_REGISTRY_ENABLE_ALLOWED_VALUES_CHECK */
 #if IS_ACTIVE(CONFIG_REGISTRY_ENABLE_FORBIDDEN_VALUES_CHECK) || IS_ACTIVE(DOXYGEN)
     const uint8_t *forbidden_values;
+    size_t forbidden_values_len;
 #endif /* CONFIG_REGISTRY_ENABLE_FORBIDDEN_VALUES_CHECK */
 #if IS_ACTIVE(CONFIG_REGISTRY_ENABLE_MIN_VALUE_CHECK) || IS_ACTIVE(DOXYGEN)
     const uint8_t *min_value;
@@ -187,9 +193,11 @@ typedef struct {
 typedef struct {
 #if IS_ACTIVE(CONFIG_REGISTRY_ENABLE_ALLOWED_VALUES_CHECK) || IS_ACTIVE(DOXYGEN)
     const uint16_t *allowed_values;
+    size_t allowed_values_len;
 #endif /* CONFIG_REGISTRY_ENABLE_ALLOWED_VALUES_CHECK */
 #if IS_ACTIVE(CONFIG_REGISTRY_ENABLE_FORBIDDEN_VALUES_CHECK) || IS_ACTIVE(DOXYGEN)
     const uint16_t *forbidden_values;
+    size_t forbidden_values_len;
 #endif /* CONFIG_REGISTRY_ENABLE_FORBIDDEN_VALUES_CHECK */
 #if IS_ACTIVE(CONFIG_REGISTRY_ENABLE_MIN_VALUE_CHECK) || IS_ACTIVE(DOXYGEN)
     const uint16_t *min_value;
@@ -202,9 +210,11 @@ typedef struct {
 typedef struct {
 #if IS_ACTIVE(CONFIG_REGISTRY_ENABLE_ALLOWED_VALUES_CHECK) || IS_ACTIVE(DOXYGEN)
     const uint32_t *allowed_values;
+    size_t allowed_values_len;
 #endif /* CONFIG_REGISTRY_ENABLE_ALLOWED_VALUES_CHECK */
 #if IS_ACTIVE(CONFIG_REGISTRY_ENABLE_FORBIDDEN_VALUES_CHECK) || IS_ACTIVE(DOXYGEN)
     const uint32_t *forbidden_values;
+    size_t forbidden_values_len;
 #endif /* CONFIG_REGISTRY_ENABLE_FORBIDDEN_VALUES_CHECK */
 #if IS_ACTIVE(CONFIG_REGISTRY_ENABLE_MIN_VALUE_CHECK) || IS_ACTIVE(DOXYGEN)
     const uint32_t *min_value;
@@ -218,9 +228,11 @@ typedef struct {
 typedef struct {
 #if IS_ACTIVE(CONFIG_REGISTRY_ENABLE_ALLOWED_VALUES_CHECK) || IS_ACTIVE(DOXYGEN)
     const uint64_t *allowed_values;
+    size_t allowed_values_len;
 #endif /* CONFIG_REGISTRY_ENABLE_ALLOWED_VALUES_CHECK */
 #if IS_ACTIVE(CONFIG_REGISTRY_ENABLE_FORBIDDEN_VALUES_CHECK) || IS_ACTIVE(DOXYGEN)
     const uint64_t *forbidden_values;
+    size_t forbidden_values_len;
 #endif /* CONFIG_REGISTRY_ENABLE_FORBIDDEN_VALUES_CHECK */
 #if IS_ACTIVE(CONFIG_REGISTRY_ENABLE_MIN_VALUE_CHECK) || IS_ACTIVE(DOXYGEN)
     const uint64_t *min_value;
@@ -234,9 +246,11 @@ typedef struct {
 typedef struct {
 #if IS_ACTIVE(CONFIG_REGISTRY_ENABLE_ALLOWED_VALUES_CHECK) || IS_ACTIVE(DOXYGEN)
     const int8_t *allowed_values;
+    size_t allowed_values_len;
 #endif /* CONFIG_REGISTRY_ENABLE_ALLOWED_VALUES_CHECK */
 #if IS_ACTIVE(CONFIG_REGISTRY_ENABLE_FORBIDDEN_VALUES_CHECK) || IS_ACTIVE(DOXYGEN)
     const int8_t *forbidden_values;
+    size_t forbidden_values_len;
 #endif /* CONFIG_REGISTRY_ENABLE_FORBIDDEN_VALUES_CHECK */
 #if IS_ACTIVE(CONFIG_REGISTRY_ENABLE_MIN_VALUE_CHECK) || IS_ACTIVE(DOXYGEN)
     const int8_t *min_value;
@@ -249,9 +263,11 @@ typedef struct {
 typedef struct {
 #if IS_ACTIVE(CONFIG_REGISTRY_ENABLE_ALLOWED_VALUES_CHECK) || IS_ACTIVE(DOXYGEN)
     const int16_t *allowed_values;
+    size_t allowed_values_len;
 #endif /* CONFIG_REGISTRY_ENABLE_ALLOWED_VALUES_CHECK */
 #if IS_ACTIVE(CONFIG_REGISTRY_ENABLE_FORBIDDEN_VALUES_CHECK) || IS_ACTIVE(DOXYGEN)
     const int16_t *forbidden_values;
+    size_t forbidden_values_len;
 #endif /* CONFIG_REGISTRY_ENABLE_FORBIDDEN_VALUES_CHECK */
 #if IS_ACTIVE(CONFIG_REGISTRY_ENABLE_MIN_VALUE_CHECK) || IS_ACTIVE(DOXYGEN)
     const int16_t *min_value;
@@ -264,9 +280,11 @@ typedef struct {
 typedef struct {
 #if IS_ACTIVE(CONFIG_REGISTRY_ENABLE_ALLOWED_VALUES_CHECK) || IS_ACTIVE(DOXYGEN)
     const int32_t *allowed_values;
+    size_t allowed_values_len;
 #endif /* CONFIG_REGISTRY_ENABLE_ALLOWED_VALUES_CHECK */
 #if IS_ACTIVE(CONFIG_REGISTRY_ENABLE_FORBIDDEN_VALUES_CHECK) || IS_ACTIVE(DOXYGEN)
     const int32_t *forbidden_values;
+    size_t forbidden_values_len;
 #endif /* CONFIG_REGISTRY_ENABLE_FORBIDDEN_VALUES_CHECK */
 #if IS_ACTIVE(CONFIG_REGISTRY_ENABLE_MIN_VALUE_CHECK) || IS_ACTIVE(DOXYGEN)
     const int32_t *min_value;
@@ -280,9 +298,11 @@ typedef struct {
 typedef struct {
 #if IS_ACTIVE(CONFIG_REGISTRY_ENABLE_ALLOWED_VALUES_CHECK) || IS_ACTIVE(DOXYGEN)
     const int64_t *allowed_values;
+    size_t allowed_values_len;
 #endif /* CONFIG_REGISTRY_ENABLE_ALLOWED_VALUES_CHECK */
 #if IS_ACTIVE(CONFIG_REGISTRY_ENABLE_FORBIDDEN_VALUES_CHECK) || IS_ACTIVE(DOXYGEN)
     const int64_t *forbidden_values;
+    size_t forbidden_values_len;
 #endif /* CONFIG_REGISTRY_ENABLE_FORBIDDEN_VALUES_CHECK */
 #if IS_ACTIVE(CONFIG_REGISTRY_ENABLE_MIN_VALUE_CHECK) || IS_ACTIVE(DOXYGEN)
     const int64_t *min_value;
@@ -297,9 +317,11 @@ typedef struct {
 typedef struct {
 #if IS_ACTIVE(CONFIG_REGISTRY_ENABLE_ALLOWED_VALUES_CHECK) || IS_ACTIVE(DOXYGEN)
     const float *allowed_values;
+    size_t allowed_values_len;
 #endif /* CONFIG_REGISTRY_ENABLE_ALLOWED_VALUES_CHECK */
 #if IS_ACTIVE(CONFIG_REGISTRY_ENABLE_FORBIDDEN_VALUES_CHECK) || IS_ACTIVE(DOXYGEN)
     const float *forbidden_values;
+    size_t forbidden_values_len;
 #endif /* CONFIG_REGISTRY_ENABLE_FORBIDDEN_VALUES_CHECK */
 #if IS_ACTIVE(CONFIG_REGISTRY_ENABLE_MIN_VALUE_CHECK) || IS_ACTIVE(DOXYGEN)
     const float *min_value;
@@ -314,9 +336,11 @@ typedef struct {
 typedef struct {
 #if IS_ACTIVE(CONFIG_REGISTRY_ENABLE_ALLOWED_VALUES_CHECK) || IS_ACTIVE(DOXYGEN)
     const double *allowed_values;
+    size_t allowed_values_len;
 #endif /* CONFIG_REGISTRY_ENABLE_ALLOWED_VALUES_CHECK */
 #if IS_ACTIVE(CONFIG_REGISTRY_ENABLE_FORBIDDEN_VALUES_CHECK) || IS_ACTIVE(DOXYGEN)
     const double *forbidden_values;
+    size_t forbidden_values_len;
 #endif /* CONFIG_REGISTRY_ENABLE_FORBIDDEN_VALUES_CHECK */
 #if IS_ACTIVE(CONFIG_REGISTRY_ENABLE_MIN_VALUE_CHECK) || IS_ACTIVE(DOXYGEN)
     const double *min_value;
