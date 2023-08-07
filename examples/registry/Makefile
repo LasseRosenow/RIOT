@@ -16,6 +16,7 @@ USEMODULE += mtd
 
 USEMODULE +=  registry_storage_vfs
 USEMODULE +=  registry_namespace_sys_rgb_led
+USEMODULE +=  registry_namespace_tests_full
 
 # Comment this out to disable code in RIOT that does safety checking
 # which is not needed in a production environment but helps in the

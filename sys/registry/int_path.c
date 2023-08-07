@@ -33,22 +33,17 @@
 
 #include "registry/int_path.h"
 
+XFA_USE_CONST(registry_namespace_t *, _registry_namespaces_xfa);
+
 static const registry_namespace_t *_namespace_lookup(const registry_namespace_id_t namespace_id)
 {
-    clist_node_t *node = _registry_namespaces.next;
-
-    if (!node) {
-        return NULL;
-    }
-
-    do {
-        node = node->next;
-        const registry_namespace_t *namespace = container_of(node, registry_namespace_t, node);
+    for (size_t i = 0; i < XFA_LEN(registry_namespace_t *, _registry_namespaces_xfa); i++) {
+        registry_namespace_t *namespace = _registry_namespaces_xfa[i];
 
         if (namespace->id == namespace_id) {
             return namespace;
         }
-    } while (node != _registry_namespaces.next);
+    }
 
     return NULL;
 }

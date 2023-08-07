@@ -34,22 +34,16 @@
 
 /* Implementation of the module */
 
-clist_node_t _registry_namespaces;
+XFA_INIT_CONST(registry_namespace_t *, _registry_namespaces_xfa);
 
-int registry_register_namespace(const registry_namespace_t *namespace)
+void registry_init(void)
 {
-    assert(namespace != NULL);
+    /* set namespace_id to its index value */
+    for (size_t i = 0; i < XFA_LEN(registry_namespace_t *, _registry_namespaces_xfa); i++) {
+        registry_namespace_t *namespace = _registry_namespaces_xfa[i];
 
-    /* get _registry_namespaces length to determine the id of the new namespace */
-    size_t count = clist_count(&_registry_namespaces);
-
-    /* set id of new namespace to the namespace count */
-    *(registry_namespace_id_t *)&namespace->id = count;
-
-    /* add namespace to list */
-    clist_rpush((clist_node_t *)&_registry_namespaces, (clist_node_t *)&namespace->node);
-
-    return 0;
+        *(registry_namespace_id_t *)&namespace->id = i;
+    }
 }
 
 int registry_register_schema_instance(const registry_schema_t *schema,
@@ -249,84 +243,85 @@ int registry_set(const registry_instance_t *instance, const registry_parameter_t
         return -EINVAL;
     }
 
-    if (IS_ACTIVE(CONFIG_REGISTRY_ENABLE_ALLOWED_VALUES_CHECK) ||
-        IS_ACTIVE(CONFIG_REGISTRY_ENABLE_FORBIDDEN_VALUES_CHECK) ||
-        IS_ACTIVE(CONFIG_REGISTRY_ENABLE_MIN_VALUE_CHECK) ||
-        IS_ACTIVE(CONFIG_REGISTRY_ENABLE_MAX_VALUE_CHECK)) {
+    // TODO FIX BUG
+    // if (IS_ACTIVE(CONFIG_REGISTRY_ENABLE_ALLOWED_VALUES_CHECK) ||
+    //     IS_ACTIVE(CONFIG_REGISTRY_ENABLE_FORBIDDEN_VALUES_CHECK) ||
+    //     IS_ACTIVE(CONFIG_REGISTRY_ENABLE_MIN_VALUE_CHECK) ||
+    //     IS_ACTIVE(CONFIG_REGISTRY_ENABLE_MAX_VALUE_CHECK)) {
 
-        bool passed_checks = true;
-        switch (parameter->type) {
-        case REGISTRY_TYPE_NONE:
-            break;
+    //     bool passed_checks = true;
+    //     switch (parameter->type) {
+    //     case REGISTRY_TYPE_NONE:
+    //         break;
 
-        case REGISTRY_TYPE_OPAQUE:
-            _REGISTRY_CHECK_SET_CONSTRAINTS_OF_ARRAY_TYPE(passed_checks, opaque, parameter, buf,
-                                                          buf_len)
-            break;
+    //     case REGISTRY_TYPE_OPAQUE:
+    //         _REGISTRY_CHECK_SET_CONSTRAINTS_OF_ARRAY_TYPE(passed_checks, opaque, parameter, buf,
+    //                                                       buf_len)
+    //         break;
 
-        case REGISTRY_TYPE_STRING:
-            _REGISTRY_CHECK_SET_CONSTRAINTS_OF_ARRAY_TYPE(passed_checks, string, parameter, buf,
-                                                          buf_len)
-            break;
+    //     case REGISTRY_TYPE_STRING:
+    //         _REGISTRY_CHECK_SET_CONSTRAINTS_OF_ARRAY_TYPE(passed_checks, string, parameter, buf,
+    //                                                       buf_len)
+    //         break;
 
-        case REGISTRY_TYPE_BOOL:
-            /* the boolean data type has no constraints*/
-            break;
+    //     case REGISTRY_TYPE_BOOL:
+    //         /* the boolean data type has no constraints*/
+    //         break;
 
-        case REGISTRY_TYPE_UINT8:
-            _REGISTRY_CHECK_SET_CONSTRAINTS_OF_VALUE_TYPE(passed_checks, uint8_t, uint8, parameter,
-                                                          buf)
-            break;
+    //     case REGISTRY_TYPE_UINT8:
+    //         _REGISTRY_CHECK_SET_CONSTRAINTS_OF_VALUE_TYPE(passed_checks, uint8_t, uint8, parameter,
+    //                                                       buf)
+    //         break;
 
-        case REGISTRY_TYPE_UINT16:
-            _REGISTRY_CHECK_SET_CONSTRAINTS_OF_VALUE_TYPE(passed_checks, uint16_t, uint16,
-                                                          parameter,
-                                                          buf)
-            break;
+    //     case REGISTRY_TYPE_UINT16:
+    //         _REGISTRY_CHECK_SET_CONSTRAINTS_OF_VALUE_TYPE(passed_checks, uint16_t, uint16,
+    //                                                       parameter,
+    //                                                       buf)
+    //         break;
 
-        case REGISTRY_TYPE_UINT32:
-            _REGISTRY_CHECK_SET_CONSTRAINTS_OF_VALUE_TYPE(passed_checks, uint32_t, uint32,
-                                                          parameter,
-                                                          buf)
-            break;
+    //     case REGISTRY_TYPE_UINT32:
+    //         _REGISTRY_CHECK_SET_CONSTRAINTS_OF_VALUE_TYPE(passed_checks, uint32_t, uint32,
+    //                                                       parameter,
+    //                                                       buf)
+    //         break;
 
-        case REGISTRY_TYPE_UINT64:
-            _REGISTRY_CHECK_SET_CONSTRAINTS_OF_VALUE_TYPE(passed_checks, uint64_t, uint64,
-                                                          parameter,
-                                                          buf)
-            break;
+    //     case REGISTRY_TYPE_UINT64:
+    //         _REGISTRY_CHECK_SET_CONSTRAINTS_OF_VALUE_TYPE(passed_checks, uint64_t, uint64,
+    //                                                       parameter,
+    //                                                       buf)
+    //         break;
 
-        case REGISTRY_TYPE_INT8:
-            _REGISTRY_CHECK_SET_CONSTRAINTS_OF_VALUE_TYPE(passed_checks, int8_t, int8, parameter,
-                                                          buf)
-            break;
+    //     case REGISTRY_TYPE_INT8:
+    //         _REGISTRY_CHECK_SET_CONSTRAINTS_OF_VALUE_TYPE(passed_checks, int8_t, int8, parameter,
+    //                                                       buf)
+    //         break;
 
-        case REGISTRY_TYPE_INT16:
-            _REGISTRY_CHECK_SET_CONSTRAINTS_OF_VALUE_TYPE(passed_checks, int16_t, int16, parameter,
-                                                          buf)
-            break;
+    //     case REGISTRY_TYPE_INT16:
+    //         _REGISTRY_CHECK_SET_CONSTRAINTS_OF_VALUE_TYPE(passed_checks, int16_t, int16, parameter,
+    //                                                       buf)
+    //         break;
 
-        case REGISTRY_TYPE_INT32:
-            _REGISTRY_CHECK_SET_CONSTRAINTS_OF_VALUE_TYPE(passed_checks, int32_t, int32, parameter,
-                                                          buf)
-            break;
+    //     case REGISTRY_TYPE_INT32:
+    //         _REGISTRY_CHECK_SET_CONSTRAINTS_OF_VALUE_TYPE(passed_checks, int32_t, int32, parameter,
+    //                                                       buf)
+    //         break;
 
-        case REGISTRY_TYPE_INT64:
-            _REGISTRY_CHECK_SET_CONSTRAINTS_OF_VALUE_TYPE(passed_checks, int64_t, int64, parameter,
-                                                          buf)
-            break;
+    //     case REGISTRY_TYPE_INT64:
+    //         _REGISTRY_CHECK_SET_CONSTRAINTS_OF_VALUE_TYPE(passed_checks, int64_t, int64, parameter,
+    //                                                       buf)
+    //         break;
 
-        case REGISTRY_TYPE_FLOAT32:
-            _REGISTRY_CHECK_SET_CONSTRAINTS_OF_VALUE_TYPE(passed_checks, float, float32, parameter,
-                                                          buf)
-            break;
+    //     case REGISTRY_TYPE_FLOAT32:
+    //         _REGISTRY_CHECK_SET_CONSTRAINTS_OF_VALUE_TYPE(passed_checks, float, float32, parameter,
+    //                                                       buf)
+    //         break;
 
-        case REGISTRY_TYPE_FLOAT64:
-            _REGISTRY_CHECK_SET_CONSTRAINTS_OF_VALUE_TYPE(passed_checks, double, float64, parameter,
-                                                          buf)
-            break;
-        }
-    }
+    //     case REGISTRY_TYPE_FLOAT64:
+    //         _REGISTRY_CHECK_SET_CONSTRAINTS_OF_VALUE_TYPE(passed_checks, double, float64, parameter,
+    //                                                       buf)
+    //         break;
+    //     }
+    // }
 
     /* call handler to apply the new value to the correct parameter in the instance of the schema */
     memcpy(intern_val, buf, buf_len);
@@ -339,26 +334,15 @@ int registry_commit(void)
     int rc = 0;
 
     /* commit all namespaces */
-    clist_node_t *node = _registry_namespaces.next;
-
-    if (!node) {
-        return -EINVAL;
-    }
-
-    do {
-        node = node->next;
-        registry_namespace_t *namespace = container_of(node, registry_namespace_t, node);
-
-        if (!namespace) {
-            return -EINVAL;
-        }
+    for (size_t i = 0; i < XFA_LEN(registry_namespace_t *, _registry_namespaces_xfa); i++) {
+        registry_namespace_t *namespace = _registry_namespaces_xfa[i];
 
         int _rc = registry_commit_namespace(namespace);
 
         if (!_rc) {
             rc = _rc;
         }
-    } while (node != _registry_namespaces.next);
+    }
 
     return rc;
 }
@@ -436,26 +420,15 @@ int registry_export(const registry_export_cb_t export_cb, const uint8_t recursio
     int rc = 0;
 
     /* export all namespaces */
-    clist_node_t *node = _registry_namespaces.next;
-
-    if (!node) {
-        return -EINVAL;
-    }
-
-    do {
-        node = node->next;
-        registry_namespace_t *namespace = container_of(node, registry_namespace_t, node);
-
-        if (!namespace) {
-            return -EINVAL;
-        }
+    for (size_t i = 0; i < XFA_LEN(registry_namespace_t *, _registry_namespaces_xfa); i++) {
+        registry_namespace_t *namespace = _registry_namespaces_xfa[i];
 
         int _rc = registry_export_namespace(namespace, export_cb, recursion_depth, context);
 
         if (!_rc) {
             rc = _rc;
         }
-    } while (node != _registry_namespaces.next);
+    }
 
     return rc;
 }

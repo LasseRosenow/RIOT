@@ -38,3 +38,7 @@ registry_namespace_t registry_tests = {
     },
     .schemas_len = 1,
 };
+
+REGISTRY_REGISTER_NAMESPACE(tests, registry_tests);
+
+// REGISTRY_NAMESPACE(1, tests, "Tests namespace");

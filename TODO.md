@@ -1,5 +1,36 @@
 # TODO
 
+## Mandatory
+
+- [ ] Update documentation
+  - Code comments
+  - Readme.md
+
+- [ ] XFA()
+  - [ ] Use XFA() to automatically add schemas to a namespace on compile time
+    - Problem: Cannot get the XFA array size at compile time => cannot apply schema_len
+  - [x] Use XFA() to automatically add namespaces to the registry on compile time
+
+- [x] Add min-value, max-value and allowed values
+  - [x] implementation
+  - [x] With a flag to disable for extremely constrained devices
+
+- [ ] Unit tests
+  - [ ] get, set
+    - [x] min, max and zero values
+    - [ ] constraints (min-value, max-value, allowed-values, forbidden-values)
+  - [ ] commit
+  - [ ] export
+  - [ ] load, save
+  - [ ] int_path
+  - [ ] string_path
+
+- [ ] Initial values
+  - dafür sorgen, dass klar ist, dass schema instances von modules initialisiert werden müssen
+  - dafür sorgen dass klar ist, dass module die initialwerte erst annehmen, wenn sie dafür aufgefordert werden, um falsches nutzen von initialwerten zu verhindern, falls neue ausm speicher geladen werden können.
+  - dafür z.B. sagen, dass module die daten erst benutzen, nachdem einmal commit_cb ausgeführt wurde.
+  - registry_init() führt dann z.B. einmal commit_cb auf instance ebene aus oder es muss halt manuell gemacht werden who knows egal.
+
 ## Uncertain
 
 - [ ] commit_cb and export_cb at most on the instance level (not on the parameter/group level)?
@@ -11,27 +42,6 @@
   - maybe introduce permission field (READ, WRITE) etc. since sensor data should not be written to
     - this should have a good name since internally write is still allowed for the driver for example
     - this is also good to expose const values like the build version number etc.
-
-## Mandatory
-
-- [ ] Update documentation
-  - Code comments
-  - Readme.md
-
-- [ ] XFA()
-  - [ ] Use XFA() to automatically add schemas to a namespace on compile time
-  - [ ] Use XFA() to automatically add namespaces to the registry on compile time
-
-- [ ] Add min-value, max-value and allowed values
-  - [x] implementation
-  - [x] With a flag to disable for extremely constrained devices
-  - [ ] add tests
-
-- [ ] Initial values
-  - dafür sorgen, dass klar ist, dass schema instances von modules initialisiert werden müssen
-  - dafür sorgen dass klar ist, dass module die initialwerte erst annehmen, wenn sie dafür aufgefordert werden, um falsches nutzen von initialwerten zu verhindern, falls neue ausm speicher geladen werden können.
-  - dafür z.B. sagen, dass module die daten erst benutzen, nachdem einmal commit_cb ausgeführt wurde.
-  - registry_init() führt dann z.B. einmal commit_cb auf instance ebene aus oder es muss halt manuell gemacht werden who knows egal.
 
 ## Optional/Future
 

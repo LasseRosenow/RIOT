@@ -222,4 +222,6 @@ registry_schema_t registry_sys_rgb_led = {
     .parameters_len = 3,
 };
 
+// REGISTRY_REGISTER_SCHEMA(sys, rgb_led, registry_sys_rgb_led);
+
 #endif

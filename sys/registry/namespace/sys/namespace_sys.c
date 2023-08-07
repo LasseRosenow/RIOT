@@ -40,3 +40,5 @@ registry_namespace_t registry_sys = {
     },
     .schemas_len = 1,
 };
+
+REGISTRY_REGISTER_NAMESPACE(sys, registry_sys);

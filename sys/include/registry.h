@@ -27,6 +27,7 @@ extern "C" {
 #include <stdint.h>
 #include <stdbool.h>
 #include "clist.h"
+#include "xfa.h"
 #include "modules.h"
 
 // TODO REMOVE THIS START
@@ -455,7 +456,6 @@ struct _registry_schema_t {
 };
 
 struct _registry_namespace_t {
-    clist_node_t node;                          /**< Linked list node */
 #if IS_USED(MODULE_REGISTRY_INT_PATH) || IS_ACTIVE(DOXYGEN)
     const registry_namespace_id_t id;           /**< Integer representing the path id of the namespace */
 #endif /* MODULE_REGISTRY_INT_PATH */
@@ -469,14 +469,14 @@ struct _registry_namespace_t {
     const size_t schemas_len;                   /**< Size of schemas array */
 };
 
-extern clist_node_t _registry_namespaces;
+#define REGISTRY_REGISTER_NAMESPACE(_name, _namespace) \
+        XFA_USE_CONST(registry_namespace_t *, _registry_namespaces_xfa); \
+        XFA_ADD_PTR(_registry_namespaces_xfa, _name, _name, &_namespace)
 
 /**
- * @brief Adds a new namespace to the registry.
- *
- * @param[in] namespace Pointer to the new namespace.
+ * @brief Initializes the RIOT Registry.
  */
-int registry_register_namespace(const registry_namespace_t *namespace);
+void registry_init(void);
 
 /**
  * @brief Adds a new instance to a schema.
@@ -667,6 +667,8 @@ int registry_export_group(const registry_instance_t *instance, const registry_gr
 int registry_export_parameter(const registry_instance_t *instance,
                               const registry_parameter_t *parameter,
                               const registry_export_cb_t export_cb, const void *context);
+
+
 
 #ifdef __cplusplus
 }

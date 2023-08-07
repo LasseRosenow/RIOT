@@ -105,7 +105,7 @@ static registry_storage_instance_t vfs_instance_2 = {
 
 int main(void)
 {
-    registry_register_namespace(&registry_sys);
+    registry_init();
 
     /* init schemas */
     registry_register_schema_instance(&registry_sys_rgb_led, &rgb_led_instance_0);
@@ -122,6 +122,8 @@ int main(void)
     registry_set(&rgb_led_instance_0, &registry_sys_rgb_led_red, &input, sizeof(input));
     registry_value_t output_value;
     registry_get(&rgb_led_instance_0, &registry_sys_rgb_led_red, &output_value);
+
+    registry_commit();
 
     /* init and run CLI */
     char line_buf[SHELL_DEFAULT_BUFSIZE];
