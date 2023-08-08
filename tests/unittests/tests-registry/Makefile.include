@@ -3,4 +3,5 @@ USEMODULE += mtd
 USEMODULE += vfs
 
 USEMODULE +=  registry_namespace_tests_full
+USEMODULE +=  registry_namespace_tests_constrained
 # USEMODULE += registry_storage_vfs

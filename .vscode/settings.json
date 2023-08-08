@@ -62,7 +62,8 @@
         "concepts": "c",
         "cmath": "c",
         "pm.h": "c",
-        "periph_cpu.h": "c"
+        "periph_cpu.h": "c",
+        "constrained.h": "c"
     },
     "C_Cpp.dimInactiveRegions": false,
 }
