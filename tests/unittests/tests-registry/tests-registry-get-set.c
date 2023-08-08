@@ -53,6 +53,9 @@ int commit_cb(const registry_commit_cb_scope_t scope,
 }
 
 static registry_tests_full_instance_t test_full_instance_1_data = {
+    .opaque = {
+        .value = 7,
+    },
     .string = "hello world",
     .boolean = true,
     .u8 = 9,
@@ -74,6 +77,9 @@ static registry_instance_t test_full_instance_1 = {
 };
 
 static registry_tests_constrained_min_max_instance_t test_constrained_min_max_instance_1_data = {
+    .opaque = {
+        .value = 7,
+    },
     .string = "hello world",
     .boolean = true,
     .u8 = 9,
@@ -96,6 +102,9 @@ static registry_instance_t test_constrained_min_max_instance_1 = {
 
 static registry_tests_constrained_allowed_values_instance_t
     test_constrained_allowed_values_instance_1_data = {
+    .opaque = {
+        .value = 7,
+    },
     .string = "hello world",
     .boolean = true,
     .u8 = 9,
@@ -118,6 +127,9 @@ static registry_instance_t test_constrained_allowed_values_instance_1 = {
 
 static registry_tests_constrained_forbidden_values_instance_t
     test_constrained_forbidden_values_instance_1_data = {
+    .opaque = {
+        .value = 7,
+    },
     .string = "hello world",
     .boolean = true,
     .u8 = 9,
@@ -854,12 +866,446 @@ static void tests_registry_constraints_min_max(void)
 
 static void tests_registry_constraints_allowed_values(void)
 {
+    int res_allowed;
+    int res_other;
 
+    /* opaque */
+    const registry_tests_constrained_allowed_values_instance_opaque_t *input_opaque_allowed =
+        registry_tests_constrained_allowed_values_opaque.constraints.opaque.allowed_values[0];
+    const registry_tests_constrained_allowed_values_instance_opaque_t input_opaque_other = {
+        .value = 19,
+    };
+
+    res_allowed = registry_set(&test_constrained_allowed_values_instance_1,
+                               &registry_tests_constrained_allowed_values_opaque,
+                               input_opaque_allowed, sizeof(*input_opaque_allowed));
+
+    res_other = registry_set(&test_constrained_allowed_values_instance_1,
+                             &registry_tests_constrained_allowed_values_opaque,
+                             &input_opaque_other, sizeof(input_opaque_other));
+
+    TEST_ASSERT_EQUAL_INT(0, res_allowed);
+    TEST_ASSERT_EQUAL_INT(-EINVAL, res_other);
+
+
+    /* string */
+    const char *input_string_allowed =
+        registry_tests_constrained_allowed_values_string.constraints.string.allowed_values[0];
+    const char *input_string_other = "test test";
+
+    res_allowed = registry_set(&test_constrained_allowed_values_instance_1,
+                               &registry_tests_constrained_allowed_values_string,
+                               input_string_allowed, sizeof(input_string_allowed));
+
+    res_other = registry_set(&test_constrained_allowed_values_instance_1,
+                             &registry_tests_constrained_allowed_values_string,
+                             input_string_other, sizeof(input_string_other));
+
+    TEST_ASSERT_EQUAL_INT(0, res_allowed);
+    TEST_ASSERT_EQUAL_INT(-EINVAL, res_other);
+
+
+    /* bool */
+    /* bool does not have allowed values constraints */
+
+    /* u8 */
+    const uint8_t input_u8_allowed =
+        registry_tests_constrained_allowed_values_u8.constraints.uint8.allowed_values[0];
+    const uint8_t input_u8_other =
+        registry_tests_constrained_allowed_values_u8.constraints.uint8.allowed_values[0] + 1;
+
+    res_allowed = registry_set(&test_constrained_allowed_values_instance_1,
+                               &registry_tests_constrained_allowed_values_u8,
+                               &input_u8_allowed, sizeof(input_u8_allowed));
+
+    res_other = registry_set(&test_constrained_allowed_values_instance_1,
+                             &registry_tests_constrained_allowed_values_u8,
+                             &input_u8_other, sizeof(input_u8_other));
+
+    TEST_ASSERT_EQUAL_INT(0, res_allowed);
+    TEST_ASSERT_EQUAL_INT(-EINVAL, res_other);
+
+
+    /* u16 */
+    const uint16_t input_u16_allowed =
+        registry_tests_constrained_allowed_values_u16.constraints.uint16.allowed_values[0];
+    const uint16_t input_u16_other =
+        registry_tests_constrained_allowed_values_u16.constraints.uint16.allowed_values[0] + 1;
+
+    res_allowed = registry_set(&test_constrained_allowed_values_instance_1,
+                               &registry_tests_constrained_allowed_values_u16,
+                               &input_u16_allowed, sizeof(input_u16_allowed));
+
+    res_other = registry_set(&test_constrained_allowed_values_instance_1,
+                             &registry_tests_constrained_allowed_values_u16,
+                             &input_u16_other, sizeof(input_u16_other));
+
+    TEST_ASSERT_EQUAL_INT(0, res_allowed);
+    TEST_ASSERT_EQUAL_INT(-EINVAL, res_other);
+
+
+    /* u32 */
+    const uint32_t input_u32_allowed =
+        registry_tests_constrained_allowed_values_u32.constraints.uint32.allowed_values[0];
+    const uint32_t input_u32_other =
+        registry_tests_constrained_allowed_values_u32.constraints.uint32.allowed_values[0] + 1;
+
+    res_allowed = registry_set(&test_constrained_allowed_values_instance_1,
+                               &registry_tests_constrained_allowed_values_u32,
+                               &input_u32_allowed, sizeof(input_u32_allowed));
+
+    res_other = registry_set(&test_constrained_allowed_values_instance_1,
+                             &registry_tests_constrained_allowed_values_u32,
+                             &input_u32_other, sizeof(input_u16_other));
+
+    TEST_ASSERT_EQUAL_INT(0, res_allowed);
+    TEST_ASSERT_EQUAL_INT(-EINVAL, res_other);
+
+
+    /* u64 */
+    const uint64_t input_u64_allowed =
+        registry_tests_constrained_allowed_values_u64.constraints.uint64.allowed_values[0];
+    const uint64_t input_u64_other =
+        registry_tests_constrained_allowed_values_u64.constraints.uint64.allowed_values[0] + 1;
+
+    res_allowed = registry_set(&test_constrained_allowed_values_instance_1,
+                               &registry_tests_constrained_allowed_values_u64,
+                               &input_u64_allowed, sizeof(input_u64_allowed));
+
+    res_other = registry_set(&test_constrained_allowed_values_instance_1,
+                             &registry_tests_constrained_allowed_values_u64,
+                             &input_u64_other, sizeof(input_u16_other));
+
+    TEST_ASSERT_EQUAL_INT(0, res_allowed);
+    TEST_ASSERT_EQUAL_INT(-EINVAL, res_other);
+
+
+    /* i8 */
+    const int8_t input_i8_allowed =
+        registry_tests_constrained_allowed_values_i8.constraints.int8.allowed_values[0];
+    const int8_t input_i8_other =
+        registry_tests_constrained_allowed_values_i8.constraints.int8.allowed_values[0] + 1;
+
+    res_allowed = registry_set(&test_constrained_allowed_values_instance_1,
+                               &registry_tests_constrained_allowed_values_i8,
+                               &input_i8_allowed, sizeof(input_i8_allowed));
+
+    res_other = registry_set(&test_constrained_allowed_values_instance_1,
+                             &registry_tests_constrained_allowed_values_i8,
+                             &input_i8_other, sizeof(input_i8_other));
+
+    TEST_ASSERT_EQUAL_INT(0, res_allowed);
+    TEST_ASSERT_EQUAL_INT(-EINVAL, res_other);
+
+
+    /* i16 */
+    const int16_t input_i16_allowed =
+        registry_tests_constrained_allowed_values_i16.constraints.int16.allowed_values[0];
+    const int16_t input_i16_other =
+        registry_tests_constrained_allowed_values_i16.constraints.int16.allowed_values[0] + 1;
+
+    res_allowed = registry_set(&test_constrained_allowed_values_instance_1,
+                               &registry_tests_constrained_allowed_values_i16,
+                               &input_i16_allowed, sizeof(input_i16_allowed));
+
+    res_other = registry_set(&test_constrained_allowed_values_instance_1,
+                             &registry_tests_constrained_allowed_values_i16,
+                             &input_i16_other, sizeof(input_i16_other));
+
+    TEST_ASSERT_EQUAL_INT(0, res_allowed);
+    TEST_ASSERT_EQUAL_INT(-EINVAL, res_other);
+
+
+    /* i32 */
+    const int32_t input_i32_allowed =
+        registry_tests_constrained_allowed_values_i32.constraints.int32.allowed_values[0];
+    const int32_t input_i32_other =
+        registry_tests_constrained_allowed_values_i32.constraints.int32.allowed_values[0] + 1;
+
+    res_allowed = registry_set(&test_constrained_allowed_values_instance_1,
+                               &registry_tests_constrained_allowed_values_i32,
+                               &input_i32_allowed, sizeof(input_i32_allowed));
+
+    res_other = registry_set(&test_constrained_allowed_values_instance_1,
+                             &registry_tests_constrained_allowed_values_i32,
+                             &input_i32_other, sizeof(input_i32_other));
+
+    TEST_ASSERT_EQUAL_INT(0, res_allowed);
+    TEST_ASSERT_EQUAL_INT(-EINVAL, res_other);
+
+
+    /* i64 */
+    const int64_t input_i64_allowed =
+        registry_tests_constrained_allowed_values_i64.constraints.int64.allowed_values[0];
+    const int64_t input_i64_other =
+        registry_tests_constrained_allowed_values_i64.constraints.int64.allowed_values[0] + 1;
+
+    res_allowed = registry_set(&test_constrained_allowed_values_instance_1,
+                               &registry_tests_constrained_allowed_values_i64,
+                               &input_i64_allowed, sizeof(input_i64_allowed));
+
+    res_other = registry_set(&test_constrained_allowed_values_instance_1,
+                             &registry_tests_constrained_allowed_values_i64,
+                             &input_i64_other, sizeof(input_i64_other));
+
+
+    /* f32 */
+    const float input_f32_allowed =
+        registry_tests_constrained_allowed_values_f32.constraints.float32.allowed_values[0];
+    const float input_f32_other =
+        registry_tests_constrained_allowed_values_f32.constraints.float32.allowed_values[0] + 1.0;
+
+    res_allowed = registry_set(&test_constrained_allowed_values_instance_1,
+                               &registry_tests_constrained_allowed_values_f32,
+                               &input_f32_allowed, sizeof(input_f32_allowed));
+
+    res_other = registry_set(&test_constrained_allowed_values_instance_1,
+                             &registry_tests_constrained_allowed_values_f32,
+                             &input_f32_other, sizeof(input_f32_other));
+
+
+    /* f64 */
+    const double input_f64_allowed =
+        registry_tests_constrained_allowed_values_f64.constraints.float64.allowed_values[0];
+    const double input_f64_other =
+        registry_tests_constrained_allowed_values_f64.constraints.float64.allowed_values[0] + 1.0;
+
+    res_allowed = registry_set(&test_constrained_allowed_values_instance_1,
+                               &registry_tests_constrained_allowed_values_f64,
+                               &input_f64_allowed, sizeof(input_f64_allowed));
+
+    res_other = registry_set(&test_constrained_allowed_values_instance_1,
+                             &registry_tests_constrained_allowed_values_f64,
+                             &input_f64_other, sizeof(input_f64_other));
+
+    TEST_ASSERT_EQUAL_INT(0, res_allowed);
+    TEST_ASSERT_EQUAL_INT(-EINVAL, res_other);
+
+    TEST_ASSERT_EQUAL_INT(0, res_allowed);
+    TEST_ASSERT_EQUAL_INT(-EINVAL, res_other);
 }
 
 static void tests_registry_constraints_forbidden_values(void)
 {
+    int res_forbidden;
+    int res_other;
 
+    /* opaque */
+    const registry_tests_constrained_forbidden_values_instance_opaque_t *input_opaque_forbidden =
+        registry_tests_constrained_forbidden_values_opaque.constraints.opaque.forbidden_values[0];
+    const registry_tests_constrained_forbidden_values_instance_opaque_t input_opaque_other = {
+        .value = 19,
+    };
+
+    res_forbidden = registry_set(&test_constrained_forbidden_values_instance_1,
+                                 &registry_tests_constrained_forbidden_values_opaque,
+                                 input_opaque_forbidden, sizeof(*input_opaque_forbidden));
+
+    res_other = registry_set(&test_constrained_forbidden_values_instance_1,
+                             &registry_tests_constrained_forbidden_values_opaque,
+                             &input_opaque_other, sizeof(input_opaque_other));
+
+    TEST_ASSERT_EQUAL_INT(-EINVAL, res_forbidden);
+    TEST_ASSERT_EQUAL_INT(0, res_other);
+
+
+    /* string */
+    const char *input_string_forbidden =
+        registry_tests_constrained_forbidden_values_string.constraints.string.forbidden_values[0];
+    const char *input_string_other = "test test";
+
+    res_forbidden = registry_set(&test_constrained_forbidden_values_instance_1,
+                                 &registry_tests_constrained_forbidden_values_string,
+                                 input_string_forbidden, sizeof(input_string_forbidden));
+
+    res_other = registry_set(&test_constrained_forbidden_values_instance_1,
+                             &registry_tests_constrained_forbidden_values_string,
+                             input_string_other, sizeof(input_string_other));
+
+    TEST_ASSERT_EQUAL_INT(-EINVAL, res_forbidden);
+    TEST_ASSERT_EQUAL_INT(0, res_other);
+
+
+    /* bool */
+    /* bool does not have forbidden values constraints */
+
+    /* u8 */
+    const uint8_t input_u8_forbidden =
+        registry_tests_constrained_forbidden_values_u8.constraints.uint8.forbidden_values[0];
+    const uint8_t input_u8_other =
+        registry_tests_constrained_forbidden_values_u8.constraints.uint8.forbidden_values[0] + 1;
+
+    res_forbidden = registry_set(&test_constrained_forbidden_values_instance_1,
+                                 &registry_tests_constrained_forbidden_values_u8,
+                                 &input_u8_forbidden, sizeof(input_u8_forbidden));
+
+    res_other = registry_set(&test_constrained_forbidden_values_instance_1,
+                             &registry_tests_constrained_forbidden_values_u8,
+                             &input_u8_other, sizeof(input_u8_other));
+
+    TEST_ASSERT_EQUAL_INT(-EINVAL, res_forbidden);
+    TEST_ASSERT_EQUAL_INT(0, res_other);
+
+
+    /* u16 */
+    const uint16_t input_u16_forbidden =
+        registry_tests_constrained_forbidden_values_u16.constraints.uint16.forbidden_values[0];
+    const uint16_t input_u16_other =
+        registry_tests_constrained_forbidden_values_u16.constraints.uint16.forbidden_values[0] + 1;
+
+    res_forbidden = registry_set(&test_constrained_forbidden_values_instance_1,
+                                 &registry_tests_constrained_forbidden_values_u16,
+                                 &input_u16_forbidden, sizeof(input_u16_forbidden));
+
+    res_other = registry_set(&test_constrained_forbidden_values_instance_1,
+                             &registry_tests_constrained_forbidden_values_u16,
+                             &input_u16_other, sizeof(input_u16_other));
+
+    TEST_ASSERT_EQUAL_INT(-EINVAL, res_forbidden);
+    TEST_ASSERT_EQUAL_INT(0, res_other);
+
+
+    /* u32 */
+    const uint32_t input_u32_forbidden =
+        registry_tests_constrained_forbidden_values_u32.constraints.uint32.forbidden_values[0];
+    const uint32_t input_u32_other =
+        registry_tests_constrained_forbidden_values_u32.constraints.uint32.forbidden_values[0] + 1;
+
+    res_forbidden = registry_set(&test_constrained_forbidden_values_instance_1,
+                                 &registry_tests_constrained_forbidden_values_u32,
+                                 &input_u32_forbidden, sizeof(input_u32_forbidden));
+
+    res_other = registry_set(&test_constrained_forbidden_values_instance_1,
+                             &registry_tests_constrained_forbidden_values_u32,
+                             &input_u32_other, sizeof(input_u16_other));
+
+    TEST_ASSERT_EQUAL_INT(-EINVAL, res_forbidden);
+    TEST_ASSERT_EQUAL_INT(0, res_other);
+
+
+    /* u64 */
+    const uint64_t input_u64_forbidden =
+        registry_tests_constrained_forbidden_values_u64.constraints.uint64.forbidden_values[0];
+    const uint64_t input_u64_other =
+        registry_tests_constrained_forbidden_values_u64.constraints.uint64.forbidden_values[0] + 1;
+
+    res_forbidden = registry_set(&test_constrained_forbidden_values_instance_1,
+                                 &registry_tests_constrained_forbidden_values_u64,
+                                 &input_u64_forbidden, sizeof(input_u64_forbidden));
+
+    res_other = registry_set(&test_constrained_forbidden_values_instance_1,
+                             &registry_tests_constrained_forbidden_values_u64,
+                             &input_u64_other, sizeof(input_u16_other));
+
+    TEST_ASSERT_EQUAL_INT(-EINVAL, res_forbidden);
+    TEST_ASSERT_EQUAL_INT(0, res_other);
+
+
+    /* i8 */
+    const int8_t input_i8_forbidden =
+        registry_tests_constrained_forbidden_values_i8.constraints.int8.forbidden_values[0];
+    const int8_t input_i8_other =
+        registry_tests_constrained_forbidden_values_i8.constraints.int8.forbidden_values[0] + 1;
+
+    res_forbidden = registry_set(&test_constrained_forbidden_values_instance_1,
+                                 &registry_tests_constrained_forbidden_values_i8,
+                                 &input_i8_forbidden, sizeof(input_i8_forbidden));
+
+    res_other = registry_set(&test_constrained_forbidden_values_instance_1,
+                             &registry_tests_constrained_forbidden_values_i8,
+                             &input_i8_other, sizeof(input_i8_other));
+
+    TEST_ASSERT_EQUAL_INT(-EINVAL, res_forbidden);
+    TEST_ASSERT_EQUAL_INT(0, res_other);
+
+
+    /* i16 */
+    const int16_t input_i16_forbidden =
+        registry_tests_constrained_forbidden_values_i16.constraints.int16.forbidden_values[0];
+    const int16_t input_i16_other =
+        registry_tests_constrained_forbidden_values_i16.constraints.int16.forbidden_values[0] + 1;
+
+    res_forbidden = registry_set(&test_constrained_forbidden_values_instance_1,
+                                 &registry_tests_constrained_forbidden_values_i16,
+                                 &input_i16_forbidden, sizeof(input_i16_forbidden));
+
+    res_other = registry_set(&test_constrained_forbidden_values_instance_1,
+                             &registry_tests_constrained_forbidden_values_i16,
+                             &input_i16_other, sizeof(input_i16_other));
+
+    TEST_ASSERT_EQUAL_INT(-EINVAL, res_forbidden);
+    TEST_ASSERT_EQUAL_INT(0, res_other);
+
+
+    /* i32 */
+    const int32_t input_i32_forbidden =
+        registry_tests_constrained_forbidden_values_i32.constraints.int32.forbidden_values[0];
+    const int32_t input_i32_other =
+        registry_tests_constrained_forbidden_values_i32.constraints.int32.forbidden_values[0] + 1;
+
+    res_forbidden = registry_set(&test_constrained_forbidden_values_instance_1,
+                                 &registry_tests_constrained_forbidden_values_i32,
+                                 &input_i32_forbidden, sizeof(input_i32_forbidden));
+
+    res_other = registry_set(&test_constrained_forbidden_values_instance_1,
+                             &registry_tests_constrained_forbidden_values_i32,
+                             &input_i32_other, sizeof(input_i32_other));
+
+    TEST_ASSERT_EQUAL_INT(-EINVAL, res_forbidden);
+    TEST_ASSERT_EQUAL_INT(0, res_other);
+
+
+    /* i64 */
+    const int64_t input_i64_forbidden =
+        registry_tests_constrained_forbidden_values_i64.constraints.int64.forbidden_values[0];
+    const int64_t input_i64_other =
+        registry_tests_constrained_forbidden_values_i64.constraints.int64.forbidden_values[0] + 1;
+
+    res_forbidden = registry_set(&test_constrained_forbidden_values_instance_1,
+                                 &registry_tests_constrained_forbidden_values_i64,
+                                 &input_i64_forbidden, sizeof(input_i64_forbidden));
+
+    res_other = registry_set(&test_constrained_forbidden_values_instance_1,
+                             &registry_tests_constrained_forbidden_values_i64,
+                             &input_i64_other, sizeof(input_i64_other));
+
+
+    /* f32 */
+    const float input_f32_forbidden =
+        registry_tests_constrained_forbidden_values_f32.constraints.float32.forbidden_values[0];
+    const float input_f32_other =
+        registry_tests_constrained_forbidden_values_f32.constraints.float32.forbidden_values[0] +
+        1.0;
+
+    res_forbidden = registry_set(&test_constrained_forbidden_values_instance_1,
+                                 &registry_tests_constrained_forbidden_values_f32,
+                                 &input_f32_forbidden, sizeof(input_f32_forbidden));
+
+    res_other = registry_set(&test_constrained_forbidden_values_instance_1,
+                             &registry_tests_constrained_forbidden_values_f32,
+                             &input_f32_other, sizeof(input_f32_other));
+
+    TEST_ASSERT_EQUAL_INT(-EINVAL, res_forbidden);
+    TEST_ASSERT_EQUAL_INT(0, res_other);
+
+
+    /* f64 */
+    const double input_f64_forbidden =
+        registry_tests_constrained_forbidden_values_f64.constraints.float64.forbidden_values[0];
+    const double input_f64_other =
+        registry_tests_constrained_forbidden_values_f64.constraints.float64.forbidden_values[0] +
+        1.0;
+
+    res_forbidden = registry_set(&test_constrained_forbidden_values_instance_1,
+                                 &registry_tests_constrained_forbidden_values_f64,
+                                 &input_f64_forbidden, sizeof(input_f64_forbidden));
+
+    res_other = registry_set(&test_constrained_forbidden_values_instance_1,
+                             &registry_tests_constrained_forbidden_values_f64,
+                             &input_f64_other, sizeof(input_f64_other));
+
+    TEST_ASSERT_EQUAL_INT(-EINVAL, res_forbidden);
+    TEST_ASSERT_EQUAL_INT(0, res_other);
 }
 
 Test *tests_registry_get_set_tests(void)
@@ -875,12 +1321,12 @@ Test *tests_registry_get_set_tests(void)
     (void)test_constrained_forbidden_values_instance_1;
 
     EMB_UNIT_TESTFIXTURES(fixtures) {
-        // new_TestFixture(tests_registry_min_values),
-        // new_TestFixture(tests_registry_zero_values),
-        // new_TestFixture(tests_registry_max_values),
+        new_TestFixture(tests_registry_min_values),
+        new_TestFixture(tests_registry_zero_values),
+        new_TestFixture(tests_registry_max_values),
         new_TestFixture(tests_registry_constraints_min_max),
-        // new_TestFixture(tests_registry_constraints_allowed_values),
-        // new_TestFixture(tests_registry_constraints_forbidden_values),
+        new_TestFixture(tests_registry_constraints_allowed_values),
+        new_TestFixture(tests_registry_constraints_forbidden_values),
     };
 
     EMB_UNIT_TESTCALLER(registry_tests, test_registry_setup, test_registry_teardown, fixtures);

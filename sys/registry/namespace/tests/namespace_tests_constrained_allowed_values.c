@@ -108,6 +108,16 @@ static void mapping(const registry_parameter_id_t parameter_id, const registry_i
     }
 }
 
+const registry_tests_constrained_allowed_values_instance_opaque_t
+    registry_tests_constrained_allowed_values_opaque_allowed_1 = {
+    .value = 7,
+};
+
+const registry_tests_constrained_allowed_values_instance_opaque_t
+    registry_tests_constrained_allowed_values_opaque_allowed_2 = {
+    .value = 9,
+};
+
 /* Schema */
 const registry_parameter_t registry_tests_constrained_allowed_values_opaque = {
     .id = REGISTRY_TESTS_CONSTRAINED_ALLOWED_VALUES_OPAQUE,
@@ -117,7 +127,10 @@ const registry_parameter_t registry_tests_constrained_allowed_values_opaque = {
     .type = REGISTRY_TYPE_OPAQUE,
     .constraints.opaque = {
 #if IS_ACTIVE(CONFIG_REGISTRY_ENABLE_ALLOWED_VALUES_CHECK) || IS_ACTIVE(DOXYGEN)
-        .allowed_values = (const void *[]){ "hello", "world" },
+        .allowed_values = (const void *[]) {
+            &registry_tests_constrained_allowed_values_opaque_allowed_1,
+            &registry_tests_constrained_allowed_values_opaque_allowed_2,
+        },
         .allowed_values_len = 2,
 #endif /* CONFIG_REGISTRY_ENABLE_ALLOWED_VALUES_CHECK */
 #if IS_ACTIVE(CONFIG_REGISTRY_ENABLE_FORBIDDEN_VALUES_CHECK) || IS_ACTIVE(DOXYGEN)

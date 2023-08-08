@@ -93,19 +93,21 @@ int registry_get(const registry_instance_t *instance, const registry_parameter_t
                                                                      _type_field_name, \
                                                                      _parameter, _buf, \
                                                                      _buf_len) \
-        _passed_checks = false; \
-        if (_parameter->constraints._type_field_name.allowed_values_len == 0) { \
-            _passed_checks = true; \
-        } \
-        for (size_t i = 0; i < _parameter->constraints._type_field_name.allowed_values_len; \
-             i++) { \
-            if (memcmp(_parameter->constraints._type_field_name.allowed_values[i], _buf, \
-                       _buf_len) == 0) { \
+        if (_parameter->constraints._type_field_name.allowed_values_len > 0) { \
+            _passed_checks = false; \
+            if (_parameter->constraints._type_field_name.allowed_values_len == 0) { \
                 _passed_checks = true; \
             } \
-        } \
-        if (!_passed_checks) { \
-            return -EINVAL; \
+            for (size_t i = 0; i < _parameter->constraints._type_field_name.allowed_values_len; \
+                 i++) { \
+                if (memcmp(_parameter->constraints._type_field_name.allowed_values[i], _buf, \
+                           _buf_len) == 0) { \
+                    _passed_checks = true; \
+                } \
+            } \
+            if (!_passed_checks) { \
+                return -EINVAL; \
+            } \
         }
 #else
     #define _REGISTRY_CHECK_SET_CONSTRAINTS_ALLOWED_VALUES_OF_ARRAY_TYPE(_passed_checks, \
@@ -119,16 +121,18 @@ int registry_get(const registry_instance_t *instance, const registry_parameter_t
                                                                        _type_field_name, \
                                                                        _parameter, _buf, \
                                                                        _buf_len) \
-        _passed_checks = true; \
-        for (size_t i = 0; i < _parameter->constraints._type_field_name.forbidden_values_len; \
-             i++) { \
-            if (memcmp(_parameter->constraints._type_field_name.forbidden_values[i], _buf, \
-                       _buf_len) == 0) { \
-                _passed_checks = false; \
+        if (_parameter->constraints._type_field_name.forbidden_values_len > 0) { \
+            _passed_checks = true; \
+            for (size_t i = 0; i < _parameter->constraints._type_field_name.forbidden_values_len; \
+                 i++) { \
+                if (memcmp(_parameter->constraints._type_field_name.forbidden_values[i], _buf, \
+                           _buf_len) == 0) { \
+                    _passed_checks = false; \
+                } \
             } \
-        } \
-        if (!_passed_checks) { \
-            return -EINVAL; \
+            if (!_passed_checks) { \
+                return -EINVAL; \
+            } \
         }
 #else
     #define _REGISTRY_CHECK_SET_CONSTRAINTS_FORBIDDEN_VALUES_OF_ARRAY_TYPE(_passed_checks, \
@@ -141,19 +145,20 @@ int registry_get(const registry_instance_t *instance, const registry_parameter_t
 #define _REGISTRY_CHECK_SET_CONSTRAINTS_ALLOWED_VALUES_OF_VALUE_TYPE(_passed_checks, _type, \
                                                                      _type_field_name, _parameter, \
                                                                      _buf) \
-        _passed_checks = false; \
-        if (_parameter->constraints._type_field_name.allowed_values_len == 0) { \
-            _passed_checks = true; \
-        } \
-        for (size_t i = 0; i < _parameter->constraints._type_field_name.allowed_values_len; \
-             i++) { \
-            if (_parameter->constraints._type_field_name.allowed_values[i] == *(_type *)_buf) { \
-                printf("\n\nLOL\n\n"); \
+        if (_parameter->constraints._type_field_name.allowed_values_len > 0) { \
+            _passed_checks = false; \
+            if (_parameter->constraints._type_field_name.allowed_values_len == 0) { \
                 _passed_checks = true; \
             } \
-        } \
-        if (!_passed_checks) { \
-            return -EINVAL; \
+            for (size_t i = 0; i < _parameter->constraints._type_field_name.allowed_values_len; \
+                 i++) { \
+                if (_parameter->constraints._type_field_name.allowed_values[i] == *(_type *)_buf) { \
+                    _passed_checks = true; \
+                } \
+            } \
+            if (!_passed_checks) { \
+                return -EINVAL; \
+            } \
         }
 #else
     #define _REGISTRY_CHECK_SET_CONSTRAINTS_ALLOWED_VALUES_OF_VALUE_TYPE(_passed_checks, _type, \
@@ -165,15 +170,18 @@ int registry_get(const registry_instance_t *instance, const registry_parameter_t
 #define _REGISTRY_CHECK_SET_CONSTRAINTS_FORBIDDEN_VALUES_OF_VALUE_TYPE(_passed_checks, _type, \
                                                                        _type_field_name, _parameter, \
                                                                        _buf) \
-        _passed_checks = true; \
-        for (size_t i = 0; i < _parameter->constraints._type_field_name.forbidden_values_len; \
-             i++) { \
-            if (_parameter->constraints._type_field_name.forbidden_values[i] == *(_type *)_buf) { \
-                _passed_checks = false; \
+        if (_parameter->constraints._type_field_name.forbidden_values_len > 0) { \
+            _passed_checks = true; \
+            for (size_t i = 0; i < _parameter->constraints._type_field_name.forbidden_values_len; \
+                 i++) { \
+                if (_parameter->constraints._type_field_name.forbidden_values[i] == \
+                    *(_type *)_buf) { \
+                    _passed_checks = false; \
+                } \
             } \
-        } \
-        if (!_passed_checks) { \
-            return -EINVAL; \
+            if (!_passed_checks) { \
+                return -EINVAL; \
+            } \
         }
 #else
     #define _REGISTRY_CHECK_SET_CONSTRAINTS_FORBIDDEN_VALUES_OF_VALUE_TYPE(_passed_checks, _type, \
@@ -184,8 +192,10 @@ int registry_get(const registry_instance_t *instance, const registry_parameter_t
 #if IS_ACTIVE(CONFIG_REGISTRY_ENABLE_MIN_VALUE_CHECK) || IS_ACTIVE(DOXYGEN)
 #define _REGISTRY_CHECK_SET_CONSTRAINTS_MIN_VALUE_OF_VALUE_TYPE(_type, _type_field_name, _parameter, \
                                                                 _buf) \
-        if (*(_type *)_buf < *_parameter->constraints._type_field_name.min_value) { \
-            return -EINVAL; \
+        if (_parameter->constraints._type_field_name.min_value != NULL) { \
+            if (*(_type *)_buf < *_parameter->constraints._type_field_name.min_value) { \
+                return -EINVAL; \
+            } \
         }
 #else
     #define _REGISTRY_CHECK_SET_CONSTRAINTS_MIN_VALUE_OF_VALUE_TYPE(_type, _type_field_name, \
@@ -195,8 +205,10 @@ int registry_get(const registry_instance_t *instance, const registry_parameter_t
 #if IS_ACTIVE(CONFIG_REGISTRY_ENABLE_MAX_VALUE_CHECK) || IS_ACTIVE(DOXYGEN)
 #define _REGISTRY_CHECK_SET_CONSTRAINTS_MAX_VALUE_OF_VALUE_TYPE(_type, _type_field_name, _parameter, \
                                                                 _buf) \
-        if (*(_type *)_buf > *_parameter->constraints._type_field_name.max_value) { \
-            return -EINVAL; \
+        if (_parameter->constraints._type_field_name.max_value != NULL) { \
+            if (*(_type *)_buf > *_parameter->constraints._type_field_name.max_value) { \
+                return -EINVAL; \
+            } \
         }
 #else
     #define _REGISTRY_CHECK_SET_CONSTRAINTS_MAX_VALUE_OF_VALUE_TYPE(_type, _type_field_name, \

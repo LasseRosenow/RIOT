@@ -16,11 +16,11 @@
   - [x] With a flag to disable for extremely constrained devices
 
 - [ ] Unit tests
-  - [ ] get, set
+  - [x] get, set
     - [x] min, max and zero values
     - [x] constraints: min-value, max-value
-    - [ ] constraints: allowed-values
-    - [ ] constraints: forbidden-values
+    - [x] constraints: allowed-values
+    - [x] constraints: forbidden-values
   - [ ] commit
   - [ ] export
   - [ ] load, save
