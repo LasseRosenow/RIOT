@@ -7,9 +7,9 @@
  */
 
 /**
- * @defgroup    sys_registry_namespace_tests_constrained RIOT Registry Schema: Constrained
+ * @defgroup    sys_registry_namespace_tests_constrained_allowed_values RIOT Registry Schema: Constrained Allowed Values
  * @ingroup     sys
- * @brief       RIOT Registry Constrained Schema representing all possible data types of the riot registry
+ * @brief       RIOT Registry Constrained Allowed Values Schema representing all possible data types of the riot registry with allowed values constraints
  * @{
  *
  * @file
@@ -29,79 +29,79 @@
 #include "kernel_defines.h"
 #include "registry.h"
 #include "registry/namespace/tests.h"
-#include "registry/namespace/tests/constrained.h"
+#include "registry/namespace/tests/constrained_allowed_values.h"
 
-#if IS_USED(MODULE_REGISTRY_NAMESPACE_TESTS_CONSTRAINED) || IS_ACTIVE(DOXYGEN)
+#if IS_USED(MODULE_REGISTRY_NAMESPACE_TESTS_CONSTRAINED_ALLOWED_VALUES) || IS_ACTIVE(DOXYGEN)
 
 /* Mapping */
 static void mapping(const registry_parameter_id_t parameter_id, const registry_instance_t *instance,
                     void **val, size_t *val_len)
 {
-    registry_tests_constrained_instance_t *_instance =
-        (registry_tests_constrained_instance_t *)instance->data;
+    registry_tests_constrained_allowed_values_instance_t *_instance =
+        (registry_tests_constrained_allowed_values_instance_t *)instance->data;
 
     switch (parameter_id) {
-    case REGISTRY_TESTS_CONSTRAINED_OPAQUE:
+    case REGISTRY_TESTS_CONSTRAINED_ALLOWED_VALUES_OPAQUE:
         *val = &_instance->opaque;
         *val_len = sizeof(_instance->opaque);
         break;
 
-    case REGISTRY_TESTS_CONSTRAINED_STRING:
+    case REGISTRY_TESTS_CONSTRAINED_ALLOWED_VALUES_STRING:
         *val = &_instance->string;
         *val_len = sizeof(_instance->string);
         break;
 
-    case REGISTRY_TESTS_CONSTRAINED_BOOLEAN:
+    case REGISTRY_TESTS_CONSTRAINED_ALLOWED_VALUES_BOOLEAN:
         *val = &_instance->boolean;
         *val_len = sizeof(_instance->boolean);
         break;
 
-    case REGISTRY_TESTS_CONSTRAINED_U8:
+    case REGISTRY_TESTS_CONSTRAINED_ALLOWED_VALUES_U8:
         *val = &_instance->u8;
         *val_len = sizeof(_instance->u8);
         break;
 
-    case REGISTRY_TESTS_CONSTRAINED_U16:
+    case REGISTRY_TESTS_CONSTRAINED_ALLOWED_VALUES_U16:
         *val = &_instance->u16;
         *val_len = sizeof(_instance->u16);
         break;
 
-    case REGISTRY_TESTS_CONSTRAINED_U32:
+    case REGISTRY_TESTS_CONSTRAINED_ALLOWED_VALUES_U32:
         *val = &_instance->u32;
         *val_len = sizeof(_instance->u32);
         break;
 
-    case REGISTRY_TESTS_CONSTRAINED_U64:
+    case REGISTRY_TESTS_CONSTRAINED_ALLOWED_VALUES_U64:
         *val = &_instance->u64;
         *val_len = sizeof(_instance->u64);
         break;
 
-    case REGISTRY_TESTS_CONSTRAINED_I8:
+    case REGISTRY_TESTS_CONSTRAINED_ALLOWED_VALUES_I8:
         *val = &_instance->i8;
         *val_len = sizeof(_instance->i8);
         break;
 
-    case REGISTRY_TESTS_CONSTRAINED_I16:
+    case REGISTRY_TESTS_CONSTRAINED_ALLOWED_VALUES_I16:
         *val = &_instance->i16;
         *val_len = sizeof(_instance->i16);
         break;
 
-    case REGISTRY_TESTS_CONSTRAINED_I32:
+    case REGISTRY_TESTS_CONSTRAINED_ALLOWED_VALUES_I32:
         *val = &_instance->i32;
         *val_len = sizeof(_instance->i32);
         break;
 
-    case REGISTRY_TESTS_CONSTRAINED_I64:
+    case REGISTRY_TESTS_CONSTRAINED_ALLOWED_VALUES_I64:
         *val = &_instance->i64;
         *val_len = sizeof(_instance->i64);
         break;
 
-    case REGISTRY_TESTS_CONSTRAINED_F32:
+    case REGISTRY_TESTS_CONSTRAINED_ALLOWED_VALUES_F32:
         *val = &_instance->f32;
         *val_len = sizeof(_instance->f32);
         break;
 
-    case REGISTRY_TESTS_CONSTRAINED_F64:
+    case REGISTRY_TESTS_CONSTRAINED_ALLOWED_VALUES_F64:
         *val = &_instance->f64;
         *val_len = sizeof(_instance->f64);
         break;
@@ -109,11 +109,11 @@ static void mapping(const registry_parameter_id_t parameter_id, const registry_i
 }
 
 /* Schema */
-const registry_parameter_t registry_tests_constrained_opaque = {
-    .id = REGISTRY_TESTS_CONSTRAINED_OPAQUE,
+const registry_parameter_t registry_tests_constrained_allowed_values_opaque = {
+    .id = REGISTRY_TESTS_CONSTRAINED_ALLOWED_VALUES_OPAQUE,
     .name = "opaque",
     .description = "",
-    .schema = &registry_tests_constrained,
+    .schema = &registry_tests_constrained_allowed_values,
     .type = REGISTRY_TYPE_OPAQUE,
     .constraints.opaque = {
 #if IS_ACTIVE(CONFIG_REGISTRY_ENABLE_ALLOWED_VALUES_CHECK) || IS_ACTIVE(DOXYGEN)
@@ -121,17 +121,17 @@ const registry_parameter_t registry_tests_constrained_opaque = {
         .allowed_values_len = 2,
 #endif /* CONFIG_REGISTRY_ENABLE_ALLOWED_VALUES_CHECK */
 #if IS_ACTIVE(CONFIG_REGISTRY_ENABLE_FORBIDDEN_VALUES_CHECK) || IS_ACTIVE(DOXYGEN)
-        .forbidden_values = (const void *[]){ "goodbye", "moon" },
-        .forbidden_values_len = 2,
+        .forbidden_values = NULL,
+        .forbidden_values_len = 0,
 #endif /* CONFIG_REGISTRY_ENABLE_FORBIDDEN_VALUES_CHECK */
     },
 };
 
-const registry_parameter_t registry_tests_constrained_string = {
-    .id = REGISTRY_TESTS_CONSTRAINED_STRING,
+const registry_parameter_t registry_tests_constrained_allowed_values_string = {
+    .id = REGISTRY_TESTS_CONSTRAINED_ALLOWED_VALUES_STRING,
     .name = "string",
     .description = "",
-    .schema = &registry_tests_constrained,
+    .schema = &registry_tests_constrained_allowed_values,
     .type = REGISTRY_TYPE_STRING,
     .constraints.string = {
 #if IS_ACTIVE(CONFIG_REGISTRY_ENABLE_ALLOWED_VALUES_CHECK) || IS_ACTIVE(DOXYGEN)
@@ -139,26 +139,26 @@ const registry_parameter_t registry_tests_constrained_string = {
         .allowed_values_len = 2,
 #endif /* CONFIG_REGISTRY_ENABLE_ALLOWED_VALUES_CHECK */
 #if IS_ACTIVE(CONFIG_REGISTRY_ENABLE_FORBIDDEN_VALUES_CHECK) || IS_ACTIVE(DOXYGEN)
-        .forbidden_values = (const char *[]){ "goodbye", "moon" },
-        .forbidden_values_len = 2,
+        .forbidden_values = NULL,
+        .forbidden_values_len = 0,
 #endif /* CONFIG_REGISTRY_ENABLE_FORBIDDEN_VALUES_CHECK */
     },
 };
 
-const registry_parameter_t registry_tests_constrained_boolean = {
-    .id = REGISTRY_TESTS_CONSTRAINED_BOOLEAN,
+const registry_parameter_t registry_tests_constrained_allowed_values_boolean = {
+    .id = REGISTRY_TESTS_CONSTRAINED_ALLOWED_VALUES_BOOLEAN,
     .name = "boolean",
     .description = "",
-    .schema = &registry_tests_constrained,
+    .schema = &registry_tests_constrained_allowed_values,
     .type = REGISTRY_TYPE_BOOL,
     .constraints.boolean = NULL,
 };
 
-const registry_parameter_t registry_tests_constrained_u8 = {
-    .id = REGISTRY_TESTS_CONSTRAINED_U8,
+const registry_parameter_t registry_tests_constrained_allowed_values_u8 = {
+    .id = REGISTRY_TESTS_CONSTRAINED_ALLOWED_VALUES_U8,
     .name = "u8",
     .description = "",
-    .schema = &registry_tests_constrained,
+    .schema = &registry_tests_constrained_allowed_values,
     .type = REGISTRY_TYPE_UINT8,
     .constraints.uint8 = {
 #if IS_ACTIVE(CONFIG_REGISTRY_ENABLE_ALLOWED_VALUES_CHECK) || IS_ACTIVE(DOXYGEN)
@@ -166,8 +166,8 @@ const registry_parameter_t registry_tests_constrained_u8 = {
         .allowed_values_len = 2,
 #endif /* CONFIG_REGISTRY_ENABLE_ALLOWED_VALUES_CHECK */
 #if IS_ACTIVE(CONFIG_REGISTRY_ENABLE_FORBIDDEN_VALUES_CHECK) || IS_ACTIVE(DOXYGEN)
-        .forbidden_values = (uint8_t[]){ 11, 19 },
-        .forbidden_values_len = 2,
+        .forbidden_values = NULL,
+        .forbidden_values_len = 0,
 #endif /* CONFIG_REGISTRY_ENABLE_FORBIDDEN_VALUES_CHECK */
 #if IS_ACTIVE(CONFIG_REGISTRY_ENABLE_MIN_VALUE_CHECK) || IS_ACTIVE(DOXYGEN)
         .min_value = (uint8_t[]){ 7 },
@@ -178,11 +178,11 @@ const registry_parameter_t registry_tests_constrained_u8 = {
     },
 };
 
-const registry_parameter_t registry_tests_constrained_u16 = {
-    .id = REGISTRY_TESTS_CONSTRAINED_U16,
+const registry_parameter_t registry_tests_constrained_allowed_values_u16 = {
+    .id = REGISTRY_TESTS_CONSTRAINED_ALLOWED_VALUES_U16,
     .name = "u16",
     .description = "",
-    .schema = &registry_tests_constrained,
+    .schema = &registry_tests_constrained_allowed_values,
     .type = REGISTRY_TYPE_UINT16,
     .constraints.uint16 = {
 #if IS_ACTIVE(CONFIG_REGISTRY_ENABLE_ALLOWED_VALUES_CHECK) || IS_ACTIVE(DOXYGEN)
@@ -190,8 +190,8 @@ const registry_parameter_t registry_tests_constrained_u16 = {
         .allowed_values_len = 2,
 #endif /* CONFIG_REGISTRY_ENABLE_ALLOWED_VALUES_CHECK */
 #if IS_ACTIVE(CONFIG_REGISTRY_ENABLE_FORBIDDEN_VALUES_CHECK) || IS_ACTIVE(DOXYGEN)
-        .forbidden_values = (uint16_t[]){ 11, 19 },
-        .forbidden_values_len = 2,
+        .forbidden_values = NULL,
+        .forbidden_values_len = 0,
 #endif /* CONFIG_REGISTRY_ENABLE_FORBIDDEN_VALUES_CHECK */
 #if IS_ACTIVE(CONFIG_REGISTRY_ENABLE_MIN_VALUE_CHECK) || IS_ACTIVE(DOXYGEN)
         .min_value = (uint16_t[]){ 7 },
@@ -202,11 +202,11 @@ const registry_parameter_t registry_tests_constrained_u16 = {
     },
 };
 
-const registry_parameter_t registry_tests_constrained_u32 = {
-    .id = REGISTRY_TESTS_CONSTRAINED_U32,
+const registry_parameter_t registry_tests_constrained_allowed_values_u32 = {
+    .id = REGISTRY_TESTS_CONSTRAINED_ALLOWED_VALUES_U32,
     .name = "u32",
     .description = "",
-    .schema = &registry_tests_constrained,
+    .schema = &registry_tests_constrained_allowed_values,
     .type = REGISTRY_TYPE_UINT32,
     .constraints.uint32 = {
 #if IS_ACTIVE(CONFIG_REGISTRY_ENABLE_ALLOWED_VALUES_CHECK) || IS_ACTIVE(DOXYGEN)
@@ -214,8 +214,8 @@ const registry_parameter_t registry_tests_constrained_u32 = {
         .allowed_values_len = 2,
 #endif /* CONFIG_REGISTRY_ENABLE_ALLOWED_VALUES_CHECK */
 #if IS_ACTIVE(CONFIG_REGISTRY_ENABLE_FORBIDDEN_VALUES_CHECK) || IS_ACTIVE(DOXYGEN)
-        .forbidden_values = (uint32_t[]){ 11, 19 },
-        .forbidden_values_len = 2,
+        .forbidden_values = NULL,
+        .forbidden_values_len = 0,
 #endif /* CONFIG_REGISTRY_ENABLE_FORBIDDEN_VALUES_CHECK */
 #if IS_ACTIVE(CONFIG_REGISTRY_ENABLE_MIN_VALUE_CHECK) || IS_ACTIVE(DOXYGEN)
         .min_value = (uint32_t[]){ 7 },
@@ -226,11 +226,11 @@ const registry_parameter_t registry_tests_constrained_u32 = {
     },
 };
 
-const registry_parameter_t registry_tests_constrained_u64 = {
-    .id = REGISTRY_TESTS_CONSTRAINED_U64,
+const registry_parameter_t registry_tests_constrained_allowed_values_u64 = {
+    .id = REGISTRY_TESTS_CONSTRAINED_ALLOWED_VALUES_U64,
     .name = "u64",
     .description = "",
-    .schema = &registry_tests_constrained,
+    .schema = &registry_tests_constrained_allowed_values,
     .type = REGISTRY_TYPE_UINT64,
     .constraints.uint64 = {
 #if IS_ACTIVE(CONFIG_REGISTRY_ENABLE_ALLOWED_VALUES_CHECK) || IS_ACTIVE(DOXYGEN)
@@ -238,8 +238,8 @@ const registry_parameter_t registry_tests_constrained_u64 = {
         .allowed_values_len = 2,
 #endif /* CONFIG_REGISTRY_ENABLE_ALLOWED_VALUES_CHECK */
 #if IS_ACTIVE(CONFIG_REGISTRY_ENABLE_FORBIDDEN_VALUES_CHECK) || IS_ACTIVE(DOXYGEN)
-        .forbidden_values = (uint64_t[]){ 11, 19 },
-        .forbidden_values_len = 2,
+        .forbidden_values = NULL,
+        .forbidden_values_len = 0,
 #endif /* CONFIG_REGISTRY_ENABLE_FORBIDDEN_VALUES_CHECK */
 #if IS_ACTIVE(CONFIG_REGISTRY_ENABLE_MIN_VALUE_CHECK) || IS_ACTIVE(DOXYGEN)
         .min_value = (uint64_t[]){ 7 },
@@ -250,11 +250,11 @@ const registry_parameter_t registry_tests_constrained_u64 = {
     },
 };
 
-const registry_parameter_t registry_tests_constrained_i8 = {
-    .id = REGISTRY_TESTS_CONSTRAINED_I8,
+const registry_parameter_t registry_tests_constrained_allowed_values_i8 = {
+    .id = REGISTRY_TESTS_CONSTRAINED_ALLOWED_VALUES_I8,
     .name = "i8",
     .description = "",
-    .schema = &registry_tests_constrained,
+    .schema = &registry_tests_constrained_allowed_values,
     .type = REGISTRY_TYPE_INT8,
     .constraints.int8 = {
 #if IS_ACTIVE(CONFIG_REGISTRY_ENABLE_ALLOWED_VALUES_CHECK) || IS_ACTIVE(DOXYGEN)
@@ -262,8 +262,8 @@ const registry_parameter_t registry_tests_constrained_i8 = {
         .allowed_values_len = 2,
 #endif /* CONFIG_REGISTRY_ENABLE_ALLOWED_VALUES_CHECK */
 #if IS_ACTIVE(CONFIG_REGISTRY_ENABLE_FORBIDDEN_VALUES_CHECK) || IS_ACTIVE(DOXYGEN)
-        .forbidden_values = (int8_t[]){ 11, 19 },
-        .forbidden_values_len = 2,
+        .forbidden_values = NULL,
+        .forbidden_values_len = 0,
 #endif /* CONFIG_REGISTRY_ENABLE_FORBIDDEN_VALUES_CHECK */
 #if IS_ACTIVE(CONFIG_REGISTRY_ENABLE_MIN_VALUE_CHECK) || IS_ACTIVE(DOXYGEN)
         .min_value = (int8_t[]){ 7 },
@@ -274,11 +274,11 @@ const registry_parameter_t registry_tests_constrained_i8 = {
     },
 };
 
-const registry_parameter_t registry_tests_constrained_i16 = {
-    .id = REGISTRY_TESTS_CONSTRAINED_I16,
+const registry_parameter_t registry_tests_constrained_allowed_values_i16 = {
+    .id = REGISTRY_TESTS_CONSTRAINED_ALLOWED_VALUES_I16,
     .name = "i16",
     .description = "",
-    .schema = &registry_tests_constrained,
+    .schema = &registry_tests_constrained_allowed_values,
     .type = REGISTRY_TYPE_INT16,
     .constraints.int16 = {
 #if IS_ACTIVE(CONFIG_REGISTRY_ENABLE_ALLOWED_VALUES_CHECK) || IS_ACTIVE(DOXYGEN)
@@ -286,8 +286,8 @@ const registry_parameter_t registry_tests_constrained_i16 = {
         .allowed_values_len = 2,
 #endif /* CONFIG_REGISTRY_ENABLE_ALLOWED_VALUES_CHECK */
 #if IS_ACTIVE(CONFIG_REGISTRY_ENABLE_FORBIDDEN_VALUES_CHECK) || IS_ACTIVE(DOXYGEN)
-        .forbidden_values = (int16_t[]){ 11, 19 },
-        .forbidden_values_len = 2,
+        .forbidden_values = NULL,
+        .forbidden_values_len = 0,
 #endif /* CONFIG_REGISTRY_ENABLE_FORBIDDEN_VALUES_CHECK */
 #if IS_ACTIVE(CONFIG_REGISTRY_ENABLE_MIN_VALUE_CHECK) || IS_ACTIVE(DOXYGEN)
         .min_value = (int16_t[]){ 7 },
@@ -298,11 +298,11 @@ const registry_parameter_t registry_tests_constrained_i16 = {
     },
 };
 
-const registry_parameter_t registry_tests_constrained_i32 = {
-    .id = REGISTRY_TESTS_CONSTRAINED_I32,
+const registry_parameter_t registry_tests_constrained_allowed_values_i32 = {
+    .id = REGISTRY_TESTS_CONSTRAINED_ALLOWED_VALUES_I32,
     .name = "i32",
     .description = "",
-    .schema = &registry_tests_constrained,
+    .schema = &registry_tests_constrained_allowed_values,
     .type = REGISTRY_TYPE_INT32,
     .constraints.int32 = {
 #if IS_ACTIVE(CONFIG_REGISTRY_ENABLE_ALLOWED_VALUES_CHECK) || IS_ACTIVE(DOXYGEN)
@@ -310,8 +310,8 @@ const registry_parameter_t registry_tests_constrained_i32 = {
         .allowed_values_len = 2,
 #endif /* CONFIG_REGISTRY_ENABLE_ALLOWED_VALUES_CHECK */
 #if IS_ACTIVE(CONFIG_REGISTRY_ENABLE_FORBIDDEN_VALUES_CHECK) || IS_ACTIVE(DOXYGEN)
-        .forbidden_values = (int32_t[]){ 11, 19 },
-        .forbidden_values_len = 2,
+        .forbidden_values = NULL,
+        .forbidden_values_len = 0,
 #endif /* CONFIG_REGISTRY_ENABLE_FORBIDDEN_VALUES_CHECK */
 #if IS_ACTIVE(CONFIG_REGISTRY_ENABLE_MIN_VALUE_CHECK) || IS_ACTIVE(DOXYGEN)
         .min_value = (int32_t[]){ 7 },
@@ -322,11 +322,11 @@ const registry_parameter_t registry_tests_constrained_i32 = {
     },
 };
 
-const registry_parameter_t registry_tests_constrained_i64 = {
-    .id = REGISTRY_TESTS_CONSTRAINED_I64,
+const registry_parameter_t registry_tests_constrained_allowed_values_i64 = {
+    .id = REGISTRY_TESTS_CONSTRAINED_ALLOWED_VALUES_I64,
     .name = "i64",
     .description = "",
-    .schema = &registry_tests_constrained,
+    .schema = &registry_tests_constrained_allowed_values,
     .type = REGISTRY_TYPE_INT64,
     .constraints.int64 = {
 #if IS_ACTIVE(CONFIG_REGISTRY_ENABLE_ALLOWED_VALUES_CHECK) || IS_ACTIVE(DOXYGEN)
@@ -334,8 +334,8 @@ const registry_parameter_t registry_tests_constrained_i64 = {
         .allowed_values_len = 2,
 #endif /* CONFIG_REGISTRY_ENABLE_ALLOWED_VALUES_CHECK */
 #if IS_ACTIVE(CONFIG_REGISTRY_ENABLE_FORBIDDEN_VALUES_CHECK) || IS_ACTIVE(DOXYGEN)
-        .forbidden_values = (int64_t[]){ 11, 19 },
-        .forbidden_values_len = 2,
+        .forbidden_values = NULL,
+        .forbidden_values_len = 0,
 #endif /* CONFIG_REGISTRY_ENABLE_FORBIDDEN_VALUES_CHECK */
 #if IS_ACTIVE(CONFIG_REGISTRY_ENABLE_MIN_VALUE_CHECK) || IS_ACTIVE(DOXYGEN)
         .min_value = (int64_t[]){ 7 },
@@ -346,11 +346,11 @@ const registry_parameter_t registry_tests_constrained_i64 = {
     },
 };
 
-const registry_parameter_t registry_tests_constrained_f32 = {
-    .id = REGISTRY_TESTS_CONSTRAINED_F32,
+const registry_parameter_t registry_tests_constrained_allowed_values_f32 = {
+    .id = REGISTRY_TESTS_CONSTRAINED_ALLOWED_VALUES_F32,
     .name = "f32",
     .description = "",
-    .schema = &registry_tests_constrained,
+    .schema = &registry_tests_constrained_allowed_values,
     .type = REGISTRY_TYPE_FLOAT32,
     .constraints.float32 = {
 #if IS_ACTIVE(CONFIG_REGISTRY_ENABLE_ALLOWED_VALUES_CHECK) || IS_ACTIVE(DOXYGEN)
@@ -358,8 +358,8 @@ const registry_parameter_t registry_tests_constrained_f32 = {
         .allowed_values_len = 2,
 #endif /* CONFIG_REGISTRY_ENABLE_ALLOWED_VALUES_CHECK */
 #if IS_ACTIVE(CONFIG_REGISTRY_ENABLE_FORBIDDEN_VALUES_CHECK) || IS_ACTIVE(DOXYGEN)
-        .forbidden_values = (float[]){ 11.0, 19.0 },
-        .forbidden_values_len = 2,
+        .forbidden_values = NULL,
+        .forbidden_values_len = 0,
 #endif /* CONFIG_REGISTRY_ENABLE_FORBIDDEN_VALUES_CHECK */
 #if IS_ACTIVE(CONFIG_REGISTRY_ENABLE_MIN_VALUE_CHECK) || IS_ACTIVE(DOXYGEN)
         .min_value = (float[]){ 7.0 },
@@ -370,11 +370,11 @@ const registry_parameter_t registry_tests_constrained_f32 = {
     },
 };
 
-const registry_parameter_t registry_tests_constrained_f64 = {
-    .id = REGISTRY_TESTS_CONSTRAINED_F64,
+const registry_parameter_t registry_tests_constrained_allowed_values_f64 = {
+    .id = REGISTRY_TESTS_CONSTRAINED_ALLOWED_VALUES_F64,
     .name = "f64",
     .description = "",
-    .schema = &registry_tests_constrained,
+    .schema = &registry_tests_constrained_allowed_values,
     .type = REGISTRY_TYPE_FLOAT64,
     .constraints.float64 = {
 #if IS_ACTIVE(CONFIG_REGISTRY_ENABLE_ALLOWED_VALUES_CHECK) || IS_ACTIVE(DOXYGEN)
@@ -382,8 +382,8 @@ const registry_parameter_t registry_tests_constrained_f64 = {
         .allowed_values_len = 2,
 #endif /* CONFIG_REGISTRY_ENABLE_ALLOWED_VALUES_CHECK */
 #if IS_ACTIVE(CONFIG_REGISTRY_ENABLE_FORBIDDEN_VALUES_CHECK) || IS_ACTIVE(DOXYGEN)
-        .forbidden_values = (double[]){ 11.0, 19.0 },
-        .forbidden_values_len = 2,
+        .forbidden_values = NULL,
+        .forbidden_values_len = 0,
 #endif /* CONFIG_REGISTRY_ENABLE_FORBIDDEN_VALUES_CHECK */
 #if IS_ACTIVE(CONFIG_REGISTRY_ENABLE_MIN_VALUE_CHECK) || IS_ACTIVE(DOXYGEN)
         .min_value = (double[]){ 7.0 },
@@ -394,28 +394,28 @@ const registry_parameter_t registry_tests_constrained_f64 = {
     },
 };
 
-registry_schema_t registry_tests_constrained = {
+registry_schema_t registry_tests_constrained_allowed_values = {
     .id = 0,
-    .name = "constrained",
+    .name = "constrained_allowed_values",
     .description = "",
     .namespace = &registry_tests,
     .mapping = mapping,
     .groups = NULL,
     .groups_len = 0,
     .parameters = (const registry_parameter_t *[]) {
-        &registry_tests_constrained_opaque,
-        &registry_tests_constrained_string,
-        &registry_tests_constrained_boolean,
-        &registry_tests_constrained_u8,
-        &registry_tests_constrained_u16,
-        &registry_tests_constrained_u32,
-        &registry_tests_constrained_u64,
-        &registry_tests_constrained_i8,
-        &registry_tests_constrained_i16,
-        &registry_tests_constrained_i32,
-        &registry_tests_constrained_i64,
-        &registry_tests_constrained_f32,
-        &registry_tests_constrained_f64,
+        &registry_tests_constrained_allowed_values_opaque,
+        &registry_tests_constrained_allowed_values_string,
+        &registry_tests_constrained_allowed_values_boolean,
+        &registry_tests_constrained_allowed_values_u8,
+        &registry_tests_constrained_allowed_values_u16,
+        &registry_tests_constrained_allowed_values_u32,
+        &registry_tests_constrained_allowed_values_u64,
+        &registry_tests_constrained_allowed_values_i8,
+        &registry_tests_constrained_allowed_values_i16,
+        &registry_tests_constrained_allowed_values_i32,
+        &registry_tests_constrained_allowed_values_i64,
+        &registry_tests_constrained_allowed_values_f32,
+        &registry_tests_constrained_allowed_values_f64,
     },
     .parameters_len = 13,
 };

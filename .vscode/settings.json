@@ -63,7 +63,13 @@
         "cmath": "c",
         "pm.h": "c",
         "periph_cpu.h": "c",
-        "constrained.h": "c"
+        "constrained.h": "c",
+        "inttypes.h": "c",
+        "float.h": "c",
+        "embunit.h": "c",
+        "constrained_min_max.h": "c",
+        "constrained_allowed_values.h": "c",
+        "constrained_forbidden_values.h": "c"
     },
     "C_Cpp.dimInactiveRegions": false,
 }

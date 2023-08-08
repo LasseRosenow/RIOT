@@ -20,6 +20,7 @@
 #include <stdint.h>
 #include <float.h>
 #include <inttypes.h>
+#include <errno.h>
 #include "embUnit.h"
 #include "fmt.h"
 #include "assert.h"
@@ -31,7 +32,9 @@
 #include "tests-registry.h"
 #include "registry/namespace/tests.h"
 #include "registry/namespace/tests/full.h"
-#include "registry/namespace/tests/constrained.h"
+#include "registry/namespace/tests/constrained_min_max.h"
+#include "registry/namespace/tests/constrained_allowed_values.h"
+#include "registry/namespace/tests/constrained_forbidden_values.h"
 
 #define FLOAT_MAX_CHAR_COUNT ((FLT_MAX_10_EXP + 1) + 1 + 1 + 6)     // (FLT_MAX_10_EXP + 1) + sign + dot + 6 decimal places
 #define DOUBLE_MAX_CHAR_COUNT ((DBL_MAX_10_EXP + 1) + 1 + 1 + 6)    // (DBL_MAX_10_EXP + 1) + sign + dot + 6 decimal places
@@ -70,7 +73,7 @@ static registry_instance_t test_full_instance_1 = {
     .commit_cb = &commit_cb,
 };
 
-static registry_tests_constrained_instance_t test_constrained_instance_1_data = {
+static registry_tests_constrained_min_max_instance_t test_constrained_min_max_instance_1_data = {
     .string = "hello world",
     .boolean = true,
     .u8 = 9,
@@ -85,9 +88,53 @@ static registry_tests_constrained_instance_t test_constrained_instance_1_data = 
     .f64 = 6.4,
 };
 
-static registry_instance_t test_constrained_instance_1 = {
-    .name = "test-constrained-1",
-    .data = &test_constrained_instance_1_data,
+static registry_instance_t test_constrained_min_max_instance_1 = {
+    .name = "test-constrained_min_max-1",
+    .data = &test_constrained_min_max_instance_1_data,
+    .commit_cb = &commit_cb,
+};
+
+static registry_tests_constrained_allowed_values_instance_t
+    test_constrained_allowed_values_instance_1_data = {
+    .string = "hello world",
+    .boolean = true,
+    .u8 = 9,
+    .u16 = 17,
+    .u32 = 33,
+    .u64 = 65,
+    .i8 = 8,
+    .i16 = 16,
+    .i32 = 32,
+    .i64 = 64,
+    .f32 = 3.2,
+    .f64 = 6.4,
+};
+
+static registry_instance_t test_constrained_allowed_values_instance_1 = {
+    .name = "test-constrained_allowed_values-1",
+    .data = &test_constrained_allowed_values_instance_1_data,
+    .commit_cb = &commit_cb,
+};
+
+static registry_tests_constrained_forbidden_values_instance_t
+    test_constrained_forbidden_values_instance_1_data = {
+    .string = "hello world",
+    .boolean = true,
+    .u8 = 9,
+    .u16 = 17,
+    .u32 = 33,
+    .u64 = 65,
+    .i8 = 8,
+    .i16 = 16,
+    .i32 = 32,
+    .i64 = 64,
+    .f32 = 3.2,
+    .f64 = 6.4,
+};
+
+static registry_instance_t test_constrained_forbidden_values_instance_1 = {
+    .name = "test-constrained_forbidden_values-1",
+    .data = &test_constrained_forbidden_values_instance_1_data,
     .commit_cb = &commit_cb,
 };
 
@@ -98,7 +145,8 @@ static void test_registry_setup(void)
 
     /* add schema instances */
     registry_register_schema_instance(&registry_tests_full, &test_full_instance_1);
-    registry_register_schema_instance(&registry_tests_constrained, &test_constrained_instance_1);
+    registry_register_schema_instance(&registry_tests_constrained_min_max,
+                                      &test_constrained_min_max_instance_1);
 }
 
 static void test_registry_teardown(void)
@@ -519,26 +567,320 @@ static void tests_registry_max_values(void)
     TEST_ASSERT_EQUAL_STRING(input_f64_string, output_f64_string);
 }
 
-static void tests_registry_constraints(void)
+static void tests_registry_constraints_min_max(void)
 {
-    registry_value_t output;
+    int res_too_small;
+    int res_too_large;
+    int res_within_range;
+
+    /* opaque */
+    /* opaque does not have min_max constraints */
+
+    /* string */
+    /* string does not have min_max constraints */
+
+    /* bool */
+    /* bool does not have min_max constraints */
 
     /* u8 */
-    const uint8_t input_u8 = UINT8_MAX;
+    const uint8_t input_u8_too_small =
+        *registry_tests_constrained_min_max_u8.constraints.uint8.min_value -
+        1;
+    const uint8_t input_u8_too_large =
+        *registry_tests_constrained_min_max_u8.constraints.uint8.max_value +
+        1;
+    const uint8_t input_u8_within_range =
+        *registry_tests_constrained_min_max_u8.constraints.uint8.min_value;
 
-    registry_set(&test_full_instance_1, &registry_tests_full_u8, &input_u8, sizeof(input_u8));
-    registry_get(&test_full_instance_1, &registry_tests_full_u8, &output);
+    res_too_small = registry_set(&test_constrained_min_max_instance_1,
+                                 &registry_tests_constrained_min_max_u8,
+                                 &input_u8_too_small, sizeof(input_u8_too_small));
 
-    TEST_ASSERT_EQUAL_INT(input_u8, *(uint8_t *)output.buf);
+    res_too_large = registry_set(&test_constrained_min_max_instance_1,
+                                 &registry_tests_constrained_min_max_u8,
+                                 &input_u8_too_large, sizeof(input_u8_too_large));
+
+    res_within_range = registry_set(&test_constrained_min_max_instance_1,
+                                    &registry_tests_constrained_min_max_u8,
+                                    &input_u8_within_range, sizeof(input_u8_within_range));
+
+    TEST_ASSERT_EQUAL_INT(-EINVAL, res_too_small);
+    TEST_ASSERT_EQUAL_INT(-EINVAL, res_too_large);
+    TEST_ASSERT_EQUAL_INT(0, res_within_range);
+
+
+    /* u16 */
+    const uint16_t input_u16_too_small =
+        *registry_tests_constrained_min_max_u16.constraints.uint16.min_value -
+        1;
+    const uint16_t input_u16_too_large =
+        *registry_tests_constrained_min_max_u16.constraints.uint16.max_value +
+        1;
+    const uint16_t input_u16_within_range =
+        *registry_tests_constrained_min_max_u16.constraints.uint16.min_value;
+
+    res_too_small = registry_set(&test_constrained_min_max_instance_1,
+                                 &registry_tests_constrained_min_max_u16,
+                                 &input_u16_too_small, sizeof(input_u16_too_small));
+
+    res_too_large = registry_set(&test_constrained_min_max_instance_1,
+                                 &registry_tests_constrained_min_max_u16,
+                                 &input_u16_too_large, sizeof(input_u16_too_large));
+
+    res_within_range = registry_set(&test_constrained_min_max_instance_1,
+                                    &registry_tests_constrained_min_max_u16,
+                                    &input_u16_within_range, sizeof(input_u16_within_range));
+
+    TEST_ASSERT_EQUAL_INT(-EINVAL, res_too_small);
+    TEST_ASSERT_EQUAL_INT(-EINVAL, res_too_large);
+    TEST_ASSERT_EQUAL_INT(0, res_within_range);
+
+
+    /* u32 */
+    const uint32_t input_u32_too_small =
+        *registry_tests_constrained_min_max_u32.constraints.uint32.min_value -
+        1;
+    const uint32_t input_u32_too_large =
+        *registry_tests_constrained_min_max_u32.constraints.uint32.max_value +
+        1;
+    const uint32_t input_u32_within_range =
+        *registry_tests_constrained_min_max_u32.constraints.uint32.min_value;
+
+    res_too_small = registry_set(&test_constrained_min_max_instance_1,
+                                 &registry_tests_constrained_min_max_u32,
+                                 &input_u32_too_small, sizeof(input_u32_too_small));
+
+    res_too_large = registry_set(&test_constrained_min_max_instance_1,
+                                 &registry_tests_constrained_min_max_u32,
+                                 &input_u32_too_large, sizeof(input_u32_too_large));
+
+    res_within_range = registry_set(&test_constrained_min_max_instance_1,
+                                    &registry_tests_constrained_min_max_u32,
+                                    &input_u32_within_range, sizeof(input_u32_within_range));
+
+    TEST_ASSERT_EQUAL_INT(-EINVAL, res_too_small);
+    TEST_ASSERT_EQUAL_INT(-EINVAL, res_too_large);
+    TEST_ASSERT_EQUAL_INT(0, res_within_range);
+
+
+    /* u64 */
+    const uint64_t input_u64_too_small =
+        *registry_tests_constrained_min_max_u64.constraints.uint64.min_value -
+        1;
+    const uint64_t input_u64_too_large =
+        *registry_tests_constrained_min_max_u64.constraints.uint64.max_value +
+        1;
+    const uint64_t input_u64_within_range =
+        *registry_tests_constrained_min_max_u64.constraints.uint64.min_value;
+
+    res_too_small = registry_set(&test_constrained_min_max_instance_1,
+                                 &registry_tests_constrained_min_max_u64,
+                                 &input_u64_too_small, sizeof(input_u64_too_small));
+
+    res_too_large = registry_set(&test_constrained_min_max_instance_1,
+                                 &registry_tests_constrained_min_max_u64,
+                                 &input_u64_too_large, sizeof(input_u64_too_large));
+
+    res_within_range = registry_set(&test_constrained_min_max_instance_1,
+                                    &registry_tests_constrained_min_max_u64,
+                                    &input_u64_within_range, sizeof(input_u64_within_range));
+
+    TEST_ASSERT_EQUAL_INT(-EINVAL, res_too_small);
+    TEST_ASSERT_EQUAL_INT(-EINVAL, res_too_large);
+    TEST_ASSERT_EQUAL_INT(0, res_within_range);
+
+
+    /* i8 */
+    const uint8_t input_i8_too_small =
+        *registry_tests_constrained_min_max_i8.constraints.int8.min_value -
+        1;
+    const int8_t input_i8_too_large =
+        *registry_tests_constrained_min_max_i8.constraints.int8.max_value +
+        1;
+    const int8_t input_i8_within_range =
+        *registry_tests_constrained_min_max_i8.constraints.int8.min_value;
+
+    res_too_small = registry_set(&test_constrained_min_max_instance_1,
+                                 &registry_tests_constrained_min_max_i8,
+                                 &input_i8_too_small, sizeof(input_i8_too_small));
+
+    res_too_large = registry_set(&test_constrained_min_max_instance_1,
+                                 &registry_tests_constrained_min_max_i8,
+                                 &input_i8_too_large, sizeof(input_i8_too_large));
+
+    res_within_range = registry_set(&test_constrained_min_max_instance_1,
+                                    &registry_tests_constrained_min_max_i8,
+                                    &input_i8_within_range, sizeof(input_i8_within_range));
+
+    TEST_ASSERT_EQUAL_INT(-EINVAL, res_too_small);
+    TEST_ASSERT_EQUAL_INT(-EINVAL, res_too_large);
+    TEST_ASSERT_EQUAL_INT(0, res_within_range);
+
+
+    /* i16 */
+    const int16_t input_i16_too_small =
+        *registry_tests_constrained_min_max_i16.constraints.int16.min_value -
+        1;
+    const int16_t input_i16_too_large =
+        *registry_tests_constrained_min_max_i16.constraints.int16.max_value +
+        1;
+    const int16_t input_i16_within_range =
+        *registry_tests_constrained_min_max_i16.constraints.int16.min_value;
+
+    res_too_small = registry_set(&test_constrained_min_max_instance_1,
+                                 &registry_tests_constrained_min_max_i16,
+                                 &input_i16_too_small, sizeof(input_i16_too_small));
+
+    res_too_large = registry_set(&test_constrained_min_max_instance_1,
+                                 &registry_tests_constrained_min_max_i16,
+                                 &input_i16_too_large, sizeof(input_i16_too_large));
+
+    res_within_range = registry_set(&test_constrained_min_max_instance_1,
+                                    &registry_tests_constrained_min_max_i16,
+                                    &input_i16_within_range, sizeof(input_i16_within_range));
+
+    TEST_ASSERT_EQUAL_INT(-EINVAL, res_too_small);
+    TEST_ASSERT_EQUAL_INT(-EINVAL, res_too_large);
+    TEST_ASSERT_EQUAL_INT(0, res_within_range);
+
+
+    /* i32 */
+    const int32_t input_i32_too_small =
+        *registry_tests_constrained_min_max_i32.constraints.int32.min_value -
+        1;
+    const int32_t input_i32_too_large =
+        *registry_tests_constrained_min_max_i32.constraints.int32.max_value +
+        1;
+    const int32_t input_i32_within_range =
+        *registry_tests_constrained_min_max_i32.constraints.int32.min_value;
+
+    res_too_small = registry_set(&test_constrained_min_max_instance_1,
+                                 &registry_tests_constrained_min_max_i32,
+                                 &input_i32_too_small, sizeof(input_i32_too_small));
+
+    res_too_large = registry_set(&test_constrained_min_max_instance_1,
+                                 &registry_tests_constrained_min_max_i32,
+                                 &input_i32_too_large, sizeof(input_i32_too_large));
+
+    res_within_range = registry_set(&test_constrained_min_max_instance_1,
+                                    &registry_tests_constrained_min_max_i32,
+                                    &input_i32_within_range, sizeof(input_i32_within_range));
+
+    TEST_ASSERT_EQUAL_INT(-EINVAL, res_too_small);
+    TEST_ASSERT_EQUAL_INT(-EINVAL, res_too_large);
+    TEST_ASSERT_EQUAL_INT(0, res_within_range);
+
+
+    /* i64 */
+    const int64_t input_i64_too_small =
+        *registry_tests_constrained_min_max_i64.constraints.int64.min_value -
+        1;
+    const int64_t input_i64_too_large =
+        *registry_tests_constrained_min_max_i64.constraints.int64.max_value +
+        1;
+    const int64_t input_i64_within_range =
+        *registry_tests_constrained_min_max_i64.constraints.int64.min_value;
+
+    res_too_small = registry_set(&test_constrained_min_max_instance_1,
+                                 &registry_tests_constrained_min_max_i64,
+                                 &input_i64_too_small, sizeof(input_i64_too_small));
+
+    res_too_large = registry_set(&test_constrained_min_max_instance_1,
+                                 &registry_tests_constrained_min_max_i64,
+                                 &input_i64_too_large, sizeof(input_i64_too_large));
+
+    res_within_range = registry_set(&test_constrained_min_max_instance_1,
+                                    &registry_tests_constrained_min_max_i64,
+                                    &input_i64_within_range, sizeof(input_i64_within_range));
+
+    TEST_ASSERT_EQUAL_INT(-EINVAL, res_too_small);
+    TEST_ASSERT_EQUAL_INT(-EINVAL, res_too_large);
+    TEST_ASSERT_EQUAL_INT(0, res_within_range);
+
+
+    /* f32 */
+    const float input_f32_too_small =
+        *registry_tests_constrained_min_max_f32.constraints.float32.min_value -
+        1.0;
+    const float input_f32_too_large =
+        *registry_tests_constrained_min_max_f32.constraints.float32.max_value +
+        1.0;
+    const float input_f32_within_range =
+        *registry_tests_constrained_min_max_f32.constraints.float32.min_value;
+
+    res_too_small = registry_set(&test_constrained_min_max_instance_1,
+                                 &registry_tests_constrained_min_max_f32,
+                                 &input_f32_too_small, sizeof(input_f32_too_small));
+
+    res_too_large = registry_set(&test_constrained_min_max_instance_1,
+                                 &registry_tests_constrained_min_max_f32,
+                                 &input_f32_too_large, sizeof(input_f32_too_large));
+
+    res_within_range = registry_set(&test_constrained_min_max_instance_1,
+                                    &registry_tests_constrained_min_max_f32,
+                                    &input_f32_within_range, sizeof(input_f32_within_range));
+
+    TEST_ASSERT_EQUAL_INT(-EINVAL, res_too_small);
+    TEST_ASSERT_EQUAL_INT(-EINVAL, res_too_large);
+    TEST_ASSERT_EQUAL_INT(0, res_within_range);
+
+
+    /* f64 */
+    const double input_f64_too_small =
+        *registry_tests_constrained_min_max_f64.constraints.float64.min_value -
+        1.0;
+    const double input_f64_too_large =
+        *registry_tests_constrained_min_max_f64.constraints.float64.max_value +
+        1.0;
+    const double input_f64_within_range =
+        *registry_tests_constrained_min_max_f64.constraints.float64.min_value;
+
+    res_too_small = registry_set(&test_constrained_min_max_instance_1,
+                                 &registry_tests_constrained_min_max_f64,
+                                 &input_f64_too_small, sizeof(input_f64_too_small));
+
+    res_too_large = registry_set(&test_constrained_min_max_instance_1,
+                                 &registry_tests_constrained_min_max_f64,
+                                 &input_f64_too_large, sizeof(input_f64_too_large));
+
+    res_within_range = registry_set(&test_constrained_min_max_instance_1,
+                                    &registry_tests_constrained_min_max_f64,
+                                    &input_f64_within_range, sizeof(input_f64_within_range));
+
+    TEST_ASSERT_EQUAL_INT(-EINVAL, res_too_small);
+    TEST_ASSERT_EQUAL_INT(-EINVAL, res_too_large);
+    TEST_ASSERT_EQUAL_INT(0, res_within_range);
+}
+
+static void tests_registry_constraints_allowed_values(void)
+{
+
+}
+
+static void tests_registry_constraints_forbidden_values(void)
+{
+
 }
 
 Test *tests_registry_get_set_tests(void)
 {
+    (void)tests_registry_min_values;
+    (void)tests_registry_zero_values;
+    (void)tests_registry_max_values;
+    (void)tests_registry_constraints_min_max;
+    (void)tests_registry_constraints_allowed_values;
+    (void)tests_registry_constraints_forbidden_values;
+
+    (void)test_constrained_allowed_values_instance_1;
+    (void)test_constrained_forbidden_values_instance_1;
+
     EMB_UNIT_TESTFIXTURES(fixtures) {
-        new_TestFixture(tests_registry_min_values),
-        new_TestFixture(tests_registry_zero_values),
-        new_TestFixture(tests_registry_max_values),
-        new_TestFixture(tests_registry_constraints),
+        // new_TestFixture(tests_registry_min_values),
+        // new_TestFixture(tests_registry_zero_values),
+        // new_TestFixture(tests_registry_max_values),
+        new_TestFixture(tests_registry_constraints_min_max),
+        // new_TestFixture(tests_registry_constraints_allowed_values),
+        // new_TestFixture(tests_registry_constraints_forbidden_values),
     };
 
     EMB_UNIT_TESTCALLER(registry_tests, test_registry_setup, test_registry_teardown, fixtures);

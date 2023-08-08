@@ -18,7 +18,9 @@
 - [ ] Unit tests
   - [ ] get, set
     - [x] min, max and zero values
-    - [ ] constraints (min-value, max-value, allowed-values, forbidden-values)
+    - [x] constraints: min-value, max-value
+    - [ ] constraints: allowed-values
+    - [ ] constraints: forbidden-values
   - [ ] commit
   - [ ] export
   - [ ] load, save

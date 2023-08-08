@@ -148,6 +148,7 @@ int registry_get(const registry_instance_t *instance, const registry_parameter_t
         for (size_t i = 0; i < _parameter->constraints._type_field_name.allowed_values_len; \
              i++) { \
             if (_parameter->constraints._type_field_name.allowed_values[i] == *(_type *)_buf) { \
+                printf("\n\nLOL\n\n"); \
                 _passed_checks = true; \
             } \
         } \
@@ -243,85 +244,84 @@ int registry_set(const registry_instance_t *instance, const registry_parameter_t
         return -EINVAL;
     }
 
-    // TODO FIX BUG
-    // if (IS_ACTIVE(CONFIG_REGISTRY_ENABLE_ALLOWED_VALUES_CHECK) ||
-    //     IS_ACTIVE(CONFIG_REGISTRY_ENABLE_FORBIDDEN_VALUES_CHECK) ||
-    //     IS_ACTIVE(CONFIG_REGISTRY_ENABLE_MIN_VALUE_CHECK) ||
-    //     IS_ACTIVE(CONFIG_REGISTRY_ENABLE_MAX_VALUE_CHECK)) {
+    if (IS_ACTIVE(CONFIG_REGISTRY_ENABLE_ALLOWED_VALUES_CHECK) ||
+        IS_ACTIVE(CONFIG_REGISTRY_ENABLE_FORBIDDEN_VALUES_CHECK) ||
+        IS_ACTIVE(CONFIG_REGISTRY_ENABLE_MIN_VALUE_CHECK) ||
+        IS_ACTIVE(CONFIG_REGISTRY_ENABLE_MAX_VALUE_CHECK)) {
 
-    //     bool passed_checks = true;
-    //     switch (parameter->type) {
-    //     case REGISTRY_TYPE_NONE:
-    //         break;
+        bool passed_checks = true;
+        switch (parameter->type) {
+        case REGISTRY_TYPE_NONE:
+            break;
 
-    //     case REGISTRY_TYPE_OPAQUE:
-    //         _REGISTRY_CHECK_SET_CONSTRAINTS_OF_ARRAY_TYPE(passed_checks, opaque, parameter, buf,
-    //                                                       buf_len)
-    //         break;
+        case REGISTRY_TYPE_OPAQUE:
+            _REGISTRY_CHECK_SET_CONSTRAINTS_OF_ARRAY_TYPE(passed_checks, opaque, parameter, buf,
+                                                          buf_len)
+            break;
 
-    //     case REGISTRY_TYPE_STRING:
-    //         _REGISTRY_CHECK_SET_CONSTRAINTS_OF_ARRAY_TYPE(passed_checks, string, parameter, buf,
-    //                                                       buf_len)
-    //         break;
+        case REGISTRY_TYPE_STRING:
+            _REGISTRY_CHECK_SET_CONSTRAINTS_OF_ARRAY_TYPE(passed_checks, string, parameter, buf,
+                                                          buf_len)
+            break;
 
-    //     case REGISTRY_TYPE_BOOL:
-    //         /* the boolean data type has no constraints*/
-    //         break;
+        case REGISTRY_TYPE_BOOL:
+            /* the boolean data type has no constraints*/
+            break;
 
-    //     case REGISTRY_TYPE_UINT8:
-    //         _REGISTRY_CHECK_SET_CONSTRAINTS_OF_VALUE_TYPE(passed_checks, uint8_t, uint8, parameter,
-    //                                                       buf)
-    //         break;
+        case REGISTRY_TYPE_UINT8:
+            _REGISTRY_CHECK_SET_CONSTRAINTS_OF_VALUE_TYPE(passed_checks, uint8_t, uint8, parameter,
+                                                          buf)
+            break;
 
-    //     case REGISTRY_TYPE_UINT16:
-    //         _REGISTRY_CHECK_SET_CONSTRAINTS_OF_VALUE_TYPE(passed_checks, uint16_t, uint16,
-    //                                                       parameter,
-    //                                                       buf)
-    //         break;
+        case REGISTRY_TYPE_UINT16:
+            _REGISTRY_CHECK_SET_CONSTRAINTS_OF_VALUE_TYPE(passed_checks, uint16_t, uint16,
+                                                          parameter,
+                                                          buf)
+            break;
 
-    //     case REGISTRY_TYPE_UINT32:
-    //         _REGISTRY_CHECK_SET_CONSTRAINTS_OF_VALUE_TYPE(passed_checks, uint32_t, uint32,
-    //                                                       parameter,
-    //                                                       buf)
-    //         break;
+        case REGISTRY_TYPE_UINT32:
+            _REGISTRY_CHECK_SET_CONSTRAINTS_OF_VALUE_TYPE(passed_checks, uint32_t, uint32,
+                                                          parameter,
+                                                          buf)
+            break;
 
-    //     case REGISTRY_TYPE_UINT64:
-    //         _REGISTRY_CHECK_SET_CONSTRAINTS_OF_VALUE_TYPE(passed_checks, uint64_t, uint64,
-    //                                                       parameter,
-    //                                                       buf)
-    //         break;
+        case REGISTRY_TYPE_UINT64:
+            _REGISTRY_CHECK_SET_CONSTRAINTS_OF_VALUE_TYPE(passed_checks, uint64_t, uint64,
+                                                          parameter,
+                                                          buf)
+            break;
 
-    //     case REGISTRY_TYPE_INT8:
-    //         _REGISTRY_CHECK_SET_CONSTRAINTS_OF_VALUE_TYPE(passed_checks, int8_t, int8, parameter,
-    //                                                       buf)
-    //         break;
+        case REGISTRY_TYPE_INT8:
+            _REGISTRY_CHECK_SET_CONSTRAINTS_OF_VALUE_TYPE(passed_checks, int8_t, int8, parameter,
+                                                          buf)
+            break;
 
-    //     case REGISTRY_TYPE_INT16:
-    //         _REGISTRY_CHECK_SET_CONSTRAINTS_OF_VALUE_TYPE(passed_checks, int16_t, int16, parameter,
-    //                                                       buf)
-    //         break;
+        case REGISTRY_TYPE_INT16:
+            _REGISTRY_CHECK_SET_CONSTRAINTS_OF_VALUE_TYPE(passed_checks, int16_t, int16, parameter,
+                                                          buf)
+            break;
 
-    //     case REGISTRY_TYPE_INT32:
-    //         _REGISTRY_CHECK_SET_CONSTRAINTS_OF_VALUE_TYPE(passed_checks, int32_t, int32, parameter,
-    //                                                       buf)
-    //         break;
+        case REGISTRY_TYPE_INT32:
+            _REGISTRY_CHECK_SET_CONSTRAINTS_OF_VALUE_TYPE(passed_checks, int32_t, int32, parameter,
+                                                          buf)
+            break;
 
-    //     case REGISTRY_TYPE_INT64:
-    //         _REGISTRY_CHECK_SET_CONSTRAINTS_OF_VALUE_TYPE(passed_checks, int64_t, int64, parameter,
-    //                                                       buf)
-    //         break;
+        case REGISTRY_TYPE_INT64:
+            _REGISTRY_CHECK_SET_CONSTRAINTS_OF_VALUE_TYPE(passed_checks, int64_t, int64, parameter,
+                                                          buf)
+            break;
 
-    //     case REGISTRY_TYPE_FLOAT32:
-    //         _REGISTRY_CHECK_SET_CONSTRAINTS_OF_VALUE_TYPE(passed_checks, float, float32, parameter,
-    //                                                       buf)
-    //         break;
+        case REGISTRY_TYPE_FLOAT32:
+            _REGISTRY_CHECK_SET_CONSTRAINTS_OF_VALUE_TYPE(passed_checks, float, float32, parameter,
+                                                          buf)
+            break;
 
-    //     case REGISTRY_TYPE_FLOAT64:
-    //         _REGISTRY_CHECK_SET_CONSTRAINTS_OF_VALUE_TYPE(passed_checks, double, float64, parameter,
-    //                                                       buf)
-    //         break;
-    //     }
-    // }
+        case REGISTRY_TYPE_FLOAT64:
+            _REGISTRY_CHECK_SET_CONSTRAINTS_OF_VALUE_TYPE(passed_checks, double, float64, parameter,
+                                                          buf)
+            break;
+        }
+    }
 
     /* call handler to apply the new value to the correct parameter in the instance of the schema */
     memcpy(intern_val, buf, buf_len);

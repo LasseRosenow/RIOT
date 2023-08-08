@@ -94,5 +94,5 @@ typedef enum {
 }
 #endif
 
-#endif /* REGISTRY_NAMESPACE_SYS_RGB_LED_H */
+#endif /* MODULE_REGISTRY_NAMESPACE_TESTS_FULL */
 /** @} */
