@@ -1310,16 +1310,6 @@ static void tests_registry_constraints_forbidden_values(void)
 
 Test *tests_registry_get_set_tests(void)
 {
-    (void)tests_registry_min_values;
-    (void)tests_registry_zero_values;
-    (void)tests_registry_max_values;
-    (void)tests_registry_constraints_min_max;
-    (void)tests_registry_constraints_allowed_values;
-    (void)tests_registry_constraints_forbidden_values;
-
-    (void)test_constrained_allowed_values_instance_1;
-    (void)test_constrained_forbidden_values_instance_1;
-
     EMB_UNIT_TESTFIXTURES(fixtures) {
         new_TestFixture(tests_registry_min_values),
         new_TestFixture(tests_registry_zero_values),

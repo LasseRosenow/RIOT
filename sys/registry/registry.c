@@ -36,16 +36,6 @@
 
 XFA_INIT_CONST(registry_namespace_t *, _registry_namespaces_xfa);
 
-void registry_init(void)
-{
-    /* set namespace_id to its index value */
-    for (size_t i = 0; i < XFA_LEN(registry_namespace_t *, _registry_namespaces_xfa); i++) {
-        registry_namespace_t *namespace = _registry_namespaces_xfa[i];
-
-        *(registry_namespace_id_t *)&namespace->id = i;
-    }
-}
-
 int registry_register_schema_instance(const registry_schema_t *schema,
                                       const registry_instance_t *instance)
 {

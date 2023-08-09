@@ -1,4 +1,4 @@
-SRC := registry.c util.c
+SRC := registry.c util.c init.c
 
 SUBMODULES := 1
 

@@ -69,7 +69,10 @@
         "embunit.h": "c",
         "constrained_min_max.h": "c",
         "constrained_allowed_values.h": "c",
-        "constrained_forbidden_values.h": "c"
+        "constrained_forbidden_values.h": "c",
+        "auto_init.h": "c",
+        "auto_init_utils.h": "c",
+        "nested.h": "c"
     },
     "C_Cpp.dimInactiveRegions": false,
 }

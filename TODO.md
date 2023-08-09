@@ -21,7 +21,7 @@
     - [x] constraints: min-value, max-value
     - [x] constraints: allowed-values
     - [x] constraints: forbidden-values
-  - [ ] commit
+  - [x] commit
   - [ ] export
   - [ ] load, save
   - [ ] int_path

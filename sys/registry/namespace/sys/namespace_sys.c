@@ -23,22 +23,23 @@
 
 #define ENABLE_DEBUG (0)
 #include "debug.h"
+#include "kernel_defines.h"
 #include "registry.h"
 
 #include "registry/namespace/sys.h"
 #include "registry/namespace/sys/rgb_led.h"
 
-/* Sys namespace */
+static const registry_schema_t *_schemas[] = {
+#if IS_USED(MODULE_REGISTRY_NAMESPACE_SYS_RGB_LED)
+    &registry_sys_rgb_led,
+#endif
+};
 
 registry_namespace_t registry_sys = {
     .name = "sys",
     .description = "Sys namespace",
-    .schemas = (const registry_schema_t *[]) {
-#if IS_USED(MODULE_REGISTRY_NAMESPACE_SYS_RGB_LED)
-        &registry_sys_rgb_led,
-#endif
-    },
-    .schemas_len = 1,
+    .schemas = _schemas,
+    .schemas_len = ARRAY_SIZE(_schemas),
 };
 
 REGISTRY_REGISTER_NAMESPACE(sys, registry_sys);
