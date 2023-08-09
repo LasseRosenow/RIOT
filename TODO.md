@@ -22,7 +22,7 @@
     - [x] constraints: allowed-values
     - [x] constraints: forbidden-values
   - [x] commit
-  - [ ] export
+  - [x] export
   - [ ] load, save
   - [ ] int_path
   - [ ] string_path
