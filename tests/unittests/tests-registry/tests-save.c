@@ -36,8 +36,6 @@
 
 #if IS_USED(MODULE_REGISTRY_NAMESPACE_TESTS_NESTED) || IS_ACTIVE(DOXYGEN)
 
-#define _TESTS_REGISTRY_LOAD_STORED_VALUE 60
-
 static registry_tests_nested_instance_t test_nested_instance_data = {
     .parameter = 9,
     .group_parameter = 5,

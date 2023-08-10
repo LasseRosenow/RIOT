@@ -395,7 +395,7 @@ const registry_parameter_t registry_tests_constrained_min_max_f64 = {
 };
 
 registry_schema_t registry_tests_constrained_min_max = {
-    .id = 0,
+    .id = REGISTRY_TESTS_CONSTRAINED_MIN_MAX_VALUES,
     .name = "constrained_min_max",
     .description = "",
     .namespace = &registry_tests,

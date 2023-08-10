@@ -395,7 +395,7 @@ const registry_parameter_t registry_tests_full_f64 = {
 };
 
 registry_schema_t registry_tests_full = {
-    .id = 0,
+    .id = REGISTRY_TESTS_FULL,
     .name = "full",
     .description = "",
     .namespace = &registry_tests,

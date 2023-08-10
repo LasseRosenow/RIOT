@@ -17,15 +17,17 @@
 
 - [ ] Unit tests
   - [x] get, set
-    - [x] min, max and zero values
-    - [x] constraints: min-value, max-value
+    - [x] min and max values of type
+    - [x] zero values
+    - [x] constraints: min-value
+    - [x] constraints: max-value
     - [x] constraints: allowed-values
     - [x] constraints: forbidden-values
   - [x] commit
   - [x] export
   - [x] load
   - [x] save
-  - [ ] int_path
+  - [x] int_path
   - [ ] string_path
   - [ ] storage_vfs
   - [ ] storage_heap

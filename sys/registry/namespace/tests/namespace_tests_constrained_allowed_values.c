@@ -408,7 +408,7 @@ const registry_parameter_t registry_tests_constrained_allowed_values_f64 = {
 };
 
 registry_schema_t registry_tests_constrained_allowed_values = {
-    .id = 0,
+    .id = REGISTRY_TESTS_CONSTRAINED_ALLOWED_VALUES,
     .name = "constrained_allowed_values",
     .description = "",
     .namespace = &registry_tests,

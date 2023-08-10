@@ -395,7 +395,7 @@ const registry_parameter_t registry_tests_constrained_forbidden_values_f64 = {
 };
 
 registry_schema_t registry_tests_constrained_forbidden_values = {
-    .id = 0,
+    .id = REGISTRY_TESTS_CONSTRAINED_FORBIDDEN_VALUES,
     .name = "constrained_forbidden_values",
     .description = "",
     .namespace = &registry_tests,

@@ -205,7 +205,7 @@ const registry_group_t registry_sys_rgb_led_brightnesses = {
 };
 
 registry_schema_t registry_sys_rgb_led = {
-    .id = 0,
+    .id = REGISTRY_SYS_RGB_LED,
     .name = "rgb_led",
     .description = "",
     .namespace = &registry_sys,

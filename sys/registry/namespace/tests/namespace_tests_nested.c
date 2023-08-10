@@ -104,7 +104,7 @@ const registry_parameter_t registry_tests_nested_group_parameter = {
 };
 
 registry_schema_t registry_tests_nested = {
-    .id = 0,
+    .id = REGISTRY_TESTS_NESTED,
     .name = "nested",
     .description = "",
     .namespace = &registry_tests,

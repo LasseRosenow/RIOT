@@ -26,9 +26,15 @@ extern "C" {
 
 #include "registry.h"
 
-/* Tests namespace */
-
 extern registry_namespace_t registry_tests;
+
+typedef enum {
+    REGISTRY_TESTS_CONSTRAINED_ALLOWED_VALUES,
+    REGISTRY_TESTS_CONSTRAINED_FORBIDDEN_VALUES,
+    REGISTRY_TESTS_CONSTRAINED_MIN_MAX_VALUES,
+    REGISTRY_TESTS_FULL,
+    REGISTRY_TESTS_NESTED,
+} registry_tests_indices_t;
 
 #ifdef __cplusplus
 }
