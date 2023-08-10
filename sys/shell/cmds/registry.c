@@ -61,6 +61,7 @@ static int _parse_string_path(const char *string_path,
     }
 
     /* get schema_id */
+    ptr++; /* skip the '/' character */
     registry_schema_id_t schema_id = strtol(ptr, &ptr, 10);
 
     if (*ptr == '\0') {
@@ -73,6 +74,7 @@ static int _parse_string_path(const char *string_path,
     }
 
     /* get instance_id */
+    ptr++; /* skip the '/' character */
     registry_instance_id_t instance_id = strtol(ptr, &ptr, 10);
 
     if (*ptr == '\0') {
@@ -85,20 +87,20 @@ static int _parse_string_path(const char *string_path,
         return 0;
     }
 
-    /* get resource_id */
-    // TODO FIX THIS
-    // registry_resource_id_t resource_id = strtol(ptr, &ptr, 10);
+    /* get group_or_parameter_id */
+    ptr++; /* skip the '/' character */
+    registry_group_or_parameter_id_t group_or_parameter_id = strtol(ptr, &ptr, 10);
 
-    // if (*ptr == '\0') {
-    //     registry_path->resource_path = (registry_resource_int_path_t) {
-    //         .namespace_id = namespace_id,
-    //         .schema_id = schema_id,
-    //         .instance_id = instance_id,
-    //         .resource_id = resource_id,
-    //     };
-    //     *registry_path_type = REGISTRY_INT_PATH_TYPE_RESOURCE;
-    //     return 0;
-    // }
+    if (*ptr == '\0') {
+        registry_path->group_or_parameter_path = (registry_group_or_parameter_int_path_t) {
+            .namespace_id = namespace_id,
+            .schema_id = schema_id,
+            .instance_id = instance_id,
+            .group_or_parameter_id = group_or_parameter_id,
+        };
+        *registry_path_type = REGISTRY_INT_PATH_TYPE_GROUP_OR_PARAMETER;
+        return 0;
+    }
 
     return 0;
 }
@@ -188,14 +190,19 @@ static int _registry(int argc, char **argv)
             return 1;
         }
 
-        if (path_type != REGISTRY_INT_PATH_TYPE_PARAMETER) {
+        if (path_type != REGISTRY_INT_PATH_TYPE_GROUP_OR_PARAMETER) {
             return -EINVAL;
         }
 
         /* get instance and parameter of the path */
-        int res =
-            registry_from_parameter_int_path(&path.parameter_path, NULL, NULL, &instance,
-                                             &parameter);
+        int res = registry_from_group_or_parameter_int_path(&path.group_or_parameter_path,
+                                                            &path_type, NULL, NULL, &instance,
+                                                            &group, &parameter);
+
+        if (path_type != REGISTRY_INT_PATH_TYPE_PARAMETER) {
+            return -EINVAL;
+        }
+
         if (res == 0) {
             res = registry_get(instance, parameter, &value);
 
@@ -222,14 +229,19 @@ static int _registry(int argc, char **argv)
             return 1;
         }
 
-        if (path_type != REGISTRY_INT_PATH_TYPE_PARAMETER) {
+        if (path_type != REGISTRY_INT_PATH_TYPE_GROUP_OR_PARAMETER) {
             return -EINVAL;
         }
 
         /* get instance and parameter of the path */
-        int res =
-            registry_from_parameter_int_path(&path.parameter_path, NULL, NULL, &instance,
-                                             &parameter);
+        int res = registry_from_group_or_parameter_int_path(&path.group_or_parameter_path,
+                                                            &path_type, NULL, NULL, &instance,
+                                                            &group, &parameter);
+
+        if (path_type != REGISTRY_INT_PATH_TYPE_PARAMETER) {
+            return -EINVAL;
+        }
+
         if (res == 0) {
             /* get value from the registry, to know its correct type and size */
             res = registry_get(instance, parameter, &value);
@@ -280,15 +292,23 @@ static int _registry(int argc, char **argv)
                 break;
 
             case REGISTRY_INT_PATH_TYPE_GROUP:
-                registry_from_group_int_path(&path.group_path, &namespace, &schema, &instance,
-                                             &group);
-                registry_commit_group(instance, group);
+                /* should not happen as we don't yet know if it is a group or a parameter */
                 break;
 
             case REGISTRY_INT_PATH_TYPE_PARAMETER:
-                registry_from_parameter_int_path(&path.parameter_path, &namespace, &schema,
-                                                 &instance, &parameter);
-                registry_commit_parameter(instance, parameter);
+                /* should not happen as we don't yet know if it is a group or a parameter */
+                break;
+
+            case REGISTRY_INT_PATH_TYPE_GROUP_OR_PARAMETER:
+                registry_from_group_or_parameter_int_path(&path.group_or_parameter_path, &path_type,
+                                                          &namespace, &schema, &instance,
+                                                          &group, &parameter);
+                if (path_type == REGISTRY_INT_PATH_TYPE_GROUP) {
+                    registry_commit_group(instance, group);
+                }
+                else if (path_type == REGISTRY_INT_PATH_TYPE_PARAMETER) {
+                    registry_commit_parameter(instance, parameter);
+                }
                 break;
             }
             return 0;

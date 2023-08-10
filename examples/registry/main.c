@@ -31,15 +31,15 @@
 #include "registry/storage.h"
 
 int rgb_led_instance_0_commit_cb(const registry_commit_cb_scope_t scope,
-                                 const registry_resource_id_t *resource_id,
+                                 const registry_group_or_parameter_id_t *group_or_parameter_id,
                                  const void *context)
 {
     (void)scope;
     (void)context;
     printf("RGB instance commit_cb was executed on ");
 
-    if (resource_id != NULL) {
-        printf("param: /%d", *resource_id);
+    if (group_or_parameter_id != NULL) {
+        printf("param: /%d", *group_or_parameter_id);
     }
     else {
         printf("whole instance");
@@ -123,7 +123,7 @@ int main(void)
     registry_value_t output_value;
     registry_get(&rgb_led_instance_0, &registry_sys_rgb_led_red, &output_value);
 
-    registry_commit();
+    // registry_commit();
 
     /* init and run CLI */
     char line_buf[SHELL_DEFAULT_BUFSIZE];

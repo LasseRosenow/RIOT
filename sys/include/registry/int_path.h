@@ -71,12 +71,20 @@ typedef struct {
     registry_parameter_id_t parameter_id;
 } registry_parameter_int_path_t;
 
+typedef struct {
+    registry_namespace_id_t namespace_id;
+    registry_schema_id_t schema_id;
+    registry_instance_id_t instance_id;
+    registry_group_or_parameter_id_t group_or_parameter_id;
+} registry_group_or_parameter_int_path_t;
+
 typedef enum {
     REGISTRY_INT_PATH_TYPE_NAMESPACE,
     REGISTRY_INT_PATH_TYPE_SCHEMA,
     REGISTRY_INT_PATH_TYPE_INSTANCE,
     REGISTRY_INT_PATH_TYPE_GROUP,
     REGISTRY_INT_PATH_TYPE_PARAMETER,
+    REGISTRY_INT_PATH_TYPE_GROUP_OR_PARAMETER,
 }registry_int_path_type_t;
 
 typedef union {
@@ -85,6 +93,7 @@ typedef union {
     registry_instance_int_path_t instance_path;
     registry_group_int_path_t group_path;
     registry_parameter_int_path_t parameter_path;
+    registry_group_or_parameter_int_path_t group_or_parameter_path;
 } registry_int_path_t;
 
 /* to int path */
@@ -119,6 +128,14 @@ int registry_from_parameter_int_path(const registry_parameter_int_path_t *path,
                                      registry_namespace_t **namespace, registry_schema_t **schema,
                                      registry_instance_t **instance,
                                      registry_parameter_t **parameter);
+
+int registry_from_group_or_parameter_int_path(const registry_group_or_parameter_int_path_t *path,
+                                              registry_int_path_type_t *path_type,
+                                              registry_namespace_t **namespace,
+                                              registry_schema_t **schema,
+                                              registry_instance_t **instance,
+                                              registry_group_t **group,
+                                              registry_parameter_t **parameter);
 
 #ifdef __cplusplus
 }

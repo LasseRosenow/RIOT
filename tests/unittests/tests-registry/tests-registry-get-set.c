@@ -42,11 +42,11 @@
 #if IS_USED(MODULE_REGISTRY_NAMESPACE_TESTS_FULL) || IS_ACTIVE(DOXYGEN)
 
 static int commit_cb(const registry_commit_cb_scope_t scope,
-                     const registry_resource_id_t *resource_id,
+                     const registry_group_or_parameter_id_t *group_or_parameter_id,
                      const void *context)
 {
     (void)scope;
-    (void)resource_id;
+    (void)group_or_parameter_id;
     (void)context;
 
     return 0;

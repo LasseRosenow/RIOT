@@ -36,16 +36,17 @@
 #if IS_USED(MODULE_REGISTRY_NAMESPACE_TESTS_NESTED) || IS_ACTIVE(DOXYGEN)
 
 static bool successful = false;
-static registry_resource_id_t parameter_id;
-static registry_resource_id_t group_id;
+static registry_group_or_parameter_id_t parameter_id;
+static registry_group_or_parameter_id_t group_id;
 
 static int commit_parameter_cb(const registry_commit_cb_scope_t scope,
-                               const registry_resource_id_t *resource_id,
+                               const registry_group_or_parameter_id_t *group_or_parameter_id,
                                const void *context)
 {
     (void)context;
 
-    if (scope == REGISTRY_COMMIT_PARAMETER && resource_id != NULL && *resource_id == parameter_id) {
+    if (scope == REGISTRY_COMMIT_PARAMETER && group_or_parameter_id != NULL &&
+        *group_or_parameter_id == parameter_id) {
         successful = true;
     }
 
@@ -53,12 +54,13 @@ static int commit_parameter_cb(const registry_commit_cb_scope_t scope,
 }
 
 static int commit_group_cb(const registry_commit_cb_scope_t scope,
-                           const registry_resource_id_t *resource_id,
+                           const registry_group_or_parameter_id_t *group_or_parameter_id,
                            const void *context)
 {
     (void)context;
 
-    if (scope == REGISTRY_COMMIT_GROUP && resource_id != NULL && *resource_id == group_id) {
+    if (scope == REGISTRY_COMMIT_GROUP && group_or_parameter_id != NULL &&
+        *group_or_parameter_id == group_id) {
         successful = true;
     }
 
@@ -66,12 +68,12 @@ static int commit_group_cb(const registry_commit_cb_scope_t scope,
 }
 
 static int commit_instance_cb(const registry_commit_cb_scope_t scope,
-                              const registry_resource_id_t *resource_id,
+                              const registry_group_or_parameter_id_t *group_or_parameter_id,
                               const void *context)
 {
     (void)context;
 
-    if (scope == REGISTRY_COMMIT_INSTANCE && resource_id == NULL) {
+    if (scope == REGISTRY_COMMIT_INSTANCE && group_or_parameter_id == NULL) {
         successful = true;
     }
 

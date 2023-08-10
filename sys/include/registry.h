@@ -47,9 +47,9 @@ extern "C" {
 typedef uint8_t registry_namespace_id_t;
 typedef uint32_t registry_schema_id_t;
 typedef uint16_t registry_instance_id_t;
-typedef uint16_t registry_resource_id_t;
-typedef registry_resource_id_t registry_group_id_t;
-typedef registry_resource_id_t registry_parameter_id_t;
+typedef uint16_t registry_group_or_parameter_id_t;
+typedef registry_group_or_parameter_id_t registry_group_id_t;
+typedef registry_group_or_parameter_id_t registry_parameter_id_t;
 
 typedef struct _registry_namespace_t registry_namespace_t;
 typedef struct _registry_schema_t registry_schema_t;
@@ -134,7 +134,7 @@ struct _registry_instance_t {
      * @return 0 on success, non-zero on failure
      */
     int (*commit_cb)(const registry_commit_cb_scope_t scope,
-                     const registry_resource_id_t *resource_id,
+                     const registry_group_or_parameter_id_t *group_or_parameter_id,
                      const void *context);
 
     void *context; /**< Optional context used by the instance */
