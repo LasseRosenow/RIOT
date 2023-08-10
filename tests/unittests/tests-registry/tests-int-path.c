@@ -108,6 +108,52 @@ static void tests_registry_to_namespace_int_path(void)
 }
 
 /* from int_path */
+static void tests_registry_from_group_or_parameter_int_path(void)
+{
+    registry_int_path_type_t path_type;
+    registry_namespace_t *namespace;
+    registry_schema_t *schema;
+    registry_instance_t *instance;
+    registry_group_t *group;
+    registry_parameter_t *parameter;
+
+
+    /* parameter */
+    const registry_group_or_parameter_int_path_t parameter_path = {
+        .namespace_id = registry_tests.id,
+        .schema_id = registry_tests_nested.id,
+        .instance_id = test_instance.id,
+        .group_or_parameter_id = registry_tests_nested_group_parameter.id,
+    };
+
+    registry_from_group_or_parameter_int_path(&parameter_path, &path_type, &namespace, &schema,
+                                              &instance, &group, &parameter);
+
+    TEST_ASSERT_EQUAL_INT(path_type, REGISTRY_INT_PATH_TYPE_PARAMETER);
+    TEST_ASSERT_EQUAL_INT((int)&registry_tests, (int)namespace);
+    TEST_ASSERT_EQUAL_INT((int)&registry_tests_nested, (int)schema);
+    TEST_ASSERT_EQUAL_INT((int)&test_instance, (int)instance);
+    TEST_ASSERT_EQUAL_INT((int)&registry_tests_nested_group_parameter, (int)parameter);
+
+
+    /* group */
+    const registry_group_or_parameter_int_path_t group_path = {
+        .namespace_id = registry_tests.id,
+        .schema_id = registry_tests_nested.id,
+        .instance_id = test_instance.id,
+        .group_or_parameter_id = registry_tests_nested_group.id,
+    };
+
+    registry_from_group_or_parameter_int_path(&group_path, &path_type, &namespace, &schema,
+                                              &instance, &group, &parameter);
+
+    TEST_ASSERT_EQUAL_INT(path_type, REGISTRY_INT_PATH_TYPE_GROUP);
+    TEST_ASSERT_EQUAL_INT((int)&registry_tests, (int)namespace);
+    TEST_ASSERT_EQUAL_INT((int)&registry_tests_nested, (int)schema);
+    TEST_ASSERT_EQUAL_INT((int)&test_instance, (int)instance);
+    TEST_ASSERT_EQUAL_INT((int)&registry_tests_nested_group, (int)group);
+}
+
 static void tests_registry_from_parameter_int_path(void)
 {
     const registry_parameter_int_path_t path = {
@@ -205,6 +251,7 @@ Test *tests_registry_int_path_tests(void)
         new_TestFixture(tests_registry_to_schema_int_path),
         new_TestFixture(tests_registry_to_namespace_int_path),
         /* from int_path */
+        new_TestFixture(tests_registry_from_group_or_parameter_int_path),
         new_TestFixture(tests_registry_from_parameter_int_path),
         new_TestFixture(tests_registry_from_group_int_path),
         new_TestFixture(tests_registry_from_instance_int_path),
