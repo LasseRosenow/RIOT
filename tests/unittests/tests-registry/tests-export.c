@@ -37,17 +37,6 @@
 
 static bool successful = false;
 
-static int commit_cb(const registry_commit_cb_scope_t scope,
-                     const registry_resource_id_t *resource_id,
-                     const void *context)
-{
-    (void)scope;
-    (void)resource_id;
-    (void)context;
-
-    return 0;
-}
-
 static registry_tests_nested_instance_t test_nested_instance_data = {
     .parameter = 9,
     .group_parameter = 5,
@@ -56,10 +45,8 @@ static registry_tests_nested_instance_t test_nested_instance_data = {
 static registry_instance_t test_nested_instance_1 = {
     .name = "test-nested-parameter-test",
     .data = &test_nested_instance_data,
-    .commit_cb = &commit_cb,
+    .commit_cb = NULL,
 };
-
-
 
 static int export_parameter_cb(const registry_export_cb_data_t *data,
                                const registry_export_cb_data_type_t data_type,

@@ -24,7 +24,7 @@
   - [x] commit
   - [x] export
   - [x] load
-  - [ ] save
+  - [x] save
   - [ ] int_path
   - [ ] string_path
   - [ ] storage_vfs
