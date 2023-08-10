@@ -105,68 +105,62 @@ static int _parse_string_path(const char *string_path,
     return 0;
 }
 
-// static int _export_cb(const registry_resource_path_t *path,
-//                       const registry_export_cb_data_t *data,
-//                       const registry_export_cb_data_type_t data_type,
-//                       const registry_value_t *value,
-//                       const void *context)
-// {
-//     (void)value;
-//     (void)context;
+static int _export_cb(const registry_export_cb_data_t *data,
+                      const registry_export_cb_data_type_t data_type,
+                      const void *context)
+{
+    (void)context;
 
-//     /* calculate the indentation based on the the exported data type */
-//     /* fallthrough switch is intentional */
-//     /* the more nesting we have, the more indentation we need. => highest nesting level first */
-//     size_t path_len = 0;
+    /* calculate the indentation based on the the exported data type */
+    /* fallthrough switch is intentional */
+    /* the more nesting we have, the more indentation we need. => highest nesting level first */
+    size_t indentation = 0;
 
-//     switch (data_type) {
-//     case REGISTRY_EXPORT_PARAMETER:
-//         printf("%d %s\n", data->parameter->id, data->parameter->name);
-//         __attribute__ ((fallthrough));
+    switch (data_type) {
+    case REGISTRY_EXPORT_PARAMETER:
+    case REGISTRY_EXPORT_GROUP:
+        indentation++;
+        __attribute__ ((fallthrough));
 
-//     case REGISTRY_EXPORT_GROUP:
-//         printf("%d %s\n", data->group->id, data->group->name);
-//         __attribute__ ((fallthrough));
+    case REGISTRY_EXPORT_INSTANCE:
+        indentation++;
+        __attribute__ ((fallthrough));
 
-//     case REGISTRY_EXPORT_INSTANCE:
-//         path_len++;
-//         __attribute__ ((fallthrough));
+    case REGISTRY_EXPORT_SCHEMA:
+        indentation++;
+        __attribute__ ((fallthrough));
 
-//     case REGISTRY_EXPORT_SCHEMA:
-//         path_len++;
-//         __attribute__ ((fallthrough));
+    case REGISTRY_EXPORT_NAMESPACE:
+        indentation++;
+    }
 
-//     case REGISTRY_EXPORT_NAMESPACE:
-//         path_len++;
-//     }
+    printf("%*c\b", ((indentation - 1) * 2) + 1, ' ');
 
-//     printf("%*c\b", ((path_len - 1) * 2) + 1, ' ');
+    /* print the path element, that is currently being exported */
+    switch (data_type) {
+    case REGISTRY_EXPORT_NAMESPACE:
+        printf("%d %s\n", data->namespace->id, data->namespace->name);
+        break;
 
-//     /* print the path element, that is currently being exported */
-//     switch (data_type) {
-//     case REGISTRY_EXPORT_NAMESPACE:
-//         printf("%d %s\n", *path->namespace_id, data->namespace->name);
-//         break;
+    case REGISTRY_EXPORT_SCHEMA:
+        printf("%d %s\n", data->schema->id, data->schema->name);
+        break;
 
-//     case REGISTRY_EXPORT_SCHEMA:
-//         printf("%d %s\n", *path->schema_id, data->schema->name);
-//         break;
+    case REGISTRY_EXPORT_INSTANCE:
+        printf("%d %s\n", data->instance->id, data->instance->name);
+        break;
 
-//     case REGISTRY_EXPORT_INSTANCE:
-//         printf("%d %s\n", *path->instance_id, data->instance->name);
-//         break;
+    case REGISTRY_EXPORT_GROUP:
+        printf("%d %s (group)\n", data->group->id, data->group->name);
+        break;
 
-//     case REGISTRY_EXPORT_GROUP:
-//         printf("%d %s\n", data->group->id, data->group->name);
-//         break;
+    case REGISTRY_EXPORT_PARAMETER:
+        printf("%d %s\n", data->parameter.data->id, data->parameter.data->name);
+        break;
+    }
 
-//     case REGISTRY_EXPORT_PARAMETER:
-//         printf("%d %s\n", data->parameter->id, data->parameter->name);
-//         break;
-//     }
-
-//     return 0;
-// }
+    return 0;
+}
 
 static int _registry(int argc, char **argv)
 {
@@ -273,73 +267,134 @@ static int _registry(int argc, char **argv)
         int res = 0;
 
         /* commit depending on the path type */
-        if (res == 0) {
-            switch (path_type) {
-            case REGISTRY_INT_PATH_TYPE_NAMESPACE:
-                registry_from_namespace_int_path(&path.namespace_path, &namespace);
-                registry_commit_namespace(namespace);
-                break;
+        switch (path_type) {
+        case REGISTRY_INT_PATH_TYPE_NAMESPACE:
+            res = registry_from_namespace_int_path(&path.namespace_path, &namespace);
+            if (res == 0) {
+                res = registry_commit_namespace(namespace);
+            }
+            break;
 
-            case REGISTRY_INT_PATH_TYPE_SCHEMA:
-                registry_from_schema_int_path(&path.schema_path, &namespace, &schema);
-                registry_commit_schema(schema);
-                break;
+        case REGISTRY_INT_PATH_TYPE_SCHEMA:
+            res = registry_from_schema_int_path(&path.schema_path, &namespace, &schema);
+            if (res == 0) {
+                res = registry_commit_schema(schema);
+            }
+            break;
 
-            case REGISTRY_INT_PATH_TYPE_INSTANCE:
-                registry_from_instance_int_path(&path.instance_path, &namespace, &schema,
-                                                &instance);
-                registry_commit_instance(instance);
-                break;
+        case REGISTRY_INT_PATH_TYPE_INSTANCE:
+            res = registry_from_instance_int_path(&path.instance_path, &namespace, &schema,
+                                                  &instance);
+            if (res == 0) {
+                res = registry_commit_instance(instance);
+            }
+            break;
 
-            case REGISTRY_INT_PATH_TYPE_GROUP:
-                /* should not happen as we don't yet know if it is a group or a parameter */
-                break;
+        case REGISTRY_INT_PATH_TYPE_GROUP:
+            /* should not happen as we don't yet know if it is a group or a parameter */
+            break;
 
-            case REGISTRY_INT_PATH_TYPE_PARAMETER:
-                /* should not happen as we don't yet know if it is a group or a parameter */
-                break;
+        case REGISTRY_INT_PATH_TYPE_PARAMETER:
+            /* should not happen as we don't yet know if it is a group or a parameter */
+            break;
 
-            case REGISTRY_INT_PATH_TYPE_GROUP_OR_PARAMETER:
-                registry_from_group_or_parameter_int_path(&path.group_or_parameter_path, &path_type,
-                                                          &namespace, &schema, &instance,
-                                                          &group, &parameter);
+        case REGISTRY_INT_PATH_TYPE_GROUP_OR_PARAMETER:
+            res = registry_from_group_or_parameter_int_path(&path.group_or_parameter_path,
+                                                            &path_type,
+                                                            &namespace, &schema, &instance,
+                                                            &group, &parameter);
+            if (res == 0) {
                 if (path_type == REGISTRY_INT_PATH_TYPE_GROUP) {
-                    registry_commit_group(instance, group);
+                    res = registry_commit_group(instance, group);
                 }
                 else if (path_type == REGISTRY_INT_PATH_TYPE_PARAMETER) {
-                    registry_commit_parameter(instance, parameter);
+                    res = registry_commit_parameter(instance, parameter);
                 }
-                break;
             }
-            return 0;
+            break;
         }
 
-        printf("error: %d\n", res);
-        return 1;
+        if (res != 0) {
+            printf("error: %d\n", res);
+            return 1;
+        }
+
+        return 0;
     }
     else if (strcmp(argv[1], "export") == 0) {
-        // TODO export is now very different because of new path API
+        /* if the path is invalid, it can also just be non existent, so other arguments like -r need to be checked */
+        bool invalid_path = false;
+        if (_parse_string_path(argv[2], &path, &path_type) < 0) {
+            invalid_path = true;
+        }
+        if (invalid_path && strcmp(argv[2], "-r") != 0) {
+            printf("usage: %s %s <path> [-r <recursion depth>]\n", argv[0], argv[1]);
+            return 1;
+        }
 
-        // /* if the path is invalid, it can also just be non existent, so other arguments like -r need to be checked */
-        // bool invalid_path = false;
-        // if (_parse_string_path(argv[2], &path) < 0) {
-        //     invalid_path = true;
-        // }
-        // if (invalid_path && strcmp(argv[2], "-r") != 0) {
-        //     printf("usage: %s %s <path> [-r <recursion depth>]\n", argv[0], argv[1]);
-        //     return 1;
-        // }
+        /* the argv index of -r varies depending on if a path was specified or not */
+        int recursion_level = 0;
+        if (invalid_path && argc > 3 && strcmp(argv[2], "-r") == 0) {
+            recursion_level = atoi(argv[3]);
+        }
+        else if (argc > 4 && strcmp(argv[3], "-r") == 0) {
+            recursion_level = atoi(argv[4]);
+        }
 
-        // /* the argv index of -r varies depending on if a path was specified or not */
-        // int recursion_level = 0;
-        // if (invalid_path && argc > 3 && strcmp(argv[2], "-r") == 0) {
-        //     recursion_level = atoi(argv[3]);
-        // }
-        // else if (argc > 4 && strcmp(argv[3], "-r") == 0) {
-        //     recursion_level = atoi(argv[4]);
-        // }
+        int res = 0;
 
-        // registry_export_by_path(_export_cb, &path, recursion_level, NULL);
+        switch (path_type) {
+        case REGISTRY_INT_PATH_TYPE_NAMESPACE:
+            res = registry_from_namespace_int_path(&path.namespace_path, &namespace);
+            if (res == 0) {
+                res = registry_export_namespace(namespace, _export_cb, recursion_level, NULL);
+            }
+            break;
+
+        case REGISTRY_INT_PATH_TYPE_SCHEMA:
+            res = registry_from_schema_int_path(&path.schema_path, &namespace, &schema);
+            if (res == 0) {
+                res = registry_export_schema(schema, _export_cb, recursion_level, NULL);
+            }
+            break;
+
+        case REGISTRY_INT_PATH_TYPE_INSTANCE:
+            res = registry_from_instance_int_path(&path.instance_path, &namespace, &schema,
+                                                  &instance);
+            if (res == 0) {
+                res = registry_export_instance(instance, _export_cb, recursion_level, NULL);
+            }
+            break;
+
+        case REGISTRY_INT_PATH_TYPE_GROUP:
+            /* should not happen as we don't yet know if it is a group or a parameter */
+            break;
+
+        case REGISTRY_INT_PATH_TYPE_PARAMETER:
+            /* should not happen as we don't yet know if it is a group or a parameter */
+            break;
+
+        case REGISTRY_INT_PATH_TYPE_GROUP_OR_PARAMETER:
+            res = registry_from_group_or_parameter_int_path(&path.group_or_parameter_path,
+                                                            &path_type,
+                                                            &namespace, &schema, &instance,
+                                                            &group, &parameter);
+            if (res == 0) {
+                if (path_type == REGISTRY_INT_PATH_TYPE_GROUP) {
+                    res = registry_export_group(instance, group, _export_cb, recursion_level, NULL);
+                }
+                else if (path_type == REGISTRY_INT_PATH_TYPE_PARAMETER) {
+                    res = registry_export_parameter(instance, parameter, _export_cb, NULL);
+                }
+            }
+            break;
+        }
+
+        if (res != 0) {
+            printf("error: %d\n", res);
+            return 1;
+        }
+
         return 0;
     }
 #if IS_USED(MODULE_REGISTRY_STORAGE) || IS_ACTIVE(DOXYGEN)
