@@ -2,9 +2,10 @@ USEMODULE += littlefs2
 USEMODULE += mtd
 USEMODULE += vfs
 
+USEMODULE +=  registry_storage
+
 USEMODULE +=  registry_namespace_tests_full
 USEMODULE +=  registry_namespace_tests_constrained_min_max
 USEMODULE +=  registry_namespace_tests_constrained_allowed_values
 USEMODULE +=  registry_namespace_tests_constrained_forbidden_values
 USEMODULE +=  registry_namespace_tests_nested
-# USEMODULE += registry_storage_vfs

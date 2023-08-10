@@ -54,7 +54,7 @@ static int _registry_load_cb(const registry_instance_t *instance,
                              const registry_parameter_t *parameter,
                              const void *buf, const size_t buf_len)
 {
-    return registry_set(instance, parameter, &buf, buf_len);
+    return registry_set(instance, parameter, buf, buf_len);
 }
 
 int registry_load(void)

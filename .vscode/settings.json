@@ -72,7 +72,8 @@
         "constrained_forbidden_values.h": "c",
         "auto_init.h": "c",
         "auto_init_utils.h": "c",
-        "nested.h": "c"
+        "nested.h": "c",
+        "atomic": "c"
     },
     "C_Cpp.dimInactiveRegions": false,
 }

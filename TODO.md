@@ -3,8 +3,8 @@
 ## Mandatory
 
 - [ ] Update documentation
-  - Code comments
-  - Readme.md
+  - [ ] Code comments
+  - [ ] Readme.md
 
 - [ ] XFA()
   - [ ] Use XFA() to automatically add schemas to a namespace on compile time
@@ -23,9 +23,12 @@
     - [x] constraints: forbidden-values
   - [x] commit
   - [x] export
-  - [ ] load, save
+  - [x] load
+  - [ ] save
   - [ ] int_path
   - [ ] string_path
+  - [ ] storage_vfs
+  - [ ] storage_heap
 
 - [ ] Initial values
   - dafür sorgen, dass klar ist, dass schema instances von modules initialisiert werden müssen
