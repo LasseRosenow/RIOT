@@ -114,5 +114,13 @@
         "workspaceRoot": "/home/lasse/Schreibtisch/RIOT/riot-registry/RIOT",
         "workspacePath": "tests/unittests/tests-registry_storage_heap",
         "id": "S5aA0gzOsJHxPEeb"
+    },
+    {
+        "type": "Directory",
+        "name": "/home/lasse/Schreibtisch/RIOT/riot-registry/RIOT/tests/unittests/tests-registry_string_path",
+        "parent_id": null,
+        "workspaceRoot": "/home/lasse/Schreibtisch/RIOT/riot-registry/RIOT",
+        "workspacePath": "tests/unittests/tests-registry_string_path",
+        "id": "8ef4daVz2lENPhci"
     }
 ]

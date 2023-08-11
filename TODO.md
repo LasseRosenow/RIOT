@@ -16,7 +16,7 @@
   - [x] implementation
   - [x] With a flag to disable for extremely constrained devices
 
-- [ ] Unit tests
+- [x] Unit tests
   - [x] get, set
     - [x] min and max values of type
     - [x] zero values
@@ -29,7 +29,7 @@
   - [x] load
   - [x] save
   - [x] int_path
-  - [ ] string_path
+  - [x] string_path
   - [x] storage_vfs
   - [x] storage_heap
 

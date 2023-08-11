@@ -24,6 +24,15 @@
 extern "C" {
 #endif
 
+typedef enum {
+    REGISTRY_STRING_PATH_TYPE_NAMESPACE,
+    REGISTRY_STRING_PATH_TYPE_SCHEMA,
+    REGISTRY_STRING_PATH_TYPE_INSTANCE,
+    REGISTRY_STRING_PATH_TYPE_GROUP,
+    REGISTRY_STRING_PATH_TYPE_PARAMETER,
+    REGISTRY_STRING_PATH_TYPE_GROUP_OR_PARAMETER,
+}registry_string_path_type_t;
+
 #include "registry.h"
 
 /* to string_path */
@@ -55,6 +64,14 @@ int registry_from_group_string_path(const char *path, registry_namespace_t **nam
 int registry_from_parameter_string_path(const char *path, registry_namespace_t **namespace,
                                         registry_schema_t **schema, registry_instance_t **instance,
                                         registry_parameter_t **parameter);
+
+int registry_from_group_or_parameter_string_path(const char *path,
+                                                 registry_string_path_type_t *path_type,
+                                                 registry_namespace_t **namespace,
+                                                 registry_schema_t **schema,
+                                                 registry_instance_t **instance,
+                                                 registry_group_t **group,
+                                                 registry_parameter_t **parameter);
 
 #ifdef __cplusplus
 }

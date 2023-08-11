@@ -77,7 +77,8 @@
         "int_path.h": "c",
         "tests-storage.h": "c",
         "tests-registry-int-path.h": "c",
-        "tests-registry_storage.h": "c"
+        "tests-registry_storage.h": "c",
+        "stdint.h": "c"
     },
     "C_Cpp.dimInactiveRegions": false,
 }

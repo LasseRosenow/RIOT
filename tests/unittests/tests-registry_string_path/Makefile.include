@@ -1,0 +1,2 @@
+USEMODULE +=  registry_string_path
+USEMODULE +=  registry_namespace_tests_nested
