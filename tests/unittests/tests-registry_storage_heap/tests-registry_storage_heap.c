@@ -8,7 +8,7 @@
 
 /**
  * @defgroup    unittests
- * @brief       Unittests for the ``registry_storage_vfs`` module
+ * @brief       Unittests for the ``registry_storage_heap`` module
  * @{
  *
  * @file
@@ -25,14 +25,10 @@
 #include "embUnit.h"
 #include "fmt.h"
 #include "assert.h"
-#include "vfs.h"
-#include "board.h"
-#include "mtd.h"
-#include "fs/littlefs2_fs.h"
 #include "registry.h"
 #include "registry/storage.h"
 
-#include "tests-registry_storage_vfs.h"
+#include "tests-registry_storage_heap.h"
 #include "registry/namespace/tests.h"
 #include "registry/namespace/tests/nested.h"
 
@@ -49,25 +45,13 @@ static registry_instance_t test_nested_instance = {
     .commit_cb = NULL,
 };
 
-
-#define FS_DRIVER littlefs2_file_system
-static littlefs2_desc_t fs_desc = {
-    .lock = MUTEX_INIT,
+static registry_storage_instance_t heap_instance = {
+    .storage = &registry_storage_heap,
+    .data = NULL,
 };
 
-static vfs_mount_t _vfs_mount = {
-    .fs = &FS_DRIVER,
-    .mount_point = "/sda",
-    .private_data = &fs_desc,
-};
-
-static registry_storage_instance_t vfs_instance = {
-    .storage = &registry_storage_vfs,
-    .data = &_vfs_mount,
-};
-
-REGISTRY_ADD_STORAGE_SOURCE(vfs_instance);
-REGISTRY_SET_STORAGE_DESTINATION(vfs_instance);
+REGISTRY_ADD_STORAGE_SOURCE(heap_instance);
+REGISTRY_SET_STORAGE_DESTINATION(heap_instance);
 
 static void test_setup(void)
 {
@@ -76,11 +60,6 @@ static void test_setup(void)
 
     /* add schema instances */
     registry_add_schema_instance(&registry_tests_nested, &test_nested_instance);
-
-    /* init storage */
-    #ifdef MTD_0
-    fs_desc.dev = MTD_0;
-    #endif
 }
 
 static void tests_load_and_save(void)
@@ -112,7 +91,7 @@ static void tests_load_and_save(void)
     TEST_ASSERT_EQUAL_INT(saved_input, *(uint8_t *)output_value.buf);
 }
 
-Test *tests_registry_storage_vfs_tests(void)
+Test *tests_registry_storage_heap_tests(void)
 {
     EMB_UNIT_TESTFIXTURES(fixtures) {
         new_TestFixture(tests_load_and_save),
@@ -123,9 +102,9 @@ Test *tests_registry_storage_vfs_tests(void)
     return (Test *)&registry_tests;
 }
 
-void tests_registry_storage_vfs(void)
+void tests_registry_storage_heap(void)
 {
-    TESTS_RUN(tests_registry_storage_vfs_tests());
+    TESTS_RUN(tests_registry_storage_heap_tests());
 }
 
 #endif

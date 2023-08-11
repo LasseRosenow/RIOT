@@ -109,7 +109,7 @@ int main(void)
     registry_add_schema_instance(&registry_sys_rgb_led, &rgb_led_instance_0);
     registry_add_schema_instance(&registry_sys_rgb_led, &rgb_led_instance_1);
 
-    /* init storage_facilities */
+    /* init storage */
     if (IS_USED(MODULE_LITTLEFS2)) {
         fs_desc.dev = MTD_0;
     }

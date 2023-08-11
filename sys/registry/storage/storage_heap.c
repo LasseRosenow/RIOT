@@ -31,7 +31,9 @@
 
 #include "registry/storage.h"
 
-#define STORE_CAPACITY 100
+#ifndef REGISTRY_STORAGE_HEAP_CAPACITY
+    #define REGISTRY_STORAGE_HEAP_CAPACITY 100
+#endif
 
 static int load(const registry_storage_instance_t *storage,
                 const load_cb_t load_cb);
@@ -41,16 +43,16 @@ static int save(const registry_storage_instance_t *storage,
                 const registry_value_t *value);
 
 typedef struct {
-    registry_namespace_t *namespace;
-    registry_schema_t *schema;
-    registry_instance_t *instance;
-    registry_parameter_t *parameter;
+    const registry_namespace_t *namespace;
+    const registry_schema_t *schema;
+    const registry_instance_t *instance;
+    const registry_parameter_t *parameter;
     void *buf;
     size_t buf_len;
 } heap_storage_t;
 
 /* This is the "storage device" containing all the data */
-static heap_storage_t heap_storage[STORE_CAPACITY];
+static heap_storage_t heap_storage[REGISTRY_STORAGE_HEAP_CAPACITY];
 static size_t heap_storage_len = 0;
 
 /* Storage interface descriptor to be registered in the RIOT Registry */
@@ -90,13 +92,15 @@ static int save(const registry_storage_instance_t *storage,
     }
 
     /* Value not found in storage => Append it at the end */
-    heap_storage[heap_storage_len].namespace = parameter->schema->namespace;
-    heap_storage[heap_storage_len].schema = parameter->schema;
-    heap_storage[heap_storage_len].instance = instance;
-    heap_storage[heap_storage_len].parameter = parameter;
-    heap_storage[heap_storage_len].buf = malloc(value->buf_len);
+    heap_storage[heap_storage_len] = (heap_storage_t) {
+        .namespace = parameter->schema->namespace,
+        .schema = parameter->schema,
+        .instance = instance,
+        .parameter = parameter,
+        .buf = malloc(value->buf_len),
+        .buf_len = value->buf_len,
+    };
     memcpy(heap_storage[heap_storage_len].buf, value->buf, value->buf_len);
-    heap_storage[heap_storage_len].buf_len = value->buf_len;
 
     heap_storage_len++;
     return 0;

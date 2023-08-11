@@ -31,7 +31,7 @@
   - [x] int_path
   - [ ] string_path
   - [x] storage_vfs
-  - [ ] storage_heap
+  - [x] storage_heap
 
 - [ ] Initial values
   - dafür sorgen, dass klar ist, dass schema instances von modules initialisiert werden müssen
