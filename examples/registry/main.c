@@ -118,6 +118,14 @@ int main(void)
     registry_set(&rgb_led_instance_0, &registry_sys_rgb_led_red, &input, sizeof(input));
     registry_value_t output_value;
     registry_get(&rgb_led_instance_0, &registry_sys_rgb_led_red, &output_value);
+    printf("Before Storage: %d\n", *(uint8_t *)output_value.buf);
+
+    registry_save();
+
+    registry_load();
+
+    registry_get(&rgb_led_instance_0, &registry_sys_rgb_led_red, &output_value);
+    printf("After Storage: %d\n", *(uint8_t *)output_value.buf);
 
     // registry_commit();
 

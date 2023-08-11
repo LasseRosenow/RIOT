@@ -26,7 +26,7 @@
 #include <fcntl.h>
 #include <errno.h>
 
-#define ENABLE_DEBUG (0)
+#define ENABLE_DEBUG (1)
 #include "debug.h"
 #include "kernel_defines.h"
 #include "vfs.h"
@@ -185,11 +185,8 @@ static int load(const registry_storage_instance_t *storage,
                                         fd);
                                 }
 
-                                /* get filesize */
-                                vfs_fstat(fd, &_stat);
-
-                                /* convert string path to registry int path */
-                                char *ptr = (char *)string_path;
+                                /* convert string path to registry int path (remove mount point and first '/' character) */
+                                char *ptr = (char *)string_path + mount->mount_point_len + 1;
                                 registry_namespace_id_t namespace_id = strtol(ptr, &ptr, 10);
                                 ptr++;
                                 registry_schema_id_t schema_id = strtol(ptr, &ptr, 10);
@@ -322,6 +319,7 @@ static int save(const registry_storage_instance_t *storage,
         DEBUG("[registry storage_vfs] save: Can not open file: %d\n", fd);
     }
 
+    /* write to file */
     if (vfs_write(fd, value->buf, value->buf_len) < 0) {
         DEBUG("[registry storage_vfs] save: Can not write to file: %d\n", fd);
     }
