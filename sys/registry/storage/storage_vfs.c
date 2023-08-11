@@ -26,7 +26,7 @@
 #include <fcntl.h>
 #include <errno.h>
 
-#define ENABLE_DEBUG (1)
+#define ENABLE_DEBUG (0)
 #include "debug.h"
 #include "kernel_defines.h"
 #include "vfs.h"
@@ -51,7 +51,8 @@ static void _string_path_append_item(char *dest, uint32_t number)
 {
     int size = snprintf(NULL, 0, "/%d", number);
 
-    char buf[size];
+    /* Allocate size + string termination */
+    char buf[size + 1];
 
     sprintf(buf, "/%d", number);
 

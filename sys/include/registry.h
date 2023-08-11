@@ -556,9 +556,9 @@ typedef const union {
 } registry_export_cb_data_t;
 
 typedef const enum {
-    REGISTRY_EXPORT_INSTANCE,
     REGISTRY_EXPORT_NAMESPACE,
     REGISTRY_EXPORT_SCHEMA,
+    REGISTRY_EXPORT_INSTANCE,
     REGISTRY_EXPORT_GROUP,
     REGISTRY_EXPORT_PARAMETER,
 } registry_export_cb_data_type_t;

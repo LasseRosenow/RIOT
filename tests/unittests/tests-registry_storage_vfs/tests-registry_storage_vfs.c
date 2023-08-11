@@ -78,7 +78,9 @@ static void test_setup(void)
     registry_add_schema_instance(&registry_tests_nested, &test_nested_instance);
 
     /* init storage_facilities */
+    #ifdef MTD_0
     fs_desc.dev = MTD_0;
+    #endif
 }
 
 static void tests_load_and_save(void)
