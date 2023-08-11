@@ -109,9 +109,9 @@ static void test_registry_setup(void)
     registry_init();
 
     /* add schema instances */
-    registry_register_schema_instance(&registry_tests_nested, &test_nested_instance_parameter_test);
-    registry_register_schema_instance(&registry_tests_nested, &test_nested_instance_group_test);
-    registry_register_schema_instance(&registry_tests_nested, &test_nested_instance_instance_test);
+    registry_add_schema_instance(&registry_tests_nested, &test_nested_instance_parameter_test);
+    registry_add_schema_instance(&registry_tests_nested, &test_nested_instance_group_test);
+    registry_add_schema_instance(&registry_tests_nested, &test_nested_instance_instance_test);
 }
 
 static void test_registry_teardown(void)

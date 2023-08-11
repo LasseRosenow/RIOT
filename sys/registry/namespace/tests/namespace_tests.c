@@ -56,4 +56,4 @@ registry_namespace_t registry_tests = {
     .schemas_len = ARRAY_SIZE(_schemas),
 };
 
-REGISTRY_REGISTER_NAMESPACE(tests, registry_tests);
+REGISTRY_ADD_NAMESPACE(tests, registry_tests);

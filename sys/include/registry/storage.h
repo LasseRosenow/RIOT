@@ -40,7 +40,7 @@ typedef struct _registry_storage_t registry_storage_t;
  */
 typedef struct {
     clist_node_t node;                  /**< linked list node */
-    registry_storage_t *itf;            /**< interface for the storage */
+    registry_storage_t *storage;        /**< interface of the storage */
     void *data;                         /**< Struct containing all config data for the storage */
 } registry_storage_instance_t;
 
@@ -92,30 +92,6 @@ struct _registry_storage_t {
     int (*save_end)(const registry_storage_instance_t *storage);
 };
 
-extern const registry_storage_instance_t *_storage_dst;
-extern clist_node_t _storage_srcs;
-
-/**
- * @brief Registers a new storage as a source of configurations. Multiple
- * storages can be configured as sources at the same time. Configurations
- * will be loaded from all of them. If more than one storage contain values
- * for the same key, then only the value of the storage is used, that was
- * registered last.
- *
- * @param[in] src Pointer to the storage to register as source.
- */
-void registry_register_storage_src(const registry_storage_instance_t *src);
-
-/**
- * @brief Registers a new storage as a destination for saving configurations.
- * Only one storage can be registered as destination at a time. If a
- * previous storage had been registered before it will be replaced by the
- * new one.
- *
- * @param[in] dst Pointer to the storage to register
- */
-void registry_register_storage_dst(const registry_storage_instance_t *dst);
-
 /**
  * @brief Load all configuration parameters from the registered storage.
  *
@@ -141,6 +117,33 @@ int registry_save_group(const registry_instance_t *instance, const registry_grou
 
 int registry_save_parameter(const registry_instance_t *instance,
                             const registry_parameter_t *parameter);
+
+/**
+ * @brief Registers a new storage as a source of configurations. Multiple
+ * storages can be configured as sources at the same time. Configurations
+ * will be loaded from all of them. If more than one storage contain values
+ * for the same key, then only the value of the storage is used, that was
+ * registered last.
+ *
+ * @param[in] src Pointer to the storage to register as source.
+ */
+#define REGISTRY_ADD_STORAGE_SOURCE(_storage_instance) \
+        XFA_USE_CONST(registry_storage_instance_t *, _registry_storage_instances_src_xfa); \
+        XFA_ADD_PTR(_registry_storage_instances_src_xfa, _storage_instance, _storage_instance, \
+                    &_storage_instance)
+
+extern const registry_storage_instance_t *_registry_storage_instance_dst;
+
+/**
+ * @brief Registers a new storage as a destination for saving configurations.
+ * Only one storage can be registered as destination at a time. If a
+ * previous storage had been registered before it will be replaced by the
+ * new one.
+ *
+ * @param[in] dst Pointer to the storage to register
+ */
+#define REGISTRY_SET_STORAGE_DESTINATION(_storage_instance) \
+        const registry_storage_instance_t *_registry_storage_instance_dst = &_storage_instance \
 
 /* heap */
 #if IS_USED(MODULE_REGISTRY_STORAGE_HEAP) || IS_ACTIVE(DOXYGEN)

@@ -53,7 +53,7 @@ static void test_registry_setup(void)
     registry_init();
 
     /* add schema instances */
-    registry_register_schema_instance(&registry_tests_nested, &test_instance);
+    registry_add_schema_instance(&registry_tests_nested, &test_instance);
 }
 
 static void test_registry_teardown(void)

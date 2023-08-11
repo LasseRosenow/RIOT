@@ -37,7 +37,6 @@ extern "C" {
 #define CONFIG_REGISTRY_ENABLE_FORBIDDEN_VALUES_CHECK 1
 #define CONFIG_REGISTRY_ENABLE_MIN_VALUE_CHECK 1
 #define CONFIG_REGISTRY_ENABLE_MAX_VALUE_CHECK 1
-#define MODULE_REGISTRY_INT_PATH 1
 #define CONFIG_REGISTRY_USE_UINT64 1
 #define CONFIG_REGISTRY_USE_INT64 1
 #define CONFIG_REGISTRY_USE_FLOAT32 1
@@ -116,9 +115,7 @@ typedef const enum {
  */
 struct _registry_instance_t {
     clist_node_t node;                  /**< Linked list node */
-#if IS_USED(MODULE_REGISTRY_INT_PATH) || IS_ACTIVE(DOXYGEN)
     const registry_instance_id_t id;    /**< Integer representing the path id of the schema instance */
-#endif /* MODULE_REGISTRY_INT_PATH */
 #if IS_ACTIVE(CONFIG_REGISTRY_ENABLE_META_NAME) || IS_ACTIVE(DOXYGEN)
     const char * const name;            /**< String describing the instance */
 #endif /* CONFIG_REGISTRY_ENABLE_META_NAME */
@@ -357,9 +354,7 @@ typedef struct {
     /* CONFIG_REGISTRY_ENABLE_ALLOWED_VALUES_CHECK || CONFIG_REGISTRY_ENABLE_FORBIDDEN_VALUES_CHECK || CONFIG_REGISTRY_ENABLE_MIN_VALUE_CHECK || CONFIG_REGISTRY_ENABLE_MAX_VALUE_CHECK */
 
 struct _registry_group_t {
-#if IS_USED(MODULE_REGISTRY_INT_PATH) || IS_ACTIVE(DOXYGEN)
     const registry_group_id_t id;                   /**< Integer representing the path id of the configuration group */
-#endif /* MODULE_REGISTRY_INT_PATH */
 #if IS_ACTIVE(CONFIG_REGISTRY_ENABLE_META_NAME) || IS_ACTIVE(DOXYGEN)
     const char * const name;                        /**< String describing the configuration group */
 #endif /* CONFIG_REGISTRY_ENABLE_META_NAME */
@@ -374,9 +369,7 @@ struct _registry_group_t {
 };
 
 struct _registry_parameter_t {
-#if IS_USED(MODULE_REGISTRY_INT_PATH) || IS_ACTIVE(DOXYGEN)
     const registry_parameter_id_t id;                       /**< Integer representing the path id of the configuration parameter */
-#endif /* MODULE_REGISTRY_INT_PATH */
 #if IS_ACTIVE(CONFIG_REGISTRY_ENABLE_META_NAME) || IS_ACTIVE(DOXYGEN)
     const char * const name;                                /**< String describing the configuration parameter */
 #endif /* CONFIG_REGISTRY_ENABLE_META_NAME */
@@ -425,9 +418,7 @@ struct _registry_parameter_t {
  * @brief Schema containing available configuration parameters.
  */
 struct _registry_schema_t {
-#if IS_USED(MODULE_REGISTRY_INT_PATH) || IS_ACTIVE(DOXYGEN)
     const registry_schema_id_t id;                          /**< Integer representing the path id of the schema */
-#endif /* MODULE_REGISTRY_INT_PATH */
 #if IS_ACTIVE(CONFIG_REGISTRY_ENABLE_META_NAME) || IS_ACTIVE(DOXYGEN)
     const char * const name;                                /**< String describing the schema */
 #endif /* CONFIG_REGISTRY_ENABLE_META_NAME */
@@ -456,9 +447,7 @@ struct _registry_schema_t {
 };
 
 struct _registry_namespace_t {
-#if IS_USED(MODULE_REGISTRY_INT_PATH) || IS_ACTIVE(DOXYGEN)
     const registry_namespace_id_t id;           /**< Integer representing the path id of the namespace */
-#endif /* MODULE_REGISTRY_INT_PATH */
 #if IS_ACTIVE(CONFIG_REGISTRY_ENABLE_META_NAME) || IS_ACTIVE(DOXYGEN)
     const char * const name;                    /**< String describing the configuration namespace */
 #endif /* CONFIG_REGISTRY_ENABLE_META_NAME */
@@ -469,7 +458,7 @@ struct _registry_namespace_t {
     const size_t schemas_len;                   /**< Size of schemas array */
 };
 
-#define REGISTRY_REGISTER_NAMESPACE(_name, _namespace) \
+#define REGISTRY_ADD_NAMESPACE(_name, _namespace) \
         XFA_USE_CONST(registry_namespace_t *, _registry_namespaces_xfa); \
         XFA_ADD_PTR(_registry_namespaces_xfa, _name, _name, &_namespace)
 
@@ -484,8 +473,8 @@ void registry_init(void);
  * @param[in] schema Pointer to the schema.
  * @param[in] instance Pointer to the new instance.
  */
-int registry_register_schema_instance(const registry_schema_t *schema,
-                                      const registry_instance_t *instance);
+int registry_add_schema_instance(const registry_schema_t *schema,
+                                 const registry_instance_t *instance);
 
 /**
  * @brief Gets the current value of a parameter that belongs to an instance

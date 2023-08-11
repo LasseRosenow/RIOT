@@ -36,8 +36,8 @@
 
 XFA_INIT_CONST(registry_namespace_t *, _registry_namespaces_xfa);
 
-int registry_register_schema_instance(const registry_schema_t *schema,
-                                      const registry_instance_t *instance)
+int registry_add_schema_instance(const registry_schema_t *schema,
+                                 const registry_instance_t *instance)
 {
     assert(schema != NULL);
     assert(instance != NULL);

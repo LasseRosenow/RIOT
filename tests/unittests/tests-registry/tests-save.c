@@ -62,7 +62,7 @@ static registry_storage_t storage_test = {
 static uint8_t storage_test_instance_data = 7;
 
 static registry_storage_instance_t storage_test_instance = {
-    .itf = &storage_test,
+    .storage = &storage_test,
     .data = &storage_test_instance_data,
 };
 
@@ -93,16 +93,15 @@ static int save(const registry_storage_instance_t *storage,
     return -EINVAL;
 }
 
+REGISTRY_SET_STORAGE_DESTINATION(storage_test_instance);
+
 static void test_registry_setup(void)
 {
     /* init registry */
     registry_init();
 
     /* add schema instances */
-    registry_register_schema_instance(&registry_tests_nested, &test_nested_instance);
-
-    /* add storages */
-    registry_register_storage_dst(&storage_test_instance);
+    registry_add_schema_instance(&registry_tests_nested, &test_nested_instance);
 }
 
 static void test_registry_teardown(void)

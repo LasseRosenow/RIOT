@@ -93,30 +93,26 @@ static vfs_mount_t _vfs_mount = {
     .private_data = &fs_desc,
 };
 
-static registry_storage_instance_t vfs_instance_1 = {
-    .itf = &registry_storage_vfs,
+static registry_storage_instance_t vfs_instance = {
+    .storage = &registry_storage_vfs,
     .data = &_vfs_mount,
 };
 
-static registry_storage_instance_t vfs_instance_2 = {
-    .itf = &registry_storage_vfs,
-    .data = &_vfs_mount,
-};
+REGISTRY_ADD_STORAGE_SOURCE(vfs_instance);
+REGISTRY_SET_STORAGE_DESTINATION(vfs_instance);
 
 int main(void)
 {
     registry_init();
 
     /* init schemas */
-    registry_register_schema_instance(&registry_sys_rgb_led, &rgb_led_instance_0);
-    registry_register_schema_instance(&registry_sys_rgb_led, &rgb_led_instance_1);
+    registry_add_schema_instance(&registry_sys_rgb_led, &rgb_led_instance_0);
+    registry_add_schema_instance(&registry_sys_rgb_led, &rgb_led_instance_1);
 
     /* init storage_facilities */
     if (IS_USED(MODULE_LITTLEFS2)) {
         fs_desc.dev = MTD_0;
     }
-    registry_register_storage_src(&vfs_instance_1);
-    registry_register_storage_dst(&vfs_instance_2);
 
     const uint8_t input = 7;
     registry_set(&rgb_led_instance_0, &registry_sys_rgb_led_red, &input, sizeof(input));

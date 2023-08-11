@@ -42,4 +42,4 @@ registry_namespace_t registry_sys = {
     .schemas_len = ARRAY_SIZE(_schemas),
 };
 
-REGISTRY_REGISTER_NAMESPACE(sys, registry_sys);
+REGISTRY_ADD_NAMESPACE(sys, registry_sys);

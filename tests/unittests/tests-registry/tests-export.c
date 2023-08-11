@@ -125,7 +125,7 @@ static void test_registry_setup(void)
     registry_init();
 
     /* add schema instances */
-    registry_register_schema_instance(&registry_tests_nested, &test_nested_instance_1);
+    registry_add_schema_instance(&registry_tests_nested, &test_nested_instance_1);
 }
 
 static void test_registry_teardown(void)
