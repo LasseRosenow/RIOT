@@ -39,7 +39,6 @@ typedef struct _registry_storage_t registry_storage_t;
  * @brief Storage descriptor
  */
 typedef struct {
-    clist_node_t node;                  /**< linked list node */
     registry_storage_t *storage;        /**< interface of the storage */
     void *data;                         /**< Struct containing all config data for the storage */
 } registry_storage_instance_t;

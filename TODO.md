@@ -7,9 +7,10 @@
   - [ ] Readme.md
 
 - [ ] XFA()
-  - [ ] Use XFA() to automatically add schemas to a namespace on compile time
+  - [ ] Automatically add schemas to a namespace on compile time
     - Problem: Cannot get the XFA array size at compile time => cannot apply schema_len
-  - [x] Use XFA() to automatically add namespaces to the registry on compile time
+  - [x] Automatically add namespaces to the registry on compile time
+  - [x] Add storage instances to the registry on compile time
 
 - [x] Add min-value, max-value and allowed values
   - [x] implementation
@@ -29,7 +30,7 @@
   - [x] save
   - [x] int_path
   - [ ] string_path
-  - [ ] storage_vfs
+  - [x] storage_vfs
   - [ ] storage_heap
 
 - [ ] Initial values
@@ -39,6 +40,8 @@
   - registry_init() führt dann z.B. einmal commit_cb auf instance ebene aus oder es muss halt manuell gemacht werden who knows egal.
 
 ## Uncertain
+
+- [ ] Use XFA() to automatically add instances at compile time? => Could not be added dynamically anymore
 
 - [ ] commit_cb and export_cb at most on the instance level (not on the parameter/group level)?
   - wenn ein driver der meinung ist, dass das auf parameter level sinnvoll ist, kann er checks in der commit_cb method implementieren dafür
