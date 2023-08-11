@@ -398,42 +398,84 @@ static int _registry(int argc, char **argv)
         return 0;
     }
 #if IS_USED(MODULE_REGISTRY_STORAGE) || IS_ACTIVE(DOXYGEN)
-    // TODO
+    else if (strcmp(argv[1], "load") == 0) {
+        if (argc > 2) {
+            printf("usage: %s %s\n", argv[0], argv[1]);
+            return 1;
+        }
 
-    // else if (strcmp(argv[1], "load") == 0) {
-    //     if (argc > 2) {
-    //         if (_parse_string_path(argv[2], &path) < 0) {
-    //             printf("usage: %s %s [path]\n", argv[0], argv[1]);
-    //             return 1;
-    //         }
-    //         else {
-    //             registry_load_by_path(&path);
-    //         }
-    //     }
-    //     else {
-    //         registry_path_t new_path = REGISTRY_PATH();
-    //         registry_load_by_path(&new_path);
-    //     }
+        registry_load();
 
-    //     return 0;
-    // }
-    // else if (strcmp(argv[1], "save") == 0) {
-    //     if (argc > 2) {
-    //         if (_parse_string_path(argv[2], &path) < 0) {
-    //             printf("usage: %s %s [path]\n", argv[0], argv[1]);
-    //             return 1;
-    //         }
-    //         else {
-    //             registry_save_by_path(&path);
-    //         }
-    //     }
-    //     else {
-    //         registry_path_t new_path = REGISTRY_PATH();
-    //         registry_save_by_path(&new_path);
-    //     }
+        return 0;
+    }
+    else if (strcmp(argv[1], "save") == 0) {
+        int res = 0;
 
-    //     return 0;
-    // }
+        if (argc > 2) {
+            if (_parse_string_path(argv[2], &path, &path_type) < 0) {
+                printf("usage: %s %s [path]\n", argv[0], argv[1]);
+                return 1;
+            }
+
+            /* commit depending on the path type */
+            switch (path_type) {
+            case REGISTRY_INT_PATH_TYPE_NAMESPACE:
+                res = registry_from_namespace_int_path(&path.namespace_path, &namespace);
+                if (res == 0) {
+                    res = registry_save_namespace(namespace);
+                }
+                break;
+
+            case REGISTRY_INT_PATH_TYPE_SCHEMA:
+                res = registry_from_schema_int_path(&path.schema_path, &namespace, &schema);
+                if (res == 0) {
+                    res = registry_save_schema(schema);
+                }
+                break;
+
+            case REGISTRY_INT_PATH_TYPE_INSTANCE:
+                res = registry_from_instance_int_path(&path.instance_path, &namespace, &schema,
+                                                      &instance);
+                if (res == 0) {
+                    res = registry_save_instance(instance);
+                }
+                break;
+
+            case REGISTRY_INT_PATH_TYPE_GROUP:
+                /* should not happen as we don't yet know if it is a group or a parameter */
+                break;
+
+            case REGISTRY_INT_PATH_TYPE_PARAMETER:
+                /* should not happen as we don't yet know if it is a group or a parameter */
+                break;
+
+            case REGISTRY_INT_PATH_TYPE_GROUP_OR_PARAMETER:
+                res = registry_from_group_or_parameter_int_path(&path.group_or_parameter_path,
+                                                                &path_type,
+                                                                &namespace, &schema, &instance,
+                                                                &group, &parameter);
+                if (res == 0) {
+                    if (path_type == REGISTRY_INT_PATH_TYPE_GROUP) {
+                        res = registry_save_group(instance, group);
+                    }
+                    else if (path_type == REGISTRY_INT_PATH_TYPE_PARAMETER) {
+                        res = registry_save_parameter(instance, parameter);
+                    }
+                }
+                break;
+            }
+        }
+        else {
+            res = registry_save();
+        }
+
+        if (res != 0) {
+            printf("error: %d\n", res);
+            return 1;
+        }
+
+        return 0;
+    }
 #endif
 
 help_error:

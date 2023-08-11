@@ -73,7 +73,8 @@
         "auto_init.h": "c",
         "auto_init_utils.h": "c",
         "nested.h": "c",
-        "atomic": "c"
+        "atomic": "c",
+        "int_path.h": "c"
     },
     "C_Cpp.dimInactiveRegions": false,
 }
