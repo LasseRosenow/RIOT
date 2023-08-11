@@ -7,13 +7,17 @@
  */
 
 /**
+ * @defgroup    unittests
+ * @brief       Unittests for the ``registry_int_path`` module
  * @{
  *
  * @file
- * @brief       Unittests for registry_to_int_path, registry_from_int_path
  *
  * @author      Lasse Rosenow <lasse.rosenow@haw-hamburg.de>
  */
+
+#include "embUnit/embUnit.h"
+#include "tests-registry_int_path.h"
 
 #include <string.h>
 #include <stdio.h>
@@ -29,8 +33,6 @@
 #include "mtd.h"
 #include "registry.h"
 #include "registry/int_path.h"
-
-#include "tests-registry.h"
 #include "registry/namespace/tests.h"
 #include "registry/namespace/tests/nested.h"
 
@@ -47,17 +49,13 @@ static registry_instance_t test_instance = {
     .commit_cb = NULL,
 };
 
-static void test_registry_setup(void)
+static void test_setup(void)
 {
     /* init registry */
     registry_init();
 
     /* add schema instances */
     registry_add_schema_instance(&registry_tests_nested, &test_instance);
-}
-
-static void test_registry_teardown(void)
-{
 }
 
 /* to int_path */
@@ -259,9 +257,14 @@ Test *tests_registry_int_path_tests(void)
         new_TestFixture(tests_registry_from_namespace_int_path),
     };
 
-    EMB_UNIT_TESTCALLER(registry_tests, test_registry_setup, test_registry_teardown, fixtures);
+    EMB_UNIT_TESTCALLER(registry_int_path_tests, test_setup, NULL, fixtures);
 
-    return (Test *)&registry_tests;
+    return (Test *)&registry_int_path_tests;
+}
+
+void tests_registry_int_path(void)
+{
+    TESTS_RUN(tests_registry_int_path_tests());
 }
 
 #endif

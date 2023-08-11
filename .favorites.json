@@ -81,6 +81,30 @@
         "workspaceRoot": "/home/lasse/Schreibtisch/RIOT/riot-registry/RIOT",
         "workspacePath": "tests/unittests/tests-registry",
         "id": "Z1V3ej8sEwA5rFbm",
-        "label": "tests"
+        "label": null
+    },
+    {
+        "type": "Directory",
+        "name": "/home/lasse/Schreibtisch/RIOT/riot-registry/RIOT/tests/unittests/tests-registry_int_path",
+        "parent_id": null,
+        "workspaceRoot": "/home/lasse/Schreibtisch/RIOT/riot-registry/RIOT",
+        "workspacePath": "tests/unittests/tests-registry_int_path",
+        "id": "FhQEcD3Z9WYAKGiM"
+    },
+    {
+        "type": "Directory",
+        "name": "/home/lasse/Schreibtisch/RIOT/riot-registry/RIOT/tests/unittests/tests-registry_storage_vfs",
+        "parent_id": null,
+        "workspaceRoot": "/home/lasse/Schreibtisch/RIOT/riot-registry/RIOT",
+        "workspacePath": "tests/unittests/tests-registry_storage_vfs",
+        "id": "AfPMXs1oz34uZVIR"
+    },
+    {
+        "type": "Directory",
+        "name": "/home/lasse/Schreibtisch/RIOT/riot-registry/RIOT/tests/unittests/tests-registry_storage",
+        "parent_id": null,
+        "workspaceRoot": "/home/lasse/Schreibtisch/RIOT/riot-registry/RIOT",
+        "workspacePath": "tests/unittests/tests-registry_storage",
+        "id": "kdenbavXSg3IRFtZ"
     }
 ]

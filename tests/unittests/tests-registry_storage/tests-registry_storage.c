@@ -7,10 +7,11 @@
  */
 
 /**
+ * @defgroup    unittests
+ * @brief       Unittests for the ``registry_storage`` module
  * @{
  *
  * @file
- * @brief       Unittests for registry_load
  *
  * @author      Lasse Rosenow <lasse.rosenow@haw-hamburg.de>
  */
@@ -30,7 +31,7 @@
 #include "registry.h"
 #include "registry/storage.h"
 
-#include "tests-registry.h"
+#include "tests-registry_storage.h"
 #include "registry/namespace/tests.h"
 #include "registry/namespace/tests/nested.h"
 
@@ -84,27 +85,29 @@ static int save(const registry_storage_instance_t *storage,
                 const registry_parameter_t *parameter,
                 const registry_value_t *value)
 {
-    (void)storage;
-    (void)instance;
-    (void)parameter;
-    (void)value;
+    if (storage == &storage_test_instance &&
+        instance == &test_nested_instance &&
+        parameter == &registry_tests_nested_group_parameter &&
+        value->buf == &test_nested_instance_data.group_parameter &&
+        value->buf_len == sizeof(uint8_t) &&
+        value->type == REGISTRY_TYPE_UINT8) {
 
-    return 0;
+        return 0;
+    }
+
+    return -EINVAL;
 }
 
 REGISTRY_ADD_STORAGE_SOURCE(storage_test_instance);
+REGISTRY_SET_STORAGE_DESTINATION(storage_test_instance);
 
-static void test_registry_setup(void)
+static void test_setup(void)
 {
     /* init registry */
     registry_init();
 
     /* add schema instances */
     registry_add_schema_instance(&registry_tests_nested, &test_nested_instance);
-}
-
-static void test_registry_teardown(void)
-{
 }
 
 static void tests_registry_load(void)
@@ -119,15 +122,60 @@ static void tests_registry_load(void)
     TEST_ASSERT_EQUAL_INT(_TESTS_REGISTRY_LOAD_STORED_VALUE, *(uint8_t *)output.buf);
 }
 
-Test *tests_registry_load_tests(void)
+static void tests_registry_save_parameter(void)
+{
+    TEST_ASSERT_EQUAL_INT(0, registry_save_parameter(&test_nested_instance,
+                                                     &registry_tests_nested_group_parameter));
+}
+
+static void tests_registry_save_group(void)
+{
+    TEST_ASSERT_EQUAL_INT(0, registry_save_group(&test_nested_instance,
+                                                 &registry_tests_nested_group));
+}
+
+static void tests_registry_save_instance(void)
+{
+    TEST_ASSERT_EQUAL_INT(0, registry_save_instance(&test_nested_instance));
+}
+
+static void tests_registry_save_schema(void)
+{
+    TEST_ASSERT_EQUAL_INT(0, registry_save_schema(&registry_tests_nested));
+}
+
+static void tests_registry_save_namespace(void)
+{
+    TEST_ASSERT_EQUAL_INT(0, registry_save_namespace(&registry_tests));
+}
+
+static void tests_registry_save_all(void)
+{
+    TEST_ASSERT_EQUAL_INT(0, registry_save());
+}
+
+Test *tests_registry_storage_tests(void)
 {
     EMB_UNIT_TESTFIXTURES(fixtures) {
+        /* load */
         new_TestFixture(tests_registry_load),
+        /* save */
+        new_TestFixture(tests_registry_save_parameter),
+        new_TestFixture(tests_registry_save_group),
+        new_TestFixture(tests_registry_save_instance),
+        new_TestFixture(tests_registry_save_schema),
+        new_TestFixture(tests_registry_save_namespace),
+        new_TestFixture(tests_registry_save_all),
     };
 
-    EMB_UNIT_TESTCALLER(registry_tests, test_registry_setup, test_registry_teardown, fixtures);
+    EMB_UNIT_TESTCALLER(registry_storage_tests, test_setup, NULL, fixtures);
 
-    return (Test *)&registry_tests;
+    return (Test *)&registry_storage_tests;
+}
+
+void tests_registry_storage(void)
+{
+    TESTS_RUN(tests_registry_storage_tests());
 }
 
 #endif

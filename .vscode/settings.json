@@ -74,7 +74,10 @@
         "auto_init_utils.h": "c",
         "nested.h": "c",
         "atomic": "c",
-        "int_path.h": "c"
+        "int_path.h": "c",
+        "tests-storage.h": "c",
+        "tests-registry-int-path.h": "c",
+        "tests-registry_storage.h": "c"
     },
     "C_Cpp.dimInactiveRegions": false,
 }

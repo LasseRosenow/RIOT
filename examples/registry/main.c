@@ -114,21 +114,6 @@ int main(void)
         fs_desc.dev = MTD_0;
     }
 
-    const uint8_t input = 7;
-    registry_set(&rgb_led_instance_0, &registry_sys_rgb_led_red, &input, sizeof(input));
-    registry_value_t output_value;
-    registry_get(&rgb_led_instance_0, &registry_sys_rgb_led_red, &output_value);
-    printf("Before Storage: %d\n", *(uint8_t *)output_value.buf);
-
-    registry_save();
-
-    registry_load();
-
-    registry_get(&rgb_led_instance_0, &registry_sys_rgb_led_red, &output_value);
-    printf("After Storage: %d\n", *(uint8_t *)output_value.buf);
-
-    // registry_commit();
-
     /* init and run CLI */
     char line_buf[SHELL_DEFAULT_BUFSIZE];
     shell_run(NULL, line_buf, sizeof(line_buf));
