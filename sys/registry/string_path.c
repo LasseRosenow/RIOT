@@ -50,12 +50,14 @@ static int _namespace_lookup(const char *path, registry_namespace_t **namespace)
         const size_t name_length = strlen(_registry_namespaces_xfa[i]->name);
 
         /* check if length of path and name match */
-        if (*(ptr + name_length) == '\0' ||
-            *(ptr + name_length) == '/') {
-            /* check if strings are equal */
-            if (strncmp(ptr, _registry_namespaces_xfa[i]->name, name_length) == 0) {
-                *namespace = _registry_namespaces_xfa[i];
-                return name_length + 1; /* name_length + `/` character */
+        if (strlen(ptr) >= name_length) {
+            if (*(ptr + name_length) == '\0' ||
+                *(ptr + name_length) == '/') {
+                /* check if strings are equal */
+                if (strncmp(ptr, _registry_namespaces_xfa[i]->name, name_length) == 0) {
+                    *namespace = _registry_namespaces_xfa[i];
+                    return name_length + 1; /* name_length + `/` character */
+                }
             }
         }
     }
@@ -79,12 +81,14 @@ static int _schema_lookup(const char *path, const registry_namespace_t *namespac
         const size_t name_length = strlen(namespace->schemas[i]->name);
 
         /* check if length of path and name match */
-        if (*(ptr + name_length) == '\0' ||
-            *(ptr + name_length) == '/') {
-            /* check if strings are equal */
-            if (strncmp(ptr, namespace->schemas[i]->name, name_length) == 0) {
-                *schema = (registry_schema_t *)namespace->schemas[i];
-                return name_length + 1; /* name_length + `/` character */
+        if (strlen(ptr) >= name_length) {
+            if (*(ptr + name_length) == '\0' ||
+                *(ptr + name_length) == '/') {
+                /* check if strings are equal */
+                if (strncmp(ptr, namespace->schemas[i]->name, name_length) == 0) {
+                    *schema = (registry_schema_t *)namespace->schemas[i];
+                    return name_length + 1; /* name_length + `/` character */
+                }
             }
         }
     }
@@ -116,16 +120,228 @@ static int _instance_lookup(const char *path, registry_schema_t *schema,
         const size_t name_length = strlen(container_of(node, registry_instance_t, node)->name);
 
         /* check if length of path and name match */
-        if (*(ptr + name_length) == '\0' ||
-            *(ptr + name_length) == '/') {
-            /* check if strings are equal */
-            if (strncmp(ptr, container_of(node, registry_instance_t, node)->name,
-                        name_length) == 0) {
-                *instance = container_of(node, registry_instance_t, node);
-                return name_length + 1; /* name_length + `/` character */
+        if (strlen(ptr) >= name_length) {
+            if (*(ptr + name_length) == '\0' ||
+                *(ptr + name_length) == '/') {
+                /* check if strings are equal */
+                if (strncmp(ptr, container_of(node, registry_instance_t, node)->name,
+                            name_length) == 0) {
+                    *instance = container_of(node, registry_instance_t, node);
+                    return name_length + 1; /* name_length + `/` character */
+                }
             }
         }
     } while (node != schema->instances.next);
+
+    return -EINVAL;
+}
+
+static int _group_lookup(const char *path, registry_schema_t *schema, registry_group_t **group)
+{
+    assert(path != NULL);
+    assert(schema != NULL);
+    assert(group != NULL);
+
+    char *ptr = (char *)path;
+
+    /* remove '/' character */
+    ptr++;
+
+    /* store the current path position */
+    size_t path_position = 0;
+
+    /* search for matching groups */
+    bool found_subgroup = true;
+    registry_group_t **groups = (registry_group_t **)schema->groups;
+    size_t groups_len = schema->groups_len;
+
+    while (found_subgroup) {
+        found_subgroup = false;
+
+        for (size_t i = 0; i < groups_len; i++) {
+            const size_t name_length = strlen(groups[i]->name);
+
+            /* path segment => save subgroups and keep searching them */
+            if (strlen(ptr + path_position) >= name_length) {
+                if (*(ptr + path_position + name_length) == '/' &&
+                    strncmp(ptr + path_position, groups[i]->name, name_length) == 0) {
+                    if (groups[i]->groups_len > 0) {
+                        found_subgroup = true;
+                        groups = (registry_group_t **)groups[i]->groups;
+                        groups_len = groups[i]->groups_len;
+                    }
+
+                    path_position += name_length + 1; /* name_length + `/` character */
+                    break;
+                }
+                /* end of path => return group if it matches */
+                else if (*(ptr + path_position + name_length) == '\0' &&
+                         strncmp(ptr + path_position, groups[i]->name, name_length) == 0) {
+                    *group = (registry_group_t *)groups[i];
+                    return path_position + name_length + 1; /* name_length + `/` character */
+                }
+            }
+        }
+    }
+
+    return -EINVAL;
+}
+
+static int _parameter_lookup(const char *path, registry_schema_t *schema,
+                             registry_parameter_t **parameter)
+{
+    assert(path != NULL);
+    assert(schema != NULL);
+    assert(parameter != NULL);
+
+    char *ptr = (char *)path;
+
+    /* remove '/' character */
+    ptr++;
+
+    /* store the current path position */
+    size_t path_position = 0;
+
+    /* search for matching parameters or groups */
+    bool found_subgroup = true;
+    registry_parameter_t **parameters = (registry_parameter_t **)schema->parameters;
+    size_t parameters_len = schema->parameters_len;
+
+    registry_group_t **groups = (registry_group_t **)schema->groups;
+    size_t groups_len = schema->groups_len;
+
+    while (found_subgroup) {
+        found_subgroup = false;
+
+        /* check for matching parameter */
+        for (size_t i = 0; i < parameters_len; i++) {
+            const size_t name_length = strlen(parameters[i]->name);
+
+            /* parameter matches => return parameters */
+            if (strlen(ptr + path_position) == name_length &&
+                strncmp(ptr + path_position, parameters[i]->name, name_length) == 0) {
+                *parameter = (registry_parameter_t *)parameters[i];
+                return path_position + name_length + 1;     /* name_length + `/` character */
+            }
+        }
+
+        /* check for matching subgroup */
+        for (size_t i = 0; i < groups_len; i++) {
+            const size_t name_length = strlen(groups[i]->name);
+
+            /* group matches => save subgroups and parameters and keep searching them */
+            if (strlen(ptr + path_position) > name_length &&
+                *(ptr + path_position + name_length) == '/' &&
+                strncmp(ptr + path_position, groups[i]->name, name_length) == 0) {
+                if (groups[i]->parameters_len > 0) {
+                    found_subgroup = true;
+                    parameters = (registry_parameter_t **)groups[i]->parameters;
+                    parameters_len = groups[i]->parameters_len;
+                }
+                else {
+                    parameters = NULL;
+                    parameters_len = 0;
+                }
+
+                if (groups[i]->groups_len > 0) {
+                    found_subgroup = true;
+                    groups = (registry_group_t **)groups[i]->groups;
+                    groups_len = groups[i]->groups_len;
+                }
+                else {
+                    groups = NULL;
+                    groups_len = 0;
+                }
+
+                path_position += name_length + 1;     /* name_length + `/` character */
+                break;
+            }
+        }
+    }
+
+    return -EINVAL;
+}
+
+static int _group_or_parameter_lookup(const char *path, registry_schema_t *schema,
+                                      registry_string_path_type_t *path_type,
+                                      registry_group_t **group, registry_parameter_t **parameter)
+{
+    assert(path != NULL);
+    assert(schema != NULL);
+    assert(parameter != NULL);
+
+    char *ptr = (char *)path;
+
+    /* remove '/' character */
+    ptr++;
+
+    /* store the current path position */
+    size_t path_position = 0;
+
+    /* search for matching parameters or groups */
+    bool found_subgroup = true;
+    registry_parameter_t **parameters = (registry_parameter_t **)schema->parameters;
+    size_t parameters_len = schema->parameters_len;
+
+    registry_group_t **groups = (registry_group_t **)schema->groups;
+    size_t groups_len = schema->groups_len;
+
+    while (found_subgroup) {
+        /* check for matching parameter */
+        for (size_t i = 0; i < parameters_len; i++) {
+            const size_t name_length = strlen(parameters[i]->name);
+
+            /* parameter matches => return parameters */
+            if (strlen(ptr + path_position) == name_length &&
+                strncmp(ptr + path_position, parameters[i]->name, name_length) == 0) {
+                *parameter = (registry_parameter_t *)parameters[i];
+                *path_type = REGISTRY_STRING_PATH_TYPE_PARAMETER;
+                return path_position + name_length + 1;     /* name_length + `/` character */
+            }
+        }
+
+        /* check for matching subgroup */
+        for (size_t i = 0; i < groups_len; i++) {
+            const size_t name_length = strlen(groups[i]->name);
+
+            /* check if remaining path is at least longer than the group name */
+            if (strlen(ptr + path_position) >= name_length) {
+                /* group matches but end of path is not reached => save subgroups and parameters and keep searching them */
+                if (*(ptr + path_position + name_length) == '/' &&
+                    strncmp(ptr + path_position, groups[i]->name, name_length) == 0) {
+                    if (groups[i]->parameters_len > 0) {
+                        found_subgroup = true;
+                        parameters = (registry_parameter_t **)groups[i]->parameters;
+                        parameters_len = groups[i]->parameters_len;
+                    }
+                    else {
+                        parameters = NULL;
+                        parameters_len = 0;
+                    }
+
+                    if (groups[i]->groups_len > 0) {
+                        found_subgroup = true;
+                        groups = (registry_group_t **)groups[i]->groups;
+                        groups_len = groups[i]->groups_len;
+                    }
+                    else {
+                        groups = NULL;
+                        groups_len = 0;
+                    }
+
+                    path_position += name_length + 1; /* name_length + `/` character */
+                    break;
+                }
+                /* end of path => return group if it matches */
+                else if (*(ptr + path_position + name_length) == '\0' &&
+                         strncmp(ptr + path_position, groups[i]->name, name_length) == 0) {
+                    *group = (registry_group_t *)groups[i];
+                    *path_type = REGISTRY_STRING_PATH_TYPE_GROUP;
+                    return path_position + name_length + 1; /* name_length + `/` character */
+                }
+            }
+        }
+    }
 
     return -EINVAL;
 }
@@ -287,6 +503,7 @@ int registry_to_parameter_string_path(const registry_instance_t *instance,
 /* from string_path */
 int registry_from_namespace_string_path(const char *path, registry_namespace_t **namespace)
 {
+    /* namespace */
     int res = _namespace_lookup(path, namespace);
 
     if (res < 0) {
@@ -299,19 +516,22 @@ int registry_from_namespace_string_path(const char *path, registry_namespace_t *
 int registry_from_schema_string_path(const char *path, registry_namespace_t **namespace,
                                      registry_schema_t **schema)
 {
-    size_t processed_path_len = 0;
+    /* store the current path position */
+    size_t path_position = 0;
 
+    /* namespace */
     registry_namespace_t *found_namespace;
     int res = _namespace_lookup(path, &found_namespace);
 
     if (res >= 0) {
-        processed_path_len += res;
+        path_position += res;
 
         if (namespace != NULL) {
             *namespace = found_namespace;
         }
 
-        res = _schema_lookup(path + processed_path_len, found_namespace, schema);
+        /* schema */
+        res = _schema_lookup(path + path_position, found_namespace, schema);
     }
 
     if (res < 0) {
@@ -324,29 +544,33 @@ int registry_from_schema_string_path(const char *path, registry_namespace_t **na
 int registry_from_instance_string_path(const char *path, registry_namespace_t **namespace,
                                        registry_schema_t **schema, registry_instance_t **instance)
 {
-    size_t processed_path_len = 0;
+    /* store the current path position */
+    size_t path_position = 0;
 
+    /* namespace */
     registry_namespace_t *found_namespace;
     int res = _namespace_lookup(path, &found_namespace);
 
     if (res >= 0) {
-        processed_path_len += res;
+        path_position += res;
 
         if (namespace != NULL) {
             *namespace = found_namespace;
         }
 
+        /* schema */
         registry_schema_t *found_schema;
-        res = _schema_lookup(path + processed_path_len, found_namespace, &found_schema);
+        res = _schema_lookup(path + path_position, found_namespace, &found_schema);
 
         if (res >= 0) {
-            processed_path_len += res;
+            path_position += res;
 
             if (schema != NULL) {
                 *schema = found_schema;
             }
 
-            res = _instance_lookup(path + processed_path_len, found_schema, instance);
+            /* instance */
+            res = _instance_lookup(path + path_position, found_schema, instance);
         }
     }
 
@@ -361,12 +585,52 @@ int registry_from_group_string_path(const char *path, registry_namespace_t **nam
                                     registry_schema_t **schema, registry_instance_t **instance,
                                     registry_group_t **group)
 {
-    (void)path;
-    (void)namespace;
-    (void)schema;
-    (void)instance;
-    (void)group;
-    // TODO
+    /* store the current path position */
+    size_t path_position = 0;
+
+    /* namespace */
+    registry_namespace_t *found_namespace;
+    int res = _namespace_lookup(path, &found_namespace);
+
+    if (res >= 0) {
+        path_position += res;
+
+        if (namespace != NULL) {
+            *namespace = found_namespace;
+        }
+
+        /* schema */
+        registry_schema_t *found_schema;
+        res = _schema_lookup(path + path_position, found_namespace, &found_schema);
+
+        if (res >= 0) {
+            path_position += res;
+
+            if (schema != NULL) {
+                *schema = found_schema;
+            }
+
+            /* instance */
+            registry_instance_t *found_instance;
+            res = _instance_lookup(path + path_position, found_schema, &found_instance);
+
+            if (res >= 0) {
+                path_position += res;
+
+                if (instance != NULL) {
+                    *instance = found_instance;
+                }
+
+                /* group */
+                res = _group_lookup(path + path_position, found_schema, group);
+            }
+        }
+    }
+
+    if (res < 0) {
+        return res;
+    }
+
     return 0;
 }
 
@@ -374,12 +638,52 @@ int registry_from_parameter_string_path(const char *path, registry_namespace_t *
                                         registry_schema_t **schema, registry_instance_t **instance,
                                         registry_parameter_t **parameter)
 {
-    (void)path;
-    (void)namespace;
-    (void)schema;
-    (void)instance;
-    (void)parameter;
-    // TODO
+    /* store the current path position */
+    size_t path_position = 0;
+
+    /* namespace */
+    registry_namespace_t *found_namespace;
+    int res = _namespace_lookup(path, &found_namespace);
+
+    if (res >= 0) {
+        path_position += res;
+
+        if (namespace != NULL) {
+            *namespace = found_namespace;
+        }
+
+        /* schema */
+        registry_schema_t *found_schema;
+        res = _schema_lookup(path + path_position, found_namespace, &found_schema);
+
+        if (res >= 0) {
+            path_position += res;
+
+            if (schema != NULL) {
+                *schema = found_schema;
+            }
+
+            /* instance */
+            registry_instance_t *found_instance;
+            res = _instance_lookup(path + path_position, found_schema, &found_instance);
+
+            if (res >= 0) {
+                path_position += res;
+
+                if (instance != NULL) {
+                    *instance = found_instance;
+                }
+
+                /* parameter */
+                res = _parameter_lookup(path + path_position, found_schema, parameter);
+            }
+        }
+    }
+
+    if (res < 0) {
+        return res;
+    }
+
     return 0;
 }
 
@@ -391,13 +695,52 @@ int registry_from_group_or_parameter_string_path(const char *path,
                                                  registry_group_t **group,
                                                  registry_parameter_t **parameter)
 {
-    (void)path;
-    (void)path_type;
-    (void)namespace;
-    (void)schema;
-    (void)instance;
-    (void)group;
-    (void)parameter;
-    // TODO
+    /* store the current path position */
+    size_t path_position = 0;
+
+    /* namespace */
+    registry_namespace_t *found_namespace;
+    int res = _namespace_lookup(path, &found_namespace);
+
+    if (res >= 0) {
+        path_position += res;
+
+        if (namespace != NULL) {
+            *namespace = found_namespace;
+        }
+
+        /* schema */
+        registry_schema_t *found_schema;
+        res = _schema_lookup(path + path_position, found_namespace, &found_schema);
+
+        if (res >= 0) {
+            path_position += res;
+
+            if (schema != NULL) {
+                *schema = found_schema;
+            }
+
+            /* instance */
+            registry_instance_t *found_instance;
+            res = _instance_lookup(path + path_position, found_schema, &found_instance);
+
+            if (res >= 0) {
+                path_position += res;
+
+                if (instance != NULL) {
+                    *instance = found_instance;
+                }
+
+                /* group or parameter */
+                res = _group_or_parameter_lookup(path + path_position, found_schema, path_type,
+                                                 group, parameter);
+            }
+        }
+    }
+
+    if (res < 0) {
+        return res;
+    }
+
     return 0;
 }

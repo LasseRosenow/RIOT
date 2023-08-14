@@ -210,7 +210,6 @@ static void tests_registry_from_namespace_string_path(void)
 
 Test *tests_registry_string_path_tests(void)
 {
-    // TODO enable remaining tests
     (void)tests_registry_from_group_or_parameter_string_path;
     (void)tests_registry_from_parameter_string_path;
     (void)tests_registry_from_group_string_path;
@@ -222,9 +221,9 @@ Test *tests_registry_string_path_tests(void)
         new_TestFixture(tests_registry_to_schema_string_path),
         new_TestFixture(tests_registry_to_namespace_string_path),
         /* from string_path */
-        // new_TestFixture(tests_registry_from_group_or_parameter_string_path),
-        // new_TestFixture(tests_registry_from_parameter_string_path),
-        // new_TestFixture(tests_registry_from_group_string_path),
+        new_TestFixture(tests_registry_from_group_or_parameter_string_path),
+        new_TestFixture(tests_registry_from_parameter_string_path),
+        new_TestFixture(tests_registry_from_group_string_path),
         new_TestFixture(tests_registry_from_instance_string_path),
         new_TestFixture(tests_registry_from_schema_string_path),
         new_TestFixture(tests_registry_from_namespace_string_path),
