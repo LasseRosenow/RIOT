@@ -16,6 +16,9 @@
   - [x] implementation
   - [x] With a flag to disable for extremely constrained devices
 
+- [x] Implement string_path
+  - name field must be unique but also within the full path perspective and not schema wide
+
 - [x] Unit tests
   - [x] get, set
     - [x] min and max values of type
@@ -58,9 +61,6 @@
 - [ ] Python code generator (registry_gen) to generate namespaces from json/yaml files
   - located in RIOT/dist/tools
   - make it a makefile target, that calls the codegen script
-  - name field must be unique but also within the full path perspective and not schema wide
-
-- [ ] Implement string_path
   - name field must be unique but also within the full path perspective and not schema wide
 
 - [ ] Mutex
