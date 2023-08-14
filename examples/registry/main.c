@@ -25,6 +25,8 @@
 #include "shell.h"
 #include "board.h"
 #include "mtd.h"
+#include "vfs.h"
+#include "fs/littlefs2_fs.h"
 #include "registry.h"
 #include "registry/namespace/sys.h"
 #include "registry/namespace/sys/rgb_led.h"
@@ -75,23 +77,12 @@ registry_instance_t rgb_led_instance_1 = {
     .commit_cb = &rgb_led_instance_0_commit_cb,
 };
 
-// Littlefs2
-#if IS_USED(MODULE_LITTLEFS2)
-#include "fs/littlefs2_fs.h"
-#define FS_DRIVER littlefs2_file_system
 static littlefs2_desc_t fs_desc = {
     .lock = MUTEX_INIT,
 };
-#elif IS_USED(MODULE_FATFS_VFS)
-#include "fs/fatfs.h"
-#define FS_DRIVER fatfs_file_system
-static fatfs_desc_t fs_desc;
-#endif
-
-
 
 static vfs_mount_t _vfs_mount = {
-    .fs = &FS_DRIVER,
+    .fs = &littlefs2_file_system,
     .mount_point = "/sda",
     .private_data = &fs_desc,
 };
@@ -125,9 +116,9 @@ int main(void)
     registry_add_schema_instance(&registry_tests_nested, &test_nested_instance);
 
     /* init storage */
-    if (IS_USED(MODULE_LITTLEFS2)) {
-        fs_desc.dev = MTD_0;
-    }
+    #if IS_USED(MODULE_LITTLEFS2)
+    fs_desc.dev = MTD_0;
+    #endif
 
     /* namespace */
     registry_namespace_t *namespace;
