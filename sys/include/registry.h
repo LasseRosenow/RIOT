@@ -472,6 +472,7 @@ void registry_init(void);
  *
  * @param[in] schema Pointer to the schema.
  * @param[in] instance Pointer to the new instance.
+ * @return 0 on success, non-zero on failure
  */
 int registry_add_schema_instance(const registry_schema_t *schema,
                                  const registry_instance_t *instance);
@@ -503,6 +504,8 @@ int registry_set(const registry_instance_t *instance, const registry_parameter_t
 
 /**
  * @brief Commits every configuration parameter.
+ * 
+ * @return 0 on success, non-zero on failure
  */
 int registry_commit(void);
 
@@ -510,6 +513,7 @@ int registry_commit(void);
  * @brief Commits every configuration parameter within the given configuration namespace.
  *
  * @param[in] namespace Pointer to the configuration namespace.
+ * @return 0 on success, non-zero on failure
  */
 int registry_commit_namespace(const registry_namespace_t *namespace);
 
@@ -517,6 +521,7 @@ int registry_commit_namespace(const registry_namespace_t *namespace);
  * @brief Commits every configuration parameter within the given configuration schema.
  *
  * @param[in] schema Pointer to the configuration schema.
+ * @return 0 on success, non-zero on failure
  */
 int registry_commit_schema(const registry_schema_t *schema);
 
@@ -524,6 +529,7 @@ int registry_commit_schema(const registry_schema_t *schema);
  * @brief Commits every configuration parameter within the given configuration schema instance.
  *
  * @param[in] instance Pointer to the configuration schema instance.
+ * @return 0 on success, non-zero on failure
  */
 int registry_commit_instance(const registry_instance_t *instance);
 
@@ -532,6 +538,7 @@ int registry_commit_instance(const registry_instance_t *instance);
  *
  * @param[in] instance Pointer to the configuration schema instance of the configuration group.
  * @param[in] group Pointer to the configuration group.
+ * @return 0 on success, non-zero on failure
  */
 int registry_commit_group(const registry_instance_t *instance, const registry_group_t *group);
 
@@ -540,6 +547,7 @@ int registry_commit_group(const registry_instance_t *instance, const registry_gr
  *
  * @param[in] instance Pointer to the configuration schema instance of the configuration parameter.
  * @param[in] parameter Pointer to the configuration parameter.
+ * @return 0 on success, non-zero on failure
  */
 int registry_commit_parameter(const registry_instance_t *instance,
                               const registry_parameter_t *parameter);
@@ -580,6 +588,7 @@ typedef int (*registry_export_cb_t)(const registry_export_cb_data_t *data,
  * will be shown. (0 to show all children, 1 to only show the exact match, n > 1
  * to show the exact match plus n - 1 levels of children)
  * @param[in] context Context that will be passed to @p export_cb
+ * @return 0 on success, non-zero on failure
  */
 int registry_export(const registry_export_cb_t export_cb,
                     const uint8_t recursion_depth, const void *context);
@@ -594,6 +603,7 @@ int registry_export(const registry_export_cb_t export_cb,
  * will be shown. (0 to show all children, 1 to only show the exact match, 2 - n
  * to show the exact match plus its children ... plus n levels of children)
  * @param[in] context Context that will be passed to @p export_cb
+ * @return 0 on success, non-zero on failure
  */
 int registry_export_namespace(const registry_namespace_t *namespace,
                               const registry_export_cb_t export_cb, const uint8_t recursion_depth,
@@ -609,6 +619,7 @@ int registry_export_namespace(const registry_namespace_t *namespace,
  * will be shown. (0 to show all children, 1 to only show the exact match, 2 - n
  * to show the exact match plus its children ... plus n levels of children)
  * @param[in] context Context that will be passed to @p export_cb
+ * @return 0 on success, non-zero on failure
  */
 int registry_export_schema(const registry_schema_t *schema, const registry_export_cb_t export_cb,
                            const uint8_t recursion_depth, const void *context);
@@ -623,6 +634,7 @@ int registry_export_schema(const registry_schema_t *schema, const registry_expor
  * will be shown. (0 to show all children, 1 to only show the exact match, 2 - n
  * to show the exact match plus its children ... plus n levels of children)
  * @param[in] context Context that will be passed to @p export_cb
+ * @return 0 on success, non-zero on failure
  */
 int registry_export_instance(const registry_instance_t *instance,
                              const registry_export_cb_t export_cb, const uint8_t recursion_depth,
@@ -639,6 +651,7 @@ int registry_export_instance(const registry_instance_t *instance,
  * will be shown. (0 to show all children, 1 to only show the exact match, 2 - n
  * to show the exact match plus its children ... plus n levels of children)
  * @param[in] context Context that will be passed to @p export_cb
+ * @return 0 on success, non-zero on failure
  */
 int registry_export_group(const registry_instance_t *instance, const registry_group_t *group,
                           const registry_export_cb_t export_cb, const uint8_t recursion_depth,
@@ -652,6 +665,7 @@ int registry_export_group(const registry_instance_t *instance, const registry_gr
  * @param[in] export_cb Exporting callback function call with the @p path and current
  * value of a specific or all configuration parameters
  * @param[in] context Context that will be passed to @p export_cb
+ * @return 0 on success, non-zero on failure
  */
 int registry_export_parameter(const registry_instance_t *instance,
                               const registry_parameter_t *parameter,
