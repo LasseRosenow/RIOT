@@ -27,8 +27,7 @@ extern "C" {
 #include "registry.h"
 
 /**
- * @brief Prototype of a callback function for the load action of a storage
- * interface
+ * @brief Prototype of a callback function for the load action of a storage interface.
  */
 typedef int (*load_cb_t)(const registry_instance_t *instance, const registry_parameter_t *parameter,
                          const void *buf, const size_t buf_len);
@@ -36,24 +35,24 @@ typedef int (*load_cb_t)(const registry_instance_t *instance, const registry_par
 typedef struct _registry_storage_t registry_storage_t;
 
 /**
- * @brief Storage descriptor
+ * @brief Storage descriptor.
  */
 typedef struct {
-    registry_storage_t *storage;        /**< interface of the storage */
-    void *data;                         /**< Struct containing all config data for the storage */
+    registry_storage_t *storage;        /**< interface of the storage. */
+    void *data;                         /**< Struct containing all config data for the storage. */
 } registry_storage_instance_t;
 
 /**
- * @brief Storage interface.
- * All storage facilities should, at least, implement the load and save actions.
+ * @brief Storage interface. All storages should, at least, implement the load and save actions.
  */
 struct _registry_storage_t {
     /**
      * @brief Loads all saved parameters and calls the @p load_cb callback function.
      *
-     * @param[in] storage Storage descriptor
-     * @param[in] load_cb Callback function to call for every saved parameter
-     * @return 0 on success, non-zero on failure
+     * @param[in] storage Storage descriptor.
+     * @param[in] load_cb Callback function to call for every saved parameter.
+     *
+     * @return 0 on success, non-zero on failure.
      */
     int (*load)(const registry_storage_instance_t *storage,
                 const load_cb_t load_cb);
@@ -62,19 +61,21 @@ struct _registry_storage_t {
      * @brief If implemented, it is used for any preparation the storage may
      * need before starting a saving process.
      *
-     * @param[in] storage Storage descriptor
-     * @return 0 on success, non-zero on failure
+     * @param[in] storage Storage descriptor.
+     *
+     * @return 0 on success, non-zero on failure.
      */
     int (*save_start)(const registry_storage_instance_t *storage);
 
     /**
      * @brief Saves a parameter into storage.
      *
-     * @param[in] storage Storage descriptor
+     * @param[in] storage Storage descriptor.
      * @param[in] instance Pointer to the configuration schema instance.
      * @param[in] parameter Pointer to the configuration parameter.
      * @param[in] value Configuration parameter value.
-     * @return 0 on success, non-zero on failure
+     *
+     * @return 0 on success, non-zero on failure.
      */
     int (*save)(const registry_storage_instance_t *storage,
                 const registry_instance_t *instance,
@@ -85,8 +86,9 @@ struct _registry_storage_t {
      * @brief If implemented, it is used for any tear-down the storage may need
      * after a saving process.
      *
-     * @param[in] storage Storage descriptor
-     * @return 0 on success, non-zero on failure
+     * @param[in] storage Storage descriptor.
+     *
+     * @return 0 on success, non-zero on failure.
      */
     int (*save_end)(const registry_storage_instance_t *storage);
 };
@@ -94,7 +96,7 @@ struct _registry_storage_t {
 /**
  * @brief Load all configuration parameters from the registered storage.
  *
- * @return 0 on success, non-zero on failure
+ * @return 0 on success, non-zero on failure.
  */
 int registry_load(void);
 
@@ -102,7 +104,7 @@ int registry_load(void);
  * @brief Save all configuration parameters to the
  * registered storage.
  *
- * @return 0 on success, non-zero on failure
+ * @return 0 on success, non-zero on failure.
  */
 int registry_save(void);
 
@@ -134,12 +136,12 @@ int registry_save_parameter(const registry_instance_t *instance,
 extern const registry_storage_instance_t *_registry_storage_instance_dst;
 
 /**
- * @brief Registers a new storage as a destination for saving configurations.
+ * @brief Registers a new storage as a destination for saving configurations
  * Only one storage can be registered as destination at a time. If a
  * previous storage had been registered before it will be replaced by the
  * new one.
  *
- * @param[in] dst Pointer to the storage to register
+ * @param[in] dst Pointer to the storage to register.
  */
 #define REGISTRY_SET_STORAGE_DESTINATION(_storage_instance) \
         const registry_storage_instance_t *_registry_storage_instance_dst = &_storage_instance \

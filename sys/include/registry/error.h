@@ -9,7 +9,7 @@
 /**
  * @defgroup    sys_registry_error RIOT Registry Error
  * @ingroup     sys
- * @brief       RIOT Registry module providing all possible error codes
+ * @brief       RIOT Registry module providing all possible registry specific error codes
  * @{
  *
  * @file
@@ -24,6 +24,9 @@
 extern "C" {
 #endif
 
+/**
+ * @brief Error codes start at 1_000 to prevent clashing with stdlib error codes.
+ */
 typedef const enum {
     REGISTRY_ERROR_NONE = 1000,
     REGISTRY_ERROR_NO_DST_STORAGE,

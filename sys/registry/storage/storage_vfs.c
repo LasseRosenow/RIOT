@@ -129,8 +129,8 @@ static int load(const registry_storage_instance_t *storage,
         vfs_dirent_t dir_entry;
 
         size_t i = 0;
-        int last_dir_entry_positions[REGISTRY_INT_PATH_LEN] = { -1 };
-        size_t last_dir_string_path_lens[REGISTRY_INT_PATH_LEN] = { 0 };
+        int last_dir_entry_positions[REGISTRY_INT_PATH_MAX_LEN] = { -1 };
+        size_t last_dir_string_path_lens[REGISTRY_INT_PATH_MAX_LEN] = { 0 };
         int res = 0;
         bool exit_folder_iteration = false;
 
@@ -142,7 +142,7 @@ static int load(const registry_storage_instance_t *storage,
 
                 if (dir_entry_position > last_dir_entry_positions[i]) {
                     last_dir_entry_positions[i] = dir_entry_position;
-                    for (size_t j = i + 1; j < REGISTRY_INT_PATH_LEN; j++) {
+                    for (size_t j = i + 1; j < REGISTRY_INT_PATH_MAX_LEN; j++) {
                         last_dir_entry_positions[j] = -1;
                     }
 
