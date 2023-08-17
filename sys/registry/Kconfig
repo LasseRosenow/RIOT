@@ -12,11 +12,11 @@ menuconfig MODULE_REGISTRY
 
 if MODULE_REGISTRY
 
-config REGISTRY_ENABLE_META_DESCRIPTION
-    bool "Include description string in schemas"
-
 config REGISTRY_ENABLE_META_NAME
     bool "Include name string in schemas"
+
+config REGISTRY_ENABLE_META_DESCRIPTION
+    bool "Include description string in schemas"
 
 config REGISTRY_ENABLE_ALLOWED_VALUES_CHECK
     bool "Check if new values are allowed"
