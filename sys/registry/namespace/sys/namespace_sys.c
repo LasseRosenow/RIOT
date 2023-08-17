@@ -36,8 +36,12 @@ static const registry_schema_t *_schemas[] = {
 };
 
 registry_namespace_t registry_sys = {
+#if IS_ACTIVE(CONFIG_REGISTRY_ENABLE_META_NAME) || IS_ACTIVE(DOXYGEN)
     .name = "sys",
+#endif /* CONFIG_REGISTRY_ENABLE_META_NAME */
+#if IS_ACTIVE(CONFIG_REGISTRY_ENABLE_META_DESCRIPTION) || IS_ACTIVE(DOXYGEN)
     .description = "Sys namespace",
+#endif /* CONFIG_REGISTRY_ENABLE_META_DESCRIPTION */
     .schemas = _schemas,
     .schemas_len = ARRAY_SIZE(_schemas),
 };

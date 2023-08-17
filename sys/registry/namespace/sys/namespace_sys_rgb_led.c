@@ -72,10 +72,18 @@ static void mapping(const registry_parameter_id_t parameter_id, const registry_i
 /* Schema */
 const registry_parameter_t registry_sys_rgb_led_red = {
     .id = REGISTRY_SYS_RGB_LED_RED,
+#if IS_ACTIVE(CONFIG_REGISTRY_ENABLE_META_NAME) || IS_ACTIVE(DOXYGEN)
     .name = "red",
+#endif /* CONFIG_REGISTRY_ENABLE_META_NAME */
+#if IS_ACTIVE(CONFIG_REGISTRY_ENABLE_META_DESCRIPTION) || IS_ACTIVE(DOXYGEN)
     .description = "",
+#endif /* CONFIG_REGISTRY_ENABLE_META_DESCRIPTION */
     .schema = &registry_sys_rgb_led,
     .type = REGISTRY_TYPE_UINT8,
+#if IS_ACTIVE(CONFIG_REGISTRY_ENABLE_ALLOWED_VALUES_CHECK) || \
+    IS_ACTIVE(CONFIG_REGISTRY_ENABLE_FORBIDDEN_VALUES_CHECK) || \
+    IS_ACTIVE(CONFIG_REGISTRY_ENABLE_MIN_VALUE_CHECK) || \
+    IS_ACTIVE(CONFIG_REGISTRY_ENABLE_MAX_VALUE_CHECK)
     .constraints.uint8 = {
 #if IS_ACTIVE(CONFIG_REGISTRY_ENABLE_ALLOWED_VALUES_CHECK) || IS_ACTIVE(DOXYGEN)
         .allowed_values = NULL,
@@ -92,14 +100,23 @@ const registry_parameter_t registry_sys_rgb_led_red = {
         .max_value = NULL,
 #endif /* CONFIG_REGISTRY_ENABLE_MAX_VALUE_CHECK */
     },
+#endif /* CONSTRAINTS */
 };
 
 const registry_parameter_t registry_sys_rgb_led_green = {
     .id = REGISTRY_SYS_RGB_LED_GREEN,
+#if IS_ACTIVE(CONFIG_REGISTRY_ENABLE_META_NAME) || IS_ACTIVE(DOXYGEN)
     .name = "green",
+#endif /* CONFIG_REGISTRY_ENABLE_META_NAME */
+#if IS_ACTIVE(CONFIG_REGISTRY_ENABLE_META_DESCRIPTION) || IS_ACTIVE(DOXYGEN)
     .description = "",
+#endif /* CONFIG_REGISTRY_ENABLE_META_DESCRIPTION */
     .schema = &registry_sys_rgb_led,
     .type = REGISTRY_TYPE_UINT8,
+#if IS_ACTIVE(CONFIG_REGISTRY_ENABLE_ALLOWED_VALUES_CHECK) || \
+    IS_ACTIVE(CONFIG_REGISTRY_ENABLE_FORBIDDEN_VALUES_CHECK) || \
+    IS_ACTIVE(CONFIG_REGISTRY_ENABLE_MIN_VALUE_CHECK) || \
+    IS_ACTIVE(CONFIG_REGISTRY_ENABLE_MAX_VALUE_CHECK)
     .constraints.uint8 = {
 #if IS_ACTIVE(CONFIG_REGISTRY_ENABLE_ALLOWED_VALUES_CHECK) || IS_ACTIVE(DOXYGEN)
         .allowed_values = NULL,
@@ -116,14 +133,23 @@ const registry_parameter_t registry_sys_rgb_led_green = {
         .max_value = NULL,
 #endif /* CONFIG_REGISTRY_ENABLE_MAX_VALUE_CHECK */
     },
+#endif /* CONSTRAINTS */
 };
 
 const registry_parameter_t registry_sys_rgb_led_blue = {
     .id = REGISTRY_SYS_RGB_LED_BLUE,
+#if IS_ACTIVE(CONFIG_REGISTRY_ENABLE_META_NAME) || IS_ACTIVE(DOXYGEN)
     .name = "blue",
+#endif /* CONFIG_REGISTRY_ENABLE_META_NAME */
+#if IS_ACTIVE(CONFIG_REGISTRY_ENABLE_META_DESCRIPTION) || IS_ACTIVE(DOXYGEN)
     .description = "",
+#endif /* CONFIG_REGISTRY_ENABLE_META_DESCRIPTION */
     .schema = &registry_sys_rgb_led,
     .type = REGISTRY_TYPE_UINT8,
+#if IS_ACTIVE(CONFIG_REGISTRY_ENABLE_ALLOWED_VALUES_CHECK) || \
+    IS_ACTIVE(CONFIG_REGISTRY_ENABLE_FORBIDDEN_VALUES_CHECK) || \
+    IS_ACTIVE(CONFIG_REGISTRY_ENABLE_MIN_VALUE_CHECK) || \
+    IS_ACTIVE(CONFIG_REGISTRY_ENABLE_MAX_VALUE_CHECK)
     .constraints.uint8 = {
 #if IS_ACTIVE(CONFIG_REGISTRY_ENABLE_ALLOWED_VALUES_CHECK) || IS_ACTIVE(DOXYGEN)
         .allowed_values = NULL,
@@ -140,14 +166,23 @@ const registry_parameter_t registry_sys_rgb_led_blue = {
         .max_value = NULL,
 #endif /* CONFIG_REGISTRY_ENABLE_MAX_VALUE_CHECK */
     },
+#endif /* CONSTRAINTS */
 };
 
 const registry_parameter_t registry_sys_rgb_led_brightnesses_white = {
     .id = REGISTRY_SYS_RGB_LED_BRIGHTNESSES_WHITE,
+#if IS_ACTIVE(CONFIG_REGISTRY_ENABLE_META_NAME) || IS_ACTIVE(DOXYGEN)
     .name = "white",
+#endif /* CONFIG_REGISTRY_ENABLE_META_NAME */
+#if IS_ACTIVE(CONFIG_REGISTRY_ENABLE_META_DESCRIPTION) || IS_ACTIVE(DOXYGEN)
     .description = "",
+#endif /* CONFIG_REGISTRY_ENABLE_META_DESCRIPTION */
     .schema = &registry_sys_rgb_led,
     .type = REGISTRY_TYPE_UINT8,
+#if IS_ACTIVE(CONFIG_REGISTRY_ENABLE_ALLOWED_VALUES_CHECK) || \
+    IS_ACTIVE(CONFIG_REGISTRY_ENABLE_FORBIDDEN_VALUES_CHECK) || \
+    IS_ACTIVE(CONFIG_REGISTRY_ENABLE_MIN_VALUE_CHECK) || \
+    IS_ACTIVE(CONFIG_REGISTRY_ENABLE_MAX_VALUE_CHECK)
     .constraints.uint8 = {
 #if IS_ACTIVE(CONFIG_REGISTRY_ENABLE_ALLOWED_VALUES_CHECK) || IS_ACTIVE(DOXYGEN)
         .allowed_values = NULL,
@@ -164,14 +199,23 @@ const registry_parameter_t registry_sys_rgb_led_brightnesses_white = {
         .max_value = NULL,
 #endif /* CONFIG_REGISTRY_ENABLE_MAX_VALUE_CHECK */
     },
+#endif /* CONSTRAINTS */
 };
 
 const registry_parameter_t registry_sys_rgb_led_brightnesses_yellow = {
     .id = REGISTRY_SYS_RGB_LED_BRIGHTNESSES_YELLOW,
+#if IS_ACTIVE(CONFIG_REGISTRY_ENABLE_META_NAME) || IS_ACTIVE(DOXYGEN)
     .name = "yellow",
+#endif /* CONFIG_REGISTRY_ENABLE_META_NAME */
+#if IS_ACTIVE(CONFIG_REGISTRY_ENABLE_META_DESCRIPTION) || IS_ACTIVE(DOXYGEN)
     .description = "",
+#endif /* CONFIG_REGISTRY_ENABLE_META_DESCRIPTION */
     .schema = &registry_sys_rgb_led,
     .type = REGISTRY_TYPE_UINT8,
+#if IS_ACTIVE(CONFIG_REGISTRY_ENABLE_ALLOWED_VALUES_CHECK) || \
+    IS_ACTIVE(CONFIG_REGISTRY_ENABLE_FORBIDDEN_VALUES_CHECK) || \
+    IS_ACTIVE(CONFIG_REGISTRY_ENABLE_MIN_VALUE_CHECK) || \
+    IS_ACTIVE(CONFIG_REGISTRY_ENABLE_MAX_VALUE_CHECK)
     .constraints.uint8 = {
 #if IS_ACTIVE(CONFIG_REGISTRY_ENABLE_ALLOWED_VALUES_CHECK) || IS_ACTIVE(DOXYGEN)
         .allowed_values = NULL,
@@ -188,12 +232,17 @@ const registry_parameter_t registry_sys_rgb_led_brightnesses_yellow = {
         .max_value = NULL,
 #endif /* CONFIG_REGISTRY_ENABLE_MAX_VALUE_CHECK */
     },
+#endif /* CONSTRAINTS */
 };
 
 const registry_group_t registry_sys_rgb_led_brightnesses = {
     .id = REGISTRY_SYS_RGB_LED_BRIGHTNESSES,
+#if IS_ACTIVE(CONFIG_REGISTRY_ENABLE_META_NAME) || IS_ACTIVE(DOXYGEN)
     .name = "brightnesses",
+#endif /* CONFIG_REGISTRY_ENABLE_META_NAME */
+#if IS_ACTIVE(CONFIG_REGISTRY_ENABLE_META_DESCRIPTION) || IS_ACTIVE(DOXYGEN)
     .description = "",
+#endif /* CONFIG_REGISTRY_ENABLE_META_DESCRIPTION */
     .schema = &registry_sys_rgb_led,
     .groups = NULL,
     .groups_len = 0,
@@ -206,8 +255,12 @@ const registry_group_t registry_sys_rgb_led_brightnesses = {
 
 registry_schema_t registry_sys_rgb_led = {
     .id = REGISTRY_SYS_RGB_LED,
+#if IS_ACTIVE(CONFIG_REGISTRY_ENABLE_META_NAME) || IS_ACTIVE(DOXYGEN)
     .name = "rgb_led",
+#endif /* CONFIG_REGISTRY_ENABLE_META_NAME */
+#if IS_ACTIVE(CONFIG_REGISTRY_ENABLE_META_DESCRIPTION) || IS_ACTIVE(DOXYGEN)
     .description = "",
+#endif /* CONFIG_REGISTRY_ENABLE_META_DESCRIPTION */
     .namespace = &registry_sys,
     .mapping = mapping,
     .groups = (const registry_group_t *[]) {

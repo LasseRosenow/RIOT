@@ -34,6 +34,8 @@
 
 #include "registry/string_path.h"
 
+#if IS_ACTIVE(CONFIG_REGISTRY_ENABLE_META_NAME) || IS_ACTIVE(DOXYGEN)
+
 XFA_USE_CONST(registry_namespace_t *, _registry_namespaces_xfa);
 
 static int _namespace_lookup(const char *path, registry_namespace_t **namespace)
@@ -744,3 +746,5 @@ int registry_from_group_or_parameter_string_path(const char *path,
 
     return 0;
 }
+
+#endif

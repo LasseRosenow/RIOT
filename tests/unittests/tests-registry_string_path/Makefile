@@ -1,1 +1,3 @@
+CFLAGS += -DCONFIG_REGISTRY_ENABLE_META_NAME=1
+
 include $(RIOTBASE)/Makefile.base

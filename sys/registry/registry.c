@@ -207,6 +207,7 @@ int registry_get(const registry_instance_t *instance, const registry_parameter_t
 
 #define _REGISTRY_CHECK_SET_CONSTRAINTS_OF_ARRAY_TYPE(_passed_checks, _type_field_name, _parameter, \
                                                       _buf, _buf_len) \
+        (void)_passed_checks; \
         _REGISTRY_CHECK_SET_CONSTRAINTS_ALLOWED_VALUES_OF_ARRAY_TYPE(_passed_checks, \
                                                                      _type_field_name, \
                                                                      _parameter, _buf, \
@@ -218,6 +219,7 @@ int registry_get(const registry_instance_t *instance, const registry_parameter_t
 
 #define _REGISTRY_CHECK_SET_CONSTRAINTS_OF_VALUE_TYPE(_passed_checks, _type, _type_field_name, \
                                                       _parameter, _buf) \
+        (void)_passed_checks; \
         _REGISTRY_CHECK_SET_CONSTRAINTS_ALLOWED_VALUES_OF_VALUE_TYPE(_passed_checks, _type, \
                                                                      _type_field_name, \
                                                                      _parameter, _buf) \

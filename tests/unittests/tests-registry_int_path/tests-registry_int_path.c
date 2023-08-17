@@ -44,7 +44,9 @@ static registry_tests_nested_instance_t test_instance_data = {
 };
 
 static registry_instance_t test_instance = {
+#if IS_ACTIVE(CONFIG_REGISTRY_ENABLE_META_NAME)
     .name = "test-nested-parameter-test",
+#endif /* CONFIG_REGISTRY_ENABLE_META_NAME */
     .data = &test_instance_data,
     .commit_cb = NULL,
 };

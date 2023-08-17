@@ -71,7 +71,9 @@ static registry_tests_full_instance_t test_full_instance_1_data = {
 };
 
 static registry_instance_t test_full_instance_1 = {
+#if IS_ACTIVE(CONFIG_REGISTRY_ENABLE_META_NAME)
     .name = "test-full-1",
+#endif /* CONFIG_REGISTRY_ENABLE_META_NAME */
     .data = &test_full_instance_1_data,
     .commit_cb = &commit_cb,
 };
@@ -95,7 +97,9 @@ static registry_tests_constrained_min_max_instance_t test_constrained_min_max_in
 };
 
 static registry_instance_t test_constrained_min_max_instance_1 = {
+#if IS_ACTIVE(CONFIG_REGISTRY_ENABLE_META_NAME)
     .name = "test-constrained_min_max-1",
+#endif /* CONFIG_REGISTRY_ENABLE_META_NAME */
     .data = &test_constrained_min_max_instance_1_data,
     .commit_cb = &commit_cb,
 };
@@ -120,7 +124,9 @@ static registry_tests_constrained_allowed_values_instance_t
 };
 
 static registry_instance_t test_constrained_allowed_values_instance_1 = {
+#if IS_ACTIVE(CONFIG_REGISTRY_ENABLE_META_NAME)
     .name = "test-constrained_allowed_values-1",
+#endif /* CONFIG_REGISTRY_ENABLE_META_NAME */
     .data = &test_constrained_allowed_values_instance_1_data,
     .commit_cb = &commit_cb,
 };
@@ -145,7 +151,9 @@ static registry_tests_constrained_forbidden_values_instance_t
 };
 
 static registry_instance_t test_constrained_forbidden_values_instance_1 = {
+#if IS_ACTIVE(CONFIG_REGISTRY_ENABLE_META_NAME)
     .name = "test-constrained_forbidden_values-1",
+#endif /* CONFIG_REGISTRY_ENABLE_META_NAME */
     .data = &test_constrained_forbidden_values_instance_1_data,
     .commit_cb = &commit_cb,
 };
@@ -596,11 +604,10 @@ static void tests_registry_constraints_min_max(void)
 
     /* u8 */
     const uint8_t input_u8_too_small =
-        *registry_tests_constrained_min_max_u8.constraints.uint8.min_value -
-        1;
+        *registry_tests_constrained_min_max_u8.constraints.uint8.min_value - 1;
+
     const uint8_t input_u8_too_large =
-        *registry_tests_constrained_min_max_u8.constraints.uint8.max_value +
-        1;
+        *registry_tests_constrained_min_max_u8.constraints.uint8.max_value + 1;
     const uint8_t input_u8_within_range =
         *registry_tests_constrained_min_max_u8.constraints.uint8.min_value;
 
@@ -1310,6 +1317,14 @@ static void tests_registry_constraints_forbidden_values(void)
 
 Test *tests_registry_get_set_tests(void)
 {
+
+    (void)tests_registry_min_values;
+    (void)tests_registry_zero_values;
+    (void)tests_registry_max_values;
+    (void)tests_registry_constraints_min_max;
+    (void)tests_registry_constraints_allowed_values;
+    (void)tests_registry_constraints_forbidden_values;
+
     EMB_UNIT_TESTFIXTURES(fixtures) {
         new_TestFixture(tests_registry_min_values),
         new_TestFixture(tests_registry_zero_values),
