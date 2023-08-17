@@ -56,10 +56,18 @@ static void mapping(const registry_parameter_id_t parameter_id, const registry_i
 /* Schema */
 const registry_parameter_t registry_tests_nested_parameter = {
     .id = REGISTRY_TESTS_NESTED_PARAMETER,
+#if IS_ACTIVE(CONFIG_REGISTRY_ENABLE_META_NAME) || IS_ACTIVE(DOXYGEN)
     .name = "parameter",
+#endif /* CONFIG_REGISTRY_ENABLE_META_NAME */
+#if IS_ACTIVE(CONFIG_REGISTRY_ENABLE_META_DESCRIPTION) || IS_ACTIVE(DOXYGEN)
     .description = "",
+#endif /* CONFIG_REGISTRY_ENABLE_META_DESCRIPTION */
     .schema = &registry_tests_nested,
     .type = REGISTRY_TYPE_UINT8,
+#if IS_ACTIVE(CONFIG_REGISTRY_ENABLE_ALLOWED_VALUES_CHECK) || \
+    IS_ACTIVE(CONFIG_REGISTRY_ENABLE_FORBIDDEN_VALUES_CHECK) || \
+    IS_ACTIVE(CONFIG_REGISTRY_ENABLE_MIN_VALUE_CHECK) || \
+    IS_ACTIVE(CONFIG_REGISTRY_ENABLE_MAX_VALUE_CHECK)
     .constraints.uint8 = {
 #if IS_ACTIVE(CONFIG_REGISTRY_ENABLE_ALLOWED_VALUES_CHECK) || IS_ACTIVE(DOXYGEN)
         .allowed_values = NULL,
@@ -70,12 +78,17 @@ const registry_parameter_t registry_tests_nested_parameter = {
         .forbidden_values_len = 0,
 #endif /* CONFIG_REGISTRY_ENABLE_FORBIDDEN_VALUES_CHECK */
     },
+#endif
 };
 
 const registry_group_t registry_tests_nested_group = {
     .id = REGISTRY_TESTS_NESTED_GROUP,
+#if IS_ACTIVE(CONFIG_REGISTRY_ENABLE_META_NAME) || IS_ACTIVE(DOXYGEN)
     .name = "group",
+#endif /* CONFIG_REGISTRY_ENABLE_META_NAME */
+#if IS_ACTIVE(CONFIG_REGISTRY_ENABLE_META_DESCRIPTION) || IS_ACTIVE(DOXYGEN)
     .description = "",
+#endif /* CONFIG_REGISTRY_ENABLE_META_DESCRIPTION */
     .schema = &registry_tests_nested,
     .groups = NULL,
     .groups_len = 0,
@@ -87,8 +100,12 @@ const registry_group_t registry_tests_nested_group = {
 
 const registry_parameter_t registry_tests_nested_group_parameter = {
     .id = REGISTRY_TESTS_NESTED_GROUP_PARAMETER,
+#if IS_ACTIVE(CONFIG_REGISTRY_ENABLE_META_NAME) || IS_ACTIVE(DOXYGEN)
     .name = "parameter",
+#endif /* CONFIG_REGISTRY_ENABLE_META_NAME */
+#if IS_ACTIVE(CONFIG_REGISTRY_ENABLE_META_DESCRIPTION) || IS_ACTIVE(DOXYGEN)
     .description = "",
+#endif /* CONFIG_REGISTRY_ENABLE_META_DESCRIPTION */
     .schema = &registry_tests_nested,
     .type = REGISTRY_TYPE_UINT8,
     .constraints.uint8 = {
@@ -105,8 +122,12 @@ const registry_parameter_t registry_tests_nested_group_parameter = {
 
 registry_schema_t registry_tests_nested = {
     .id = REGISTRY_TESTS_NESTED,
+#if IS_ACTIVE(CONFIG_REGISTRY_ENABLE_META_NAME) || IS_ACTIVE(DOXYGEN)
     .name = "nested",
+#endif /* CONFIG_REGISTRY_ENABLE_META_NAME */
+#if IS_ACTIVE(CONFIG_REGISTRY_ENABLE_META_DESCRIPTION) || IS_ACTIVE(DOXYGEN)
     .description = "",
+#endif /* CONFIG_REGISTRY_ENABLE_META_DESCRIPTION */
     .namespace = &registry_tests,
     .mapping = mapping,
     .groups = (const registry_group_t *[]) {
