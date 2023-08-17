@@ -30,12 +30,6 @@ extern "C" {
 #include "xfa.h"
 #include "modules.h"
 
-//#define CONFIG_REGISTRY_ENABLE_META_NAME 1
-#define CONFIG_REGISTRY_ENABLE_ALLOWED_VALUES_CHECK 1
-#define CONFIG_REGISTRY_ENABLE_FORBIDDEN_VALUES_CHECK 1
-#define CONFIG_REGISTRY_ENABLE_MIN_VALUE_CHECK 1
-#define CONFIG_REGISTRY_ENABLE_MAX_VALUE_CHECK 1
-
 typedef uint8_t registry_namespace_id_t;
 typedef uint32_t registry_schema_id_t;
 typedef uint16_t registry_instance_id_t;
