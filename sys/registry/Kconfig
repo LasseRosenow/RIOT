@@ -36,6 +36,7 @@ config MODULE_REGISTRY_INT_PATH
 config MODULE_REGISTRY_STRING_PATH
     bool "Access configuration parameters via a string path"
 
+rsource "namespace/Kconfig"
 rsource "storage/Kconfig"
 
 endif # MODULE_REGISTRY

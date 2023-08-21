@@ -14,5 +14,6 @@ menuconfig MODULE_REGISTRY_NAMESPACE
 if MODULE_REGISTRY_NAMESPACE
 
 rsource "sys/Kconfig"
+rsource "tests/Kconfig"
 
 endif # MODULE_REGISTRY_NAMESPACE
