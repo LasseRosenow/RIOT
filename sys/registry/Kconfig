@@ -30,6 +30,9 @@ config REGISTRY_ENABLE_MIN_VALUE_CHECK
 config REGISTRY_ENABLE_MAX_VALUE_CHECK
     bool "Check if new value does not exceed maximum"
 
+config MODULE_REGISTRY_INT_PATH
+    bool "Access configuration parameters via an integer path"
+
 rsource "storage/Kconfig"
 
 endif # MODULE_REGISTRY
