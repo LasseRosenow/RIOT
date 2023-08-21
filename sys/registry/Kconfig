@@ -1,0 +1,33 @@
+# Copyright (c) 2023 HAW Hamburg
+#
+# This file is subject to the terms and conditions of the GNU Lesser
+# General Public License v2.1. See the file LICENSE in the top level
+# directory for more details.
+#
+
+menuconfig MODULE_REGISTRY
+    bool "REGISTRY"
+    help
+        RIOT Registry module for handling runtime configurations.
+
+if MODULE_REGISTRY
+
+config REGISTRY_ENABLE_META_NAME
+    bool "Include name string in schemas"
+
+config REGISTRY_ENABLE_META_DESCRIPTION
+    bool "Include description string in schemas"
+
+config REGISTRY_ENABLE_ALLOWED_VALUES_CHECK
+    bool "Check if new values are allowed"
+
+config REGISTRY_ENABLE_FORBIDDEN_VALUES_CHECK
+    bool "Check if new values are forbidden"
+
+config REGISTRY_ENABLE_MIN_VALUE_CHECK
+    bool "Check if new value does not exceed minimum"
+
+config REGISTRY_ENABLE_MAX_VALUE_CHECK
+    bool "Check if new value does not exceed maximum"
+
+endif # MODULE_REGISTRY

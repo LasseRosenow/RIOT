@@ -694,4 +694,8 @@ ifneq (,$(filter auto_init%,$(USEMODULE)))
   USEMODULE += preprocessor_successor
 endif
 
+ifneq (,$(filter registry%,$(USEMODULE)))
+  include $(RIOTBASE)/sys/registry/Makefile.dep
+endif
+
 include $(RIOTBASE)/sys/test_utils/Makefile.dep
