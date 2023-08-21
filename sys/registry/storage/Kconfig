@@ -16,4 +16,7 @@ if MODULE_REGISTRY_STORAGE
 config MODULE_REGISTRY_STORAGE_HEAP
     bool "Heap storage"
 
+config MODULE_REGISTRY_STORAGE_VFS
+    bool "VFS storage"
+
 endif # MODULE_REGISTRY_STORAGE
