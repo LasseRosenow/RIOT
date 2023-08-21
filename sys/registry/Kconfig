@@ -33,6 +33,9 @@ config REGISTRY_ENABLE_MAX_VALUE_CHECK
 config MODULE_REGISTRY_INT_PATH
     bool "Access configuration parameters via an integer path"
 
+config MODULE_REGISTRY_STRING_PATH
+    bool "Access configuration parameters via a string path"
+
 rsource "storage/Kconfig"
 
 endif # MODULE_REGISTRY
