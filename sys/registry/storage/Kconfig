@@ -10,3 +10,10 @@ menuconfig MODULE_REGISTRY_STORAGE
     depends on MODULE_REGISTRY
     help
         Storage module allowing to store configuration parameters to non-volatile storage.
+
+if MODULE_REGISTRY_STORAGE
+
+config MODULE_REGISTRY_STORAGE_HEAP
+    bool "Heap storage"
+
+endif # MODULE_REGISTRY_STORAGE

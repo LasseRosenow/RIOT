@@ -146,6 +146,11 @@ extern const registry_storage_instance_t *_registry_storage_instance_dst;
 #define REGISTRY_SET_STORAGE_DESTINATION(_storage_instance) \
         const registry_storage_instance_t *_registry_storage_instance_dst = &_storage_instance \
 
+/* heap */
+#if IS_USED(MODULE_REGISTRY_STORAGE_HEAP) || IS_ACTIVE(DOXYGEN)
+extern registry_storage_t registry_storage_heap;
+#endif
+
 #ifdef __cplusplus
 }
 #endif
