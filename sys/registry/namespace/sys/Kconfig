@@ -1,0 +1,19 @@
+# Copyright (c) 2023 HAW Hamburg
+#
+# This file is subject to the terms and conditions of the GNU Lesser
+# General Public License v2.1. See the file LICENSE in the top level
+# directory for more details.
+#
+
+menuconfig MODULE_REGISTRY_NAMESPACE_SYS
+    bool "REGISTRY_NAMESPACE_SYS"
+    depends on MODULE_REGISTRY_NAMESPACE
+    help
+        Namespace Sys module providing common sys configuration schemas for the RIOT Registry sys module.
+
+if MODULE_REGISTRY_NAMESPACE_SYS
+
+config MODULE_REGISTRY_NAMESPACE_SYS_RGB_LED
+    bool "RGB LED schema"
+
+endif # MODULE_REGISTRY_NAMESPACE_SYS
