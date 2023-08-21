@@ -6,9 +6,7 @@
   - [ ] Code comments
   - [ ] Readme.md
 
-- [ ] XFA()
-  - [ ] Automatically add schemas to a namespace on compile time
-    - Problem: Cannot get the XFA array size at compile time => cannot apply schema_len
+- [x] XFA()
   - [x] Automatically add namespaces to the registry on compile time
   - [x] Add storage instances to the registry on compile time
 
@@ -44,7 +42,10 @@
 
 ## Uncertain
 
-- [ ] Use XFA() to automatically add instances at compile time? => Could not be added dynamically anymore
+- [ ] XFA()
+  - [ ] Automatically add schemas to a namespace on compile time
+    - Problem: Cannot get the XFA array size at compile time => cannot apply schema_len
+  - [ ] Use XFA() to automatically add instances at compile time? => Could not be added dynamically anymore
 
 - [ ] commit_cb and export_cb at most on the instance level (not on the parameter/group level)?
   - wenn ein driver der meinung ist, dass das auf parameter level sinnvoll ist, kann er checks in der commit_cb method implementieren dafür
