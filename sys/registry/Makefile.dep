@@ -1,3 +1,7 @@
+ifneq (,$(filter registry_storage%,$(USEMODULE)))
+  include $(RIOTBASE)/sys/registry/storage/Makefile.dep
+endif
+
 ifneq (,$(filter registry_%,$(USEMODULE)))
   USEMODULE += registry
 endif
