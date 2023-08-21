@@ -1,6 +1,6 @@
 <mxfile host="65bd71144e">
     <diagram id="h9DzdqyxrpRUiVM34piB" name="Page-1">
-        <mxGraphModel dx="2376" dy="2537" grid="1" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="1" pageScale="1" pageWidth="1169" pageHeight="827" math="0" shadow="0">
+        <mxGraphModel dx="2255" dy="2449" grid="1" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="1" pageScale="1" pageWidth="1169" pageHeight="827" math="0" shadow="0">
             <root>
                 <mxCell id="0"/>
                 <mxCell id="1" parent="0"/>
@@ -31,7 +31,7 @@
                         <mxPoint x="-27" y="7" as="offset"/>
                     </mxGeometry>
                 </mxCell>
-                <mxCell id="2" value="«component»&lt;br&gt;&lt;b&gt;Core&lt;/b&gt;" style="html=1;dropTarget=0;verticalAlign=top;fillColor=#d5e8d4;strokeColor=#82b366;" parent="1" vertex="1">
+                <mxCell id="2" value="«component»&lt;br&gt;&lt;b&gt;Registry Core&lt;/b&gt;" style="html=1;dropTarget=0;verticalAlign=top;fillColor=#d5e8d4;strokeColor=#82b366;" parent="1" vertex="1">
                     <mxGeometry x="-860" y="-1470" width="650" height="190" as="geometry"/>
                 </mxCell>
                 <mxCell id="3" value="" style="shape=module;jettyWidth=8;jettyHeight=4;" parent="2" vertex="1">
@@ -42,7 +42,7 @@
                 <mxCell id="118" style="html=1;edgeStyle=elbowEdgeStyle;" parent="1" source="4" target="2" edge="1">
                     <mxGeometry relative="1" as="geometry"/>
                 </mxCell>
-                <mxCell id="4" value="«component»&lt;br&gt;&lt;b&gt;String_Path&lt;/b&gt;" style="html=1;dropTarget=0;verticalAlign=top;fillColor=#ffe6cc;strokeColor=#d79b00;" parent="1" vertex="1">
+                <mxCell id="4" value="«component»&lt;br&gt;&lt;b&gt;String Path&lt;/b&gt;" style="html=1;dropTarget=0;verticalAlign=top;fillColor=#ffe6cc;strokeColor=#d79b00;" parent="1" vertex="1">
                     <mxGeometry x="-410" y="-1260" width="200" height="190" as="geometry"/>
                 </mxCell>
                 <mxCell id="5" value="" style="shape=module;jettyWidth=8;jettyHeight=4;" parent="4" vertex="1">
@@ -143,7 +143,7 @@
                 <mxCell id="72" value="«Configuration Manager»&lt;br&gt;&lt;b&gt;REST API&lt;/b&gt;" style="html=1;dropTarget=0;verticalAlign=middle;" parent="1" vertex="1">
                     <mxGeometry x="-410" y="-880" width="180" height="50" as="geometry"/>
                 </mxCell>
-                <mxCell id="100" style="edgeStyle=elbowEdgeStyle;rounded=0;html=1;fontSize=14;" parent="1" source="77" target="57" edge="1">
+                <mxCell id="100" style="edgeStyle=elbowEdgeStyle;rounded=0;html=1;fontSize=14;" parent="1" source="57" target="77" edge="1">
                     <mxGeometry relative="1" as="geometry">
                         <mxPoint x="-380.00000000000045" y="-780" as="targetPoint"/>
                     </mxGeometry>
@@ -192,7 +192,7 @@
                         <mxPoint x="-840" y="-1150" as="targetPoint"/>
                     </mxGeometry>
                 </mxCell>
-                <mxCell id="110" value="«component»&lt;br&gt;&lt;b&gt;Integer_Path&lt;/b&gt;" style="html=1;dropTarget=0;verticalAlign=top;fillColor=#ffe6cc;strokeColor=#d79b00;" parent="1" vertex="1">
+                <mxCell id="110" value="«component»&lt;br&gt;&lt;b&gt;Integer Path&lt;/b&gt;" style="html=1;dropTarget=0;verticalAlign=top;fillColor=#ffe6cc;strokeColor=#d79b00;" parent="1" vertex="1">
                     <mxGeometry x="-635" y="-1260" width="200" height="190" as="geometry"/>
                 </mxCell>
                 <mxCell id="111" value="" style="shape=module;jettyWidth=8;jettyHeight=4;" parent="110" vertex="1">
@@ -221,7 +221,7 @@
                         <mxPoint x="-520.0000000000005" y="-860" as="sourcePoint"/>
                     </mxGeometry>
                 </mxCell>
-                <mxCell id="121" style="edgeStyle=elbowEdgeStyle;rounded=0;html=1;fontSize=36;entryX=0;entryY=0.25;entryDx=0;entryDy=0;elbow=vertical;" parent="1" source="10" target="2" edge="1">
+                <mxCell id="121" style="edgeStyle=elbowEdgeStyle;rounded=0;html=1;fontSize=36;elbow=vertical;exitX=0;exitY=0.25;exitDx=0;exitDy=0;" parent="1" source="2" target="10" edge="1">
                     <mxGeometry relative="1" as="geometry">
                         <mxPoint x="-920" y="-1420" as="sourcePoint"/>
                         <mxPoint x="-850" y="-1317.5" as="targetPoint"/>
