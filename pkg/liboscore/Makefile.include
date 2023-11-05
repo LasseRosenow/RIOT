@@ -1,0 +1,8 @@
+CFLAGS += -DLIBCOSE_HAS_HKDF
+
+# OSCORE's own includes
+INCLUDES += -I${PKGDIRBASE}/liboscore/src/include
+
+# Backends we choose for RIOT
+INCLUDES += -I${PKGDIRBASE}/liboscore/backends/nanocoap/inc
+INCLUDES += -I${PKGDIRBASE}/liboscore/backends/libcose/inc

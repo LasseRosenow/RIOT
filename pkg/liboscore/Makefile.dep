@@ -1,0 +1,4 @@
+USEMODULE += nanocoap
+USEPKG += libcose
+USEMODULE += liboscore_nanocoap
+USEMODULE += liboscore_libcose
