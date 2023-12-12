@@ -16,7 +16,8 @@
         "primitive.h": "c",
         "persistence.h": "c",
         "demo-server.h": "c",
-        "message.h": "c"
+        "message.h": "c",
+        "*.inc": "c"
     },
     "[shellscript][c][cpp]": {
         "editor.tabSize": 4,

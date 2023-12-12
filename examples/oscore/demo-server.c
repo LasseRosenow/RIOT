@@ -325,7 +325,7 @@ static ssize_t _riot_board_handler(coap_pkt_t *pdu, uint8_t *buf, size_t len, co
 
 static const coap_resource_t _resources[] = {
     /* This index (0) is used by the notify mechanism, don't move it around without updating there */
-    { "/", COAP_POST | COAP_FETCH, oscore_handler, NULL },
+    { "/", COAP_POST | COAP_FETCH | COAP_MATCH_SUBTREE | COAP_GET, oscore_handler, NULL },
     { "/oscore/hello/coap", COAP_GET, plugtest_nonoscore_hello, NULL },
     { "/riot/board", COAP_GET, _riot_board_handler, NULL },
     // FIXME: This creates an artefact entry in .well-known/core
