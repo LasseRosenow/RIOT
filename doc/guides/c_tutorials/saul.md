@@ -131,7 +131,7 @@ whether the result of the function was `NULL` or not.
 The code should now look like this:
 
 <!--skip ci-->
-```c title="main.c"
+```c title="main.c" {8-25}
 #include <stdio.h>
 
 #include "board.h"
