@@ -186,16 +186,17 @@ and afterwards we turn the LED off by clearing the pin.
 
 {/*<!--skip ci-->*/}
 ```c
-int main(void) {
-  /* Initialize the LED0 pin */
-  gpio_init(led0, led0_mode);
-  /* Turn off the LED0 pin */
-  gpio_clear(led0);
+int main(void)
+{
+    /* Initialize the LED0 pin */
+    gpio_init(led0, led0_mode);
+    /* Turn off the LED0 pin */
+    gpio_clear(led0);
 
-  /* Loop forever */
-  while (1) {
+    /* Loop forever */
+    while (1) {
 
-  }
+    }
 }
 ```
 
@@ -203,18 +204,18 @@ Turning the LED off when the board starts is quite boring,
 so let's make it blink by adding a delay and toggling the LED.
 
 ```c
-  /* Loop forever */
-  while (1) {
-    /* Toggle the LED0 pin every 500 milliseconds */
-    gpio_toggle(led0);
-    ztimer_sleep(ZTIMER_MSEC, 500);
-  }
+    /* Loop forever */
+    while (1) {
+        /* Toggle the LED0 pin every 500 milliseconds */
+        gpio_toggle(led0);
+        ztimer_sleep(ZTIMER_MSEC, 500);
+    }
 ```
 
 The full code should now look like this:
 
 {/*<!--skip ci-->*/}
-```c title="main.c" {15-20}
+```c title="main.c" {16-21}
 #include "board.h"
 #include "periph/gpio.h"
 #include "ztimer.h"
@@ -223,18 +224,19 @@ The full code should now look like this:
 gpio_t led0 = GPIO_PIN(1, 9);
 gpio_mode_t led0_mode = GPIO_OUT;
 
-int main(void) {
-  /* Initialize the LED0 pin */
-  gpio_init(led0, led0_mode);
-  /* Turn off the LED0 pin */
-  gpio_clear(led0);
+int main(void)
+{
+    /* Initialize the LED0 pin */
+    gpio_init(led0, led0_mode);
+    /* Turn off the LED0 pin */
+    gpio_clear(led0);
 
-  /* Loop forever */
-  while (1) {
-    /* Toggle the LED0 pin every 500 milliseconds */
-    gpio_toggle(led0);
-    ztimer_sleep(ZTIMER_MSEC, 500);
-  }
+    /* Loop forever */
+    while (1) {
+        /* Toggle the LED0 pin every 500 milliseconds */
+        gpio_toggle(led0);
+        ztimer_sleep(ZTIMER_MSEC, 500);
+    }
 }
 ```
 
@@ -260,22 +262,24 @@ that will be called when the button is pressed.
 
 ```c title="Define the button callback function"
 /* This callback function will be called when the button state changes */
-void button_callback(void *arg) {
-  /* the argument is not used */
-  (void)arg;
+void button_callback(void *arg)
+{
+    /* the argument is not used */
+    (void)arg;
 
-  /* Toggle the LED1 pin based on the button state */
-  if (gpio_read(button)) {
-    gpio_clear(led1);
-  } else {
-    gpio_set(led1);
-  }
+    /* Toggle the LED1 pin based on the button state */
+    if (gpio_read(button)) {
+        gpio_clear(led1);
+    }
+    else {
+        gpio_set(led1);
+    }
 }
 ```
 
 Now we need to define the button and led1 pin and mode and initialize it.
 
-```c title="main.c" {9-14, 35-41}
+```c title="main.c" {9-14, 38-44}
 #include "board.h"
 #include "periph/gpio.h"
 #include "ztimer.h"
@@ -292,38 +296,41 @@ gpio_mode_t led1_mode = GPIO_OUT;
 gpio_t button = GPIO_PIN(1, 2);
 
 /* This callback function will be called when the button state changes */
-void button_callback(void *arg) {
-  /* the argument is not used */
-  (void)arg;
+void button_callback(void *arg)
+{
+    /* the argument is not used */
+    (void)arg;
 
-  /* Toggle the LED1 pin based on the button state */
-  if (gpio_read(button)) {
-    gpio_clear(led1);
-  } else {
-    gpio_set(led1);
-  }
+    /* Toggle the LED1 pin based on the button state */
+    if (gpio_read(button)) {
+        gpio_clear(led1);
+    }
+    else {
+        gpio_set(led1);
+    }
 }
 
-int main(void) {
-  /* Initialize the LED0 pin */
-  gpio_init(led0, led0_mode);
-  /* Turn off the LED0 pin */
-  gpio_clear(led0);
+int main(void)
+{
+    /* Initialize the LED0 pin */
+    gpio_init(led0, led0_mode);
+    /* Turn off the LED0 pin */
+    gpio_clear(led0);
 
-  /* Initialize the LED1 pin */
-  gpio_init(led1, led1_mode);
-  /* Turn off the LED1 pin */
-  gpio_clear(led1);
+    /* Initialize the LED1 pin */
+    gpio_init(led1, led1_mode);
+    /* Turn off the LED1 pin */
+    gpio_clear(led1);
 
-  /* Initialize the button pin */
-  gpio_init_int(button, GPIO_IN_PU, GPIO_BOTH, button_callback, NULL);
+    /* Initialize the button pin */
+    gpio_init_int(button, GPIO_IN_PU, GPIO_BOTH, button_callback, NULL);
 
-  /* Loop forever */
-  while (1) {
-    /* Toggle the LED0 pin every 500 milliseconds */
-    gpio_toggle(led0);
-    ztimer_sleep(ZTIMER_MSEC, 500);
-  }
+    /* Loop forever */
+    while (1) {
+        /* Toggle the LED0 pin every 500 milliseconds */
+        gpio_toggle(led0);
+        ztimer_sleep(ZTIMER_MSEC, 500);
+    }
 }
 ```
 
@@ -361,18 +368,19 @@ Using this define, we can simplify our code to the following:
 
 {/*<!--skip ci-->*/}
 ```c title="Using the LED0_TOGGLE define"
-int main(void) {
-  /* Initialize the LED0 pin */
-  gpio_init(led0, led0_mode);
-  /* Turn off the LED0 pin */
-  gpio_clear(led0);
+int main(void)
+{
+    /* Initialize the LED0 pin */
+    gpio_init(led0, led0_mode);
+    /* Turn off the LED0 pin */
+    gpio_clear(led0);
 
-  /* Loop forever */
-  while (1) {
-    /* Toggle the LED0 pin every 500 milliseconds */
-    LED0_TOGGLE;
-    ztimer_sleep(ZTIMER_MSEC, 500);
-  }
+    /* Loop forever */
+    while (1) {
+        /* Toggle the LED0 pin every 500 milliseconds */
+        LED0_TOGGLE;
+        ztimer_sleep(ZTIMER_MSEC, 500);
+    }
 }
 ```
 
