@@ -26,9 +26,9 @@ int main(void)
     }
     else {
         /*
-     * Otherwise print the name of the temperature sensor
-     * and continue the program
-     */
+         * Otherwise print the name of the temperature sensor
+         * and continue the program
+         */
         printf("Temperature sensor found: %s\n", temperature_sensor->name);
     }
 
@@ -38,10 +38,10 @@ int main(void)
         phydat_t temperature;
 
         /*
-     * Read the temperature sensor
-     * and store the result in the temperature variable
-     * saul_reg_read returns the dimension of the data read (1 in this case)
-     */
+         * Read the temperature sensor
+         * and store the result in the temperature variable
+         * saul_reg_read returns the dimension of the data read (1 in this case)
+         */
         int dimension = saul_reg_read(temperature_sensor, &temperature);
 
         /* If the read was successful (1+ Dimensions), print the temperature */
