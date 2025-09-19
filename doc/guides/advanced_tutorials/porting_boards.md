@@ -346,23 +346,23 @@ commonly be done in your application `Makefile` or your environment). You can
 specify multiple directories separated by spaces.
 
 ```
-/home/
-|----RIOT/
-    |---- ...
-|----external-boards/
-    |----board-foo/
-        |----dist/
-            |----scripts
-        |----board.c
-        |----doc.md
-        |----include/
-            |----periph_conf.h
-            |----board.h
-            |----gpio_params.h
-        |----Makefile
-        |----Makefile.dep
-        |----Makefile.features
-        |----Makefile.include
+/home
+├── RIOT
+│   └── ...
+└── external-boards
+    └── board-foo
+        ├── dist
+        │   └── scripts
+        ├── board.c
+        ├── doc.md
+        ├── include
+        │   ├── periph_conf.h
+        │   ├── board.h
+        │   └── gpio_params.h
+        ├── Makefile
+        ├── Makefile.dep
+        ├── Makefile.features
+        └── Makefile.include
 ```
 
 If the external `BOARD` is very similar to a `BOARD` already present in
