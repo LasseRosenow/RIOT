@@ -1,6 +1,6 @@
 ---
 title: Timers and Callbacks
-description: This tutorial explains how to use timers and callbacs in RIOT.
+description: This tutorial explains how to use timers and callbacks in RIOT.
 code_folder: examples/guides/timers/
 ---
 
