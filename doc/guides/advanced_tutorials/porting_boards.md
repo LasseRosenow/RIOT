@@ -32,19 +32,19 @@ although not all of the subdirectories or Makefiles have to be present for
 a board implementation to work.
 
 ```
-  board-foo/
-  |----dist/
-      |----scripts
-  |----board.c
-  |----doc.md
-  |----include/
-      |----periph_conf.h
-      |----board.h
-      |----gpio_params.h
-  |----Makefile
-  |----Makefile.dep
-  |----Makefile.features
-  |----Makefile.include
+board-foo
+├── dist
+│   └── scripts
+├── board.c
+├── doc.md
+├── include
+│   ├── periph_conf.h
+│   ├── board.h
+│   └── gpio_params.h
+├── Makefile
+├── Makefile.dep
+├── Makefile.features
+└── Makefile.include
 ```
 
 ## Source Files
