@@ -210,7 +210,7 @@ RIOT provides a simple function to solve this problem,
 
 The final code should now look like this:
 
-```c title="main.c"
+```c title="main.c" {27-50}
 #include <stdio.h>
 
 #include "board.h"
