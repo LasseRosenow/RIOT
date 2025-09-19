@@ -132,7 +132,7 @@ ifneq (,$(filter native native32 native64,$(BOARD)))
 endif
 ```
 
-# Helper Tools
+## Helper Tools
 
 To help you start writing an application within RIOT, the build system provides
 the `generate-example` and `generate-test` make targets. These targets are wrappers
