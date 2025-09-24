@@ -13,7 +13,7 @@ description: This page describes the process of managing a release.
 6. [Other Repositories](#6-other-repositories)
 7. [Important Fixes after Release](#7-important-fixes-after-release)
 8. [Resources](#8-resources)
-9. [Forum post templates](#9-forum-post-templates)
+9. [Forum Post Templates](#9-forum-post-templates)
 
 ## 1. Checklist
 
