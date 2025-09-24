@@ -194,9 +194,9 @@ A point release for a critical issue is best limited to a small number of change
 | Release manager tool | https://github.com/RIOT-OS/RIOT-release-manager |
 | Test automation helper scripts | https://github.com/RIOT-OS/Release-Specs?tab=readme-ov-file#pytest-runner |
 | Pending changes to test automation helper scripts | https://github.com/jia200x/Release-Specs/pulls |
-| Backport automation script | {RIOTBASE}/dist/tools/backport_pr |
+| Backport automation script | https://github.com/RIOT-OS/RIOT/blob/master/dist/tools/backport_pr |
 | Release statistics wiki | https://github.com/RIOT-OS/RIOT/wiki/release-statistics |
-| Release stats script | {RIOTBASE}/dist/tools/release-stats |
+| Release stats script | https://github.com/RIOT-OS/RIOT/blob/master/dist/tools/release-stats |
 | Release management org spreadsheet | https://drive.google.com/open?id=1rKYswFgQGYj4jSA4TBHjg980pAGoaKPj |
 | Release test tracking spreadsheet | https://drive.google.com/open?id=0B384VtEXbD_HRzJSY1NGdnFpWERxb2JFeGdaS09iUjV0TGhN |
 
