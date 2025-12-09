@@ -103,8 +103,7 @@ struct _registry_storage_t {
 };
 
 /**
- * @brief Load all configuration parameters from the storages that are registered
- * using @p REGISTRY_ADD_STORAGE_SOURCE.
+ * @brief Load all configuration parameters from the storage instance.
  *
  * @param[in] storage_instance Storage instance to load the configurations from.
  *
@@ -114,9 +113,8 @@ registry_error_t registry_storage_load(
     const registry_storage_instance_t *storage_instance);
 
 /**
- * @brief Save all configuration parameters that are within
- * the scope of the to the @p node. to the storage device, that was registered
- * using @p REGISTRY_SET_STORAGE_DESTINATION.
+ * @brief Save all configuration parameters, that are within
+ * the scope of the provided node, to the storage instance.
  *
  * @param[in] storage_instance Storage instance to save the configurations to.
  * @param[in] node A location within the registry configuration tree.
