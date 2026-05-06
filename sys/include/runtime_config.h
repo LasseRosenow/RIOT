@@ -187,13 +187,13 @@ typedef struct {
     /** The location inside of the configuration tree */
     union {
         /** Pointer to the configuration namespace */
-        const runtime_config_namespace_t *namespace;
+        const runtime_config_namespace_t *as_namespace;
 
         /** Pointer to a configuration schema */
-        const runtime_config_schema_t *schema;
+        const runtime_config_schema_t *as_schema;
 
         /** Pointer to a schema instance */
-        const runtime_config_schema_instance_t *instance;
+        const runtime_config_schema_instance_t *as_instance;
 
         /** A configuration group depends on an instance */
         struct {
@@ -202,7 +202,7 @@ typedef struct {
 
             /** Pointer to a configuration group */
             const runtime_config_group_t *group;
-        } group;
+        } as_group;
 
         /** A configuration parameter depends on an instance */
         struct {
@@ -211,9 +211,8 @@ typedef struct {
 
             /** Pointer to a configuration parameter */
             const runtime_config_parameter_t *parameter;
-        } parameter;
-
-    } value;
+        } as_parameter;
+    };
 } runtime_config_node_t;
 
 /**

@@ -253,7 +253,7 @@ static runtime_config_error_t _runtime_config_traverse_schema_tree_instance(
     /* return the given configuration schema instance */
     const runtime_config_node_t tree_traversal_node = {
         .type = RUNTIME_CONFIG_NODE_INSTANCE,
-        .value.instance = instance,
+        .as_instance = instance,
     };
     runtime_config_error_t rc = tree_traversal_cb(&tree_traversal_node, context);
 
@@ -299,7 +299,7 @@ static runtime_config_error_t _runtime_config_traverse_schema_tree(
     /* return the given configuration schema */
     const runtime_config_node_t tree_traversal_node = {
         .type = RUNTIME_CONFIG_NODE_SCHEMA,
-        .value.schema = schema,
+        .as_schema = schema,
     };
     runtime_config_error_t rc = tree_traversal_cb(&tree_traversal_node, context);
 
@@ -341,7 +341,7 @@ static runtime_config_error_t _runtime_config_traverse_namespace_tree(
     /* return the given namespace */
     const runtime_config_node_t tree_traversal_node = {
         .type = RUNTIME_CONFIG_NODE_NAMESPACE,
-        .value.namespace = namespace,
+        .as_namespace = namespace,
     };
     runtime_config_error_t rc = tree_traversal_cb(&tree_traversal_node, context);
 

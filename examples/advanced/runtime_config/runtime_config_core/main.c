@@ -85,7 +85,7 @@ int main(void)
         /* Create runtime_config_node_t for the board_led_parameter */
         const runtime_config_node_t parameter_node = {
             .type = RUNTIME_CONFIG_NODE_PARAMETER,
-            .value.parameter = {
+            .as_parameter = {
                 .instance = &board_led_instance,
                 .parameter = &runtime_config_sys_board_led_enabled,
             },

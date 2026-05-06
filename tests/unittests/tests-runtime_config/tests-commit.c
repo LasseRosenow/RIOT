@@ -130,7 +130,7 @@ static void tests_runtime_config_apply_parameter(void)
 
     const runtime_config_node_t node = {
         .type = RUNTIME_CONFIG_NODE_PARAMETER,
-        .value.parameter = {
+        .as_parameter = {
             .instance = &test_nested_instance_parameter_test,
             .parameter = &runtime_config_tests_nested_parameter,
         },
@@ -148,7 +148,7 @@ static void tests_runtime_config_apply_group(void)
 
     const runtime_config_node_t node = {
         .type = RUNTIME_CONFIG_NODE_GROUP,
-        .value.group = {
+        .as_group = {
             .instance = &test_nested_instance_group_test,
             .group = &runtime_config_tests_nested_group,
         },
@@ -165,7 +165,7 @@ static void tests_runtime_config_apply_instance(void)
 
     const runtime_config_node_t node = {
         .type = RUNTIME_CONFIG_NODE_INSTANCE,
-        .value.instance = &test_nested_instance_instance_test,
+        .as_instance = &test_nested_instance_instance_test,
     };
 
     runtime_config_apply(&node);
@@ -179,7 +179,7 @@ static void tests_runtime_config_apply_schema(void)
 
     const runtime_config_node_t node = {
         .type = RUNTIME_CONFIG_NODE_SCHEMA,
-        .value.schema = &runtime_config_tests_nested,
+        .as_schema = &runtime_config_tests_nested,
     };
 
     runtime_config_apply(&node);
@@ -193,7 +193,7 @@ static void tests_runtime_config_apply_namespace(void)
 
     const runtime_config_node_t node = {
         .type = RUNTIME_CONFIG_NODE_NAMESPACE,
-        .value.namespace = &runtime_config_tests,
+        .as_namespace = &runtime_config_tests,
     };
 
     runtime_config_apply(&node);

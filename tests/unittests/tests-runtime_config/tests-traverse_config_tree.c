@@ -135,7 +135,7 @@ static void tests_runtime_config_traverse_parameter(void)
 
     const runtime_config_node_t node = {
         .type = RUNTIME_CONFIG_NODE_PARAMETER,
-        .value.parameter = {
+        .as_parameter = {
             .instance = &test_nested_instance_1,
             .parameter = &runtime_config_tests_nested_parameter,
         },
@@ -150,7 +150,7 @@ static void tests_runtime_config_traverse_group(void)
 {
     const runtime_config_node_t node = {
         .type = RUNTIME_CONFIG_NODE_GROUP,
-        .value.group = {
+        .as_group = {
             .instance = &test_nested_instance_1,
             .group = &runtime_config_tests_nested_group,
         },
@@ -192,7 +192,7 @@ static void tests_runtime_config_traverse_instance(void)
 {
     const runtime_config_node_t node = {
         .type = RUNTIME_CONFIG_NODE_INSTANCE,
-        .value.instance = &test_nested_instance_1,
+        .as_instance = &test_nested_instance_1,
     };
 
     /* check if instance gets exported */
@@ -230,7 +230,7 @@ static void tests_runtime_config_traverse_schema(void)
 {
     const runtime_config_node_t node = {
         .type = RUNTIME_CONFIG_NODE_SCHEMA,
-        .value.schema = &runtime_config_tests_nested,
+        .as_schema = &runtime_config_tests_nested,
     };
 
     /* check if schema gets exported */
@@ -273,7 +273,7 @@ static void tests_runtime_config_traverse_namespace(void)
 {
     const runtime_config_node_t node = {
         .type = RUNTIME_CONFIG_NODE_NAMESPACE,
-        .value.namespace = &runtime_config_tests,
+        .as_namespace = &runtime_config_tests,
     };
 
     /* check if namespace gets exported */
