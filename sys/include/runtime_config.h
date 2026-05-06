@@ -386,7 +386,6 @@ struct runtime_config_schema {
     const size_t parameters_len;
 
     /**
-     * @internal
      * @brief Get the value of a configuration parameter of a specific schema
      *        instance.
      *
@@ -402,6 +401,8 @@ struct runtime_config_schema {
      * @param[in] instance Pointer to the schema instance that contains the parameter.
      * @param[out] val Pointer to buffer containing the new value.
      * @param[out] val_len Pointer to length of the buffer to store the current value.
+     *
+     * @internal
      */
     void (*const get_parameter_value_from_instance)(
         const runtime_config_parameter_id_t parameter_id,
