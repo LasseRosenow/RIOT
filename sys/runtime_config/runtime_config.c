@@ -33,22 +33,22 @@ XFA_INIT_CONST(runtime_config_namespace_t *, _runtime_config_namespaces_xfa);
 
 runtime_config_error_t runtime_config_add_schema_instance(
     runtime_config_schema_t *schema,
-    runtime_config_schema_instance_t *instance)
+    runtime_config_schema_instance_t *schema_instance)
 {
     assert(schema != NULL);
-    assert(instance != NULL);
+    assert(schema_instance != NULL);
 
     /* add schema to instance */
-    instance->schema = schema;
+    schema_instance->schema = schema;
 
     /* get instances length to determine the id of the new instance */
     size_t count = clist_count(&schema->instances);
 
     /* set id of new instance to the instance count */
-    instance->id = count;
+    schema_instance->id = count;
 
     /* add instance to schema */
-    clist_rpush(&schema->instances, &instance->node);
+    clist_rpush(&schema->instances, &schema_instance->node);
 
     return RUNTIME_CONFIG_ERROR_NONE;
 }
@@ -181,32 +181,32 @@ runtime_config_error_t runtime_config_apply(const runtime_config_node_t *node)
 }
 
 static runtime_config_error_t _runtime_config_traverse_parameter_tree(
-    const runtime_config_schema_instance_t *instance,
+    const runtime_config_schema_instance_t *schema_instance,
     const runtime_config_parameter_t *parameter,
     const runtime_config_tree_traversal_cb_t tree_traversal_cb,
     const void *context)
 {
     assert(parameter != NULL);
-    assert(instance != NULL);
+    assert(schema_instance != NULL);
 
     const runtime_config_node_t tree_traversal_node = RUNTIME_CONFIG_NODE_PARAMETER(
-        instance, parameter);
+        schema_instance, parameter);
 
     return tree_traversal_cb(&tree_traversal_node, context);
 }
 
 static runtime_config_error_t _runtime_config_traverse_group_tree(
-    const runtime_config_schema_instance_t *instance,
+    const runtime_config_schema_instance_t *schema_instance,
     const runtime_config_group_t *group,
     const runtime_config_tree_traversal_cb_t tree_traversal_cb,
     const uint8_t tree_traversal_depth,
     const void *context)
 {
     assert(group != NULL);
-    assert(instance != NULL);
+    assert(schema_instance != NULL);
 
     /* return the given configuration group */
-    const runtime_config_node_t tree_traversal_node = RUNTIME_CONFIG_NODE_GROUP(instance, group);
+    const runtime_config_node_t tree_traversal_node = RUNTIME_CONFIG_NODE_GROUP(schema_instance, group);
     runtime_config_error_t rc = tree_traversal_cb(&tree_traversal_node, context);
 
     /* traverse through all children of the given configuration group
@@ -218,7 +218,7 @@ static runtime_config_error_t _runtime_config_traverse_group_tree(
         /* group */
         for (size_t i = 0; i < group->groups_len; i++) {
             rc = _runtime_config_traverse_group_tree(
-                instance, group->groups[i], tree_traversal_cb,
+                schema_instance, group->groups[i], tree_traversal_cb,
                 tree_traversal_depth - 1, context);
 
             if (rc != RUNTIME_CONFIG_ERROR_NONE) {
@@ -229,7 +229,7 @@ static runtime_config_error_t _runtime_config_traverse_group_tree(
         /* parameter */
         for (size_t i = 0; i < group->parameters_len; i++) {
             rc = _runtime_config_traverse_parameter_tree(
-                instance, group->parameters[i], tree_traversal_cb, context);
+                schema_instance, group->parameters[i], tree_traversal_cb, context);
 
             if (!(rc == RUNTIME_CONFIG_ERROR_NONE)) {
                 return rc;
@@ -309,9 +309,16 @@ static runtime_config_error_t _runtime_config_traverse_schema_tree(
 
         do {
             node = node->next;
-            runtime_config_schema_instance_t *instance = container_of(node, runtime_config_schema_instance_t, node);
+            runtime_config_schema_instance_t *schema_instance = container_of(
+                node,
+                runtime_config_schema_instance_t,
+                node);
 
-            rc = _runtime_config_traverse_schema_tree_instance(instance, tree_traversal_cb, tree_traversal_depth - 1, context);
+            rc = _runtime_config_traverse_schema_tree_instance(
+                schema_instance,
+                tree_traversal_cb,
+                tree_traversal_depth - 1,
+                context);
 
             if (!(rc == RUNTIME_CONFIG_ERROR_NONE)) {
                 return rc;

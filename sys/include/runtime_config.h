@@ -305,7 +305,7 @@ typedef struct {
  */
 typedef runtime_config_error_t (*runtime_config_apply_cb_t)(
     const runtime_config_group_or_parameter_id_t *group_or_parameter_id,
-    const runtime_config_schema_instance_t *instance);
+    const runtime_config_schema_instance_t *schema_instance);
 
 /**
  * @brief Instance of a schema containing its configuration parameter values.
@@ -529,13 +529,13 @@ void runtime_config_init(void);
  * @brief Adds a new instance to a schema.
  *
  * @param[in] schema Pointer to the schema.
- * @param[in] instance Pointer to the new instance.
+ * @param[in] schema_instance Pointer to the new instance.
  *
  * @return 0 on success, non-zero on failure.
  */
 runtime_config_error_t runtime_config_add_schema_instance(
     runtime_config_schema_t *schema,
-    runtime_config_schema_instance_t *instance);
+    runtime_config_schema_instance_t *schema_instance);
 
 /**
  * @brief Gets a pointer to the current value of a parameter that belongs to an
