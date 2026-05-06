@@ -194,20 +194,14 @@ static void tests_runtime_config_apply_all(void)
 
 Test *tests_runtime_config_apply_tests(void)
 {
-    (void)tests_runtime_config_apply_parameter;
-    (void)tests_runtime_config_apply_group;
-    (void)tests_runtime_config_apply_instance;
-    (void)tests_runtime_config_apply_schema;
-    (void)tests_runtime_config_apply_namespace;
-    (void)tests_runtime_config_apply_all;
 
     EMB_UNIT_TESTFIXTURES(fixtures){
-        // new_TestFixture(tests_runtime_config_apply_parameter),
-        // new_TestFixture(tests_runtime_config_apply_group),
-        // new_TestFixture(tests_runtime_config_apply_instance),
-        // new_TestFixture(tests_runtime_config_apply_schema),
+        new_TestFixture(tests_runtime_config_apply_parameter),
+        new_TestFixture(tests_runtime_config_apply_group),
+        new_TestFixture(tests_runtime_config_apply_instance),
+        new_TestFixture(tests_runtime_config_apply_schema),
         new_TestFixture(tests_runtime_config_apply_namespace),
-        // new_TestFixture(tests_runtime_config_apply_all),
+        new_TestFixture(tests_runtime_config_apply_all),
     };
 
     EMB_UNIT_TESTCALLER(runtime_config_tests, test_runtime_config_setup, test_runtime_config_teardown, fixtures);
