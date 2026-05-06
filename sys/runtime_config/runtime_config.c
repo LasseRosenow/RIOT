@@ -25,7 +25,6 @@
 #include "clist.h"
 
 #include "runtime_config.h"
-#include "runtime_config/util.h"
 
 #define ENABLE_DEBUG 0
 #include "debug.h"
@@ -54,10 +53,14 @@ runtime_config_error_t runtime_config_add_schema_instance(
     return RUNTIME_CONFIG_ERROR_NONE;
 }
 
-runtime_config_error_t runtime_config_get(const runtime_config_node_t *node, runtime_config_value_t *value)
+runtime_config_error_t runtime_config_get(
+    const runtime_config_node_t *node,
+    void **buf,
+    size_t *buf_len)
 {
     assert(node != NULL);
-    assert(value != NULL);
+    assert(buf != NULL);
+    assert(buf_len != NULL);
 
     if (node->type != RUNTIME_CONFIG_NODE_PARAMETER) {
         return -RUNTIME_CONFIG_ERROR_NODE_INVALID;
@@ -72,17 +75,18 @@ runtime_config_error_t runtime_config_get(const runtime_config_node_t *node, run
     parameter->schema->get_parameter_value_from_instance(
         parameter->id, node->as_parameter.instance, &intern_val, &intern_val_len);
 
-    /* update buf pointer in runtime_config_value_t to point
-     * to its internal value and set buf_len accordingly */
-    value->count = parameter->count;
-    value->type = parameter->type;
-    value->buf = intern_val;
-    value->buf_len = intern_val_len;
+    /* update buf pointer to point to its internal value
+     * and set buf_len accordingly */
+    *buf = intern_val;
+    *buf_len = intern_val_len;
 
     return RUNTIME_CONFIG_ERROR_NONE;
 }
 
-runtime_config_error_t runtime_config_set(const runtime_config_node_t *node, const void *buf, const size_t buf_len)
+runtime_config_error_t runtime_config_set(
+    const runtime_config_node_t *node,
+    const void *buf,
+    const size_t buf_len)
 {
     assert(node != NULL);
     assert(buf != NULL);
@@ -111,7 +115,9 @@ runtime_config_error_t runtime_config_set(const runtime_config_node_t *node, con
     return RUNTIME_CONFIG_ERROR_NONE;
 }
 
-static runtime_config_error_t _apply_tree_traversal_cb(const runtime_config_node_t *node, const void *context)
+static runtime_config_error_t _apply_tree_traversal_cb(
+    const runtime_config_node_t *node,
+    const void *context)
 {
     (void)context;
 
@@ -167,8 +173,11 @@ runtime_config_error_t runtime_config_apply(const runtime_config_node_t *node)
         }
     }
 
-    return runtime_config_traverse_config_tree(node, _apply_tree_traversal_cb,
-                                               tree_traversal_depth, NULL);
+    return runtime_config_traverse_config_tree(
+        node,
+        _apply_tree_traversal_cb,
+        tree_traversal_depth,
+        NULL);
 }
 
 static runtime_config_error_t _runtime_config_traverse_parameter_tree(

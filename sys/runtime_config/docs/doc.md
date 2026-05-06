@@ -197,13 +197,16 @@ runtime_config_add_schema_instance(&runtime_config_sys_board_led, &board_led_ins
 ### Get configurations
 
 A Configuration Value can be retrieved using the `runtime_config_get` function.
-The function takes the `runtime_config_node_t` and a `runtime_config_value_t`
-pointer (to return the value) as its arguments.
+The function takes the `runtime_config_node_t` as input and a pointer to a buffer
+and a pointer to the buffers size as output.
+After the function finished executing, the output pointer will point to the
+internal buffer holding the actual configuration value.
 
 ```c
-int runtime_config_get(
+runtime_config_error_t runtime_config_get(
     const runtime_config_node_t *node,
-    runtime_config_value_t *value
+    void **buf,
+    size_t *buf_len
 );
 ```
 

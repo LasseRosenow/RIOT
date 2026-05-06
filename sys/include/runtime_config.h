@@ -216,23 +216,6 @@ typedef struct {
 } runtime_config_node_t;
 
 /**
- * @brief Basic representation of a configuration parameter value.
- */
-typedef struct {
-    /** Number of elements (1 for scalar, >1 for array). */
-    size_t count;
-
-    /** The type of the configuration parameter value such as uint8_t or float. */
-    runtime_config_type_t type;
-
-    /** Pointer to the buffer containing the value of the configuration parameter. */
-    const void *buf;
-
-    /** Length of the buffer. */
-    size_t buf_len;
-} runtime_config_value_t;
-
-/**
  * @brief The callback must be implemented by consumers of a configuration schema.
  *
  * This callback is called when the runtime configuration module notifies the consumer,
@@ -484,18 +467,22 @@ runtime_config_error_t runtime_config_add_schema_instance(
     runtime_config_schema_instance_t *instance);
 
 /**
- * @brief Gets the current value of a parameter that belongs to an instance
- *        of a configuration schema.
+ * @brief Gets a pointer to the current value of a parameter that belongs to an
+ *        instance of a configuration schema.
  *
  * @param[in]  node A location within the runtime configuration tree.
  *                  Must be of the type "RUNTIME_CONFIG_NODE_PARAMETER".
- * @param[out] value Pointer to a uninitialized @ref runtime_config_value_t struct.
+ * @param[out] buf Pointer to a pointer that will be updated to point to
+ *                 the internal configuration value. Must not be NULL.
+ * @param[out] buf_len Pointer to a variable where the length of the
+ *                     configuration value will be written. Must not be NULL.
  *
  * @return 0 on success, non-zero on failure.
  */
 runtime_config_error_t runtime_config_get(
     const runtime_config_node_t *node,
-    runtime_config_value_t *value);
+    void **buf,
+    size_t *buf_len);
 
 /**
  * @brief Sets the value of a configuration parameter that belongs
