@@ -41,9 +41,9 @@
 #define DEBUG_STARTUP(...) DEBUG("[native] startup: " __VA_ARGS__)
 
 typedef enum {
-    _STDIOTYPE_STDIO = 0, /**< leave intact */
-    _STDIOTYPE_NULL,      /**< redirect to "/dev/null" */
-    _STDIOTYPE_FILE,      /**< redirect to file */
+    _STDIOTYPE_STDIO = 0,   /**< leave intact */
+    _STDIOTYPE_NULL,        /**< redirect to "/dev/null" */
+    _STDIOTYPE_FILE,        /**< redirect to file */
 } _stdiotype_t;
 
 int _native_null_in_pipe[2];
@@ -56,66 +56,66 @@ unsigned _native_rng_seed = 0;
 int _native_rng_mode = 0;
 
 #ifdef MODULE_NETDEV_TAP
-#  include "netdev_tap_params.h"
+#include "netdev_tap_params.h"
 
 netdev_tap_params_t netdev_tap_params[NETDEV_TAP_MAX];
 #endif
 #ifdef MODULE_MTD_NATIVE
-#  include "board.h"
-#  include "mtd_native.h"
+#include "board.h"
+#include "mtd_native.h"
 #endif
 #ifdef MODULE_PERIPH_CAN
-#  include "candev_linux.h"
+#include "candev_linux.h"
 #endif
 #ifdef MODULE_PERIPH_SPIDEV_LINUX
-#  include "spidev_linux.h"
+#include "spidev_linux.h"
 #endif
 #ifdef MODULE_PERIPH_GPIO_LINUX
-#  include "gpiodev_linux.h"
+#include "gpiodev_linux.h"
 #endif
 #ifdef MODULE_NATIVE_CLI_EUI_PROVIDER
-#  include "native_cli_eui_provider.h"
+#include "native_cli_eui_provider.h"
 #endif
 #ifdef MODULE_SOCKET_ZEP
-#  include "socket_zep_params.h"
+#include "socket_zep_params.h"
 
 socket_zep_params_t socket_zep_params[SOCKET_ZEP_MAX];
 #endif
 #ifdef MODULE_PERIPH_EEPROM
-#  include "eeprom_native.h"
+#include "eeprom_native.h"
 extern char eeprom_file[EEPROM_FILEPATH_MAX_LEN];
 #endif
 
 static const char short_opts[] = ":hi:s:deEoc:"
 #ifdef MODULE_PERIPH_GPIO_LINUX
-                                 "g:"
+    "g:"
 #endif
 #ifdef MODULE_MTD_NATIVE
-                                 "m:"
+    "m:"
 #endif
 #ifdef MODULE_PERIPH_CAN
-                                 "n:"
+    "n:"
 #endif
 #ifdef MODULE_SOCKET_ZEP
-                                 "z:"
+    "z:"
 #endif
 #ifdef MODULE_NATIVE_CLI_EUI_PROVIDER
-                                 "U:"
+    "U:"
 #endif
 #ifdef MODULE_PERIPH_SPIDEV_LINUX
-                                 "p:"
+    "p:"
 #endif
 #ifdef MODULE_NETDEV_TAP
-                                 "w:"
+    "w:"
 #endif
-                                 "";
+    "";
 
 #if __GLIBC__
 /* glibc and Apple's libSystem pass argc, argv, and envp to init_fini handlers */
-#  define _HAVE_INIT_FINIT_PROGRAM_ARGUMENTS 1
+# define _HAVE_INIT_FINIT_PROGRAM_ARGUMENTS 1
 #else
 /* otherwise, not guaranteed */
-#  define _HAVE_INIT_FINIT_PROGRAM_ARGUMENTS 0
+# define _HAVE_INIT_FINIT_PROGRAM_ARGUMENTS 0
 #endif
 
 static const struct option long_opts[] = {
@@ -189,27 +189,27 @@ int _native_log_output(_stdiotype_t stdiotype, int output)
     assert((output == STDERR_FILENO) || (output == STDOUT_FILENO));
 
     switch (stdiotype) {
-    case _STDIOTYPE_STDIO:
-        return -1;
-    case _STDIOTYPE_NULL:
-        if ((outfile = real_open("/dev/null", O_WRONLY)) == -1) {
-            err(EXIT_FAILURE, "_native_log_output: open");
-        }
-        break;
-    case _STDIOTYPE_FILE: {
-        /* 20 should suffice for 64-bit PIDs ;-) */
-        char logname[sizeof("/tmp/riot.stderr.") + 20];
+        case _STDIOTYPE_STDIO:
+            return -1;
+        case _STDIOTYPE_NULL:
+            if ((outfile = real_open("/dev/null", O_WRONLY)) == -1) {
+                err(EXIT_FAILURE, "_native_log_output: open");
+            }
+            break;
+        case _STDIOTYPE_FILE: {
+            /* 20 should suffice for 64-bit PIDs ;-) */
+            char logname[sizeof("/tmp/riot.stderr.") + 20];
 
-        snprintf(logname, sizeof(logname), "/tmp/riot.std%s.%d",
-                 (output == STDOUT_FILENO) ? "out" : "err", _native_pid);
-        if ((outfile = real_creat(logname, 0666)) == -1) {
-            err(EXIT_FAILURE, "_native_log_output: open");
+            snprintf(logname, sizeof(logname), "/tmp/riot.std%s.%d",
+                     (output == STDOUT_FILENO) ? "out": "err", _native_pid);
+            if ((outfile = real_creat(logname, 0666)) == -1) {
+                err(EXIT_FAILURE, "_native_log_output: open");
+            }
+            break;
         }
-        break;
-    }
-    default:
-        errx(EXIT_FAILURE, "_native_log_output: unknown log type");
-        break;
+        default:
+            errx(EXIT_FAILURE, "_native_log_output: unknown log type");
+            break;
     }
     if (real_dup2(outfile, output) == -1) {
         err(EXIT_FAILURE, "_native_log_output: dup2(output)");
@@ -301,77 +301,76 @@ void usage_exit(int status)
     real_printf("help: %s -h\n", _progname);
 
     real_printf("\nOptions:\n"
-                "    -h, --help\n"
-                "        print this help message\n"
-                "    -i <id>, --id=<id>\n"
-                "        specify instance id (set by config module)\n"
-                "    -s <seed>, --seed=<seed>\n"
-                "        specify srandom(3) seed (/dev/random is used instead of random(3) if\n"
-                "        the option is omitted)\n"
-                "    -d, --daemonize\n"
-                "        daemonize native instance\n"
-                "    -e, --stderr-pipe\n"
-                "        redirect stderr to file\n"
-                "    -E, --stderr-noredirect\n"
-                "        do not redirect stderr (i.e. leave sterr unchanged despite\n"
-                "        daemon/socket io)\n"
-                "    -o, --stdout-pipe\n"
-                "        redirect stdout to file (/tmp/riot.stdout.PID) when not attached\n"
-                "        to socket\n"
-                "    -c <tty>, --uart-tty=<tty>\n"
-                "        specify TTY device for UART. This argument can be used multiple\n"
-                "        times (up to UART_NUMOF)\n"
+"    -h, --help\n"
+"        print this help message\n"
+"    -i <id>, --id=<id>\n"
+"        specify instance id (set by config module)\n"
+"    -s <seed>, --seed=<seed>\n"
+"        specify srandom(3) seed (/dev/random is used instead of random(3) if\n"
+"        the option is omitted)\n"
+"    -d, --daemonize\n"
+"        daemonize native instance\n"
+"    -e, --stderr-pipe\n"
+"        redirect stderr to file\n"
+"    -E, --stderr-noredirect\n"
+"        do not redirect stderr (i.e. leave sterr unchanged despite\n"
+"        daemon/socket io)\n"
+"    -o, --stdout-pipe\n"
+"        redirect stdout to file (/tmp/riot.stdout.PID) when not attached\n"
+"        to socket\n"
+"    -c <tty>, --uart-tty=<tty>\n"
+"        specify TTY device for UART. This argument can be used multiple\n"
+"        times (up to UART_NUMOF)\n"
 #ifdef MODULE_PERIPH_GPIO_LINUX
-                "    -g <gpio>, --gpio=<gpio>\n"
-                "        specify gpiochip device for GPIO access.\n"
-                "        This argument can be used multiple times.\n"
-                "        Example: --gpio=/dev/gpiochip0 uses gpiochip0 for port 0\n"
+"    -g <gpio>, --gpio=<gpio>\n"
+"        specify gpiochip device for GPIO access.\n"
+"        This argument can be used multiple times.\n"
+"        Example: --gpio=/dev/gpiochip0 uses gpiochip0 for port 0\n"
 #endif
 #if defined(MODULE_SOCKET_ZEP) && (SOCKET_ZEP_MAX > 0)
-                "    -z [<laddr>:<lport>,]<raddr>:<rport> --zep=[<laddr>:<lport>,]<raddr>:<rport>\n"
-                "        provide a ZEP interface with an (optional) local address and port\n"
-                "        (<laddr>:<lport>) and a remote address and port (<raddr>:<rport>).\n"
-                "        The ZEP interface connects to the remote address and may listen\n"
-                "        on a local address.\n"
-                "        Required to be provided SOCKET_ZEP_MAX times\n"
+"    -z [<laddr>:<lport>,]<raddr>:<rport> --zep=[<laddr>:<lport>,]<raddr>:<rport>\n"
+"        provide a ZEP interface with an (optional) local address and port\n"
+"        (<laddr>:<lport>) and a remote address and port (<raddr>:<rport>).\n"
+"        The ZEP interface connects to the remote address and may listen\n"
+"        on a local address.\n"
+"        Required to be provided SOCKET_ZEP_MAX times\n"
 #endif
 #ifdef MODULE_NATIVE_CLI_EUI_PROVIDER
-                "    -U <eui64>, --eui64=<eui64>\n"
-                "        provide a ZEP interface with EUI-64 (MAC address)\n"
-                "        This argument can be provided multiple times\n"
+"    -U <eui64>, --eui64=<eui64>\n"
+"        provide a ZEP interface with EUI-64 (MAC address)\n"
+"        This argument can be provided multiple times\n"
 #endif
     );
 #ifdef MODULE_MTD_NATIVE
     real_printf(
-        "    -m <mtd>, --mtd=<mtd>\n"
-        "       specify the file name of mtd emulated device\n");
+"    -m <mtd>, --mtd=<mtd>\n"
+"       specify the file name of mtd emulated device\n");
 #endif
 #if defined(MODULE_PERIPH_CAN)
     real_printf(
-        "    -n <ifnum>:<ifname>, --can <ifnum>:<ifname>\n"
-        "        specify CAN interface <ifname> to use for CAN device #<ifnum>\n"
-        "        max number of CAN device: %d\n",
-        CAN_DLL_NUMOF);
+"    -n <ifnum>:<ifname>, --can <ifnum>:<ifname>\n"
+"        specify CAN interface <ifname> to use for CAN device #<ifnum>\n"
+"        max number of CAN device: %d\n", CAN_DLL_NUMOF);
 #endif
 #ifdef MODULE_PERIPH_SPIDEV_LINUX
     real_printf(
-        "    -p <b>:<d>:<spidev>, --spi=<b>:<d>:<spidev>\n"
-        "        specify Linux SPI device to use for CS line d on bus b (in RIOT)\n"
-        "        Example: --spi=0:1:/dev/spidev0.0 will assign the file spidev0.0 to\n"
-        "                 SPI_DEV(0) and SPI_HWCS(1).\n"
-        "        Supports up to %d buses with %d CS lines each.\n",
-        SPI_NUMOF, SPI_MAXCS);
+"    -p <b>:<d>:<spidev>, --spi=<b>:<d>:<spidev>\n"
+"        specify Linux SPI device to use for CS line d on bus b (in RIOT)\n"
+"        Example: --spi=0:1:/dev/spidev0.0 will assign the file spidev0.0 to\n"
+"                 SPI_DEV(0) and SPI_HWCS(1).\n"
+"        Supports up to %d buses with %d CS lines each.\n", SPI_NUMOF, SPI_MAXCS
+    );
 #endif
 #ifdef MODULE_PERIPH_EEPROM
     real_printf(
-        "    -M <eeprom> , --eeprom=<eeprom>\n"
-        "        Specify the file path where the EEPROM content is stored\n"
-        "        Example: --eeprom=/tmp/riot_native.eeprom\n");
+"    -M <eeprom> , --eeprom=<eeprom>\n"
+"        Specify the file path where the EEPROM content is stored\n"
+"        Example: --eeprom=/tmp/riot_native.eeprom\n");
 #endif
 #ifdef MODULE_NETDEV_TAP
     real_printf(
-        "    -w <tap>\n"
-        "        Add a tap interface as a wireless interface\n");
+"    -w <tap>\n"
+"        Add a tap interface as a wireless interface\n");
 #endif
     real_exit(status);
 }
@@ -447,7 +446,7 @@ typedef void (*init_func_t)(int argc, char **argv, char **envp);
  */
 /* Find the extents of the __DATA __mod_init_func section */
 extern init_func_t __init_array_start __asm("section$start$__DATA$__mod_init_func");
-extern init_func_t __init_array_end __asm("section$end$__DATA$__mod_init_func");
+extern init_func_t __init_array_end   __asm("section$end$__DATA$__mod_init_func");
 #else
 /* Linker script provides pointers to the beginning and end of the init array */
 extern init_func_t __init_array_start;
@@ -504,8 +503,7 @@ __attribute__((constructor)) static void startup(int argc, char **argv, char **e
         }
         expect((size_t)argc < argc_max);
         argv = realloc(argv, sizeof(char *) * (argc + 1));
-    }
-    else {
+    } else {
         /* must be */
         assert(argc > 0);
         assert(argv);
@@ -534,112 +532,114 @@ __attribute__((constructor)) static void startup(int argc, char **argv, char **e
 
     while ((c = getopt_long(argc, argv, short_opts, long_opts, &opt_idx)) >= 0) {
         switch (c) {
-        case 0:
-            /* fall through to 'h' */
-        case 'h':
-            usage_exit(EXIT_SUCCESS);
-            break;
-        case 'i':
-            _native_id = atol(optarg);
-            break;
-        case 's':
-            _native_rng_seed = atol(optarg);
-            _native_rng_mode = 1;
-            break;
-        case 'd':
-            dmn = true;
-            break;
-        case 'e':
-            if (force_stderr) {
-                /* -e and -E are mutually exclusive */
-                usage_exit(EXIT_FAILURE);
-            }
-            stderrtype = _STDIOTYPE_FILE;
-            break;
-        case 'E':
-            if (stderrtype == _STDIOTYPE_FILE) {
-                /* -e and -E are mutually exclusive */
-                usage_exit(EXIT_FAILURE);
-            }
-            force_stderr = true;
-            break;
+            case 0:
+                /* fall through to 'h' */
+            case 'h':
+                usage_exit(EXIT_SUCCESS);
+                break;
+            case 'i':
+                _native_id = atol(optarg);
+                break;
+            case 's':
+                _native_rng_seed = atol(optarg);
+                _native_rng_mode = 1;
+                break;
+            case 'd':
+                dmn = true;
+                break;
+            case 'e':
+                if (force_stderr) {
+                    /* -e and -E are mutually exclusive */
+                    usage_exit(EXIT_FAILURE);
+                }
+                stderrtype = _STDIOTYPE_FILE;
+                break;
+            case 'E':
+                if (stderrtype == _STDIOTYPE_FILE) {
+                    /* -e and -E are mutually exclusive */
+                    usage_exit(EXIT_FAILURE);
+                }
+                force_stderr = true;
+                break;
 #ifdef MODULE_PERIPH_GPIO_LINUX
-        case 'g':
-            if (gpio_linux_setup(optarg) < 0) {
-                usage_exit(EXIT_FAILURE);
-            }
-            break;
+            case 'g':
+                if (gpio_linux_setup(optarg) < 0) {
+                    usage_exit(EXIT_FAILURE);
+                }
+                break;
 #endif
-        case 'o':
-            stdouttype = _STDIOTYPE_FILE;
-            break;
-        case 'c':
-            tty_uart_setup(uart++, optarg);
-            break;
+            case 'o':
+                stdouttype = _STDIOTYPE_FILE;
+                break;
+            case 'c':
+                tty_uart_setup(uart++, optarg);
+                break;
 #ifdef MODULE_MTD_NATIVE
-        case 'm':
-            ((mtd_native_dev_t *)mtd_dev_get(0))->fname = strndup(optarg, PATH_MAX - 1);
-            break;
+            case 'm':
+                ((mtd_native_dev_t *)mtd_dev_get(0))->fname = strndup(optarg, PATH_MAX - 1);
+                break;
 #endif
 #if defined(MODULE_PERIPH_CAN)
-        case 'n': {
-            int i;
-            i = atol(optarg);
-            if (i >= (int)CAN_DLL_NUMOF) {
-                usage_exit(EXIT_FAILURE);
-            }
-            while ((*optarg != ':') && (*optarg != '\0')) {
+            case 'n':{
+                int i;
+                i = atol(optarg);
+                if (i >= (int)CAN_DLL_NUMOF) {
+                    usage_exit(EXIT_FAILURE);
+                }
+                while ((*optarg != ':') && (*optarg != '\0')) {
+                    optarg++;
+                }
+                if (*optarg == '\0') {
+                    usage_exit(EXIT_FAILURE);
+                }
                 optarg++;
-            }
-            if (*optarg == '\0') {
-                usage_exit(EXIT_FAILURE);
-            }
-            optarg++;
-            strncpy(candev_conf[i].interface_name, optarg,
-                    CAN_MAX_SIZE_INTERFACE_NAME);
-        } break;
+                strncpy(candev_conf[i].interface_name, optarg,
+                        CAN_MAX_SIZE_INTERFACE_NAME);
+                }
+                break;
 #endif
 #ifdef MODULE_SOCKET_ZEP
-        case 'z':
-            _zep_params_setup(optarg, zeps++);
-            break;
+            case 'z':
+                _zep_params_setup(optarg, zeps++);
+                break;
 #endif
 #ifdef MODULE_NATIVE_CLI_EUI_PROVIDER
-        case 'U':
-            native_cli_add_eui64(optarg);
-            break;
+            case 'U':
+                native_cli_add_eui64(optarg);
+                break;
 #endif
 #ifdef MODULE_PERIPH_SPIDEV_LINUX
-        case 'p': {
-            long bus = strtol(optarg, &optarg, 10);
-            if (*optarg != ':') {
-                usage_exit(EXIT_FAILURE);
-            }
-            long cs = strtol(++optarg, &optarg, 10);
-            if (*optarg != ':') {
-                usage_exit(EXIT_FAILURE);
-            }
-            if (spidev_linux_setup(bus, cs, ++optarg) < 0) {
-                usage_exit(EXIT_FAILURE);
-            }
-        } break;
+            case 'p': {
+                    long bus = strtol(optarg, &optarg, 10);
+                    if (*optarg != ':') {
+                        usage_exit(EXIT_FAILURE);
+                    }
+                    long cs = strtol(++optarg, &optarg, 10);
+                    if (*optarg != ':') {
+                        usage_exit(EXIT_FAILURE);
+                    }
+                    if (spidev_linux_setup(bus, cs, ++optarg) < 0) {
+                        usage_exit(EXIT_FAILURE);
+                    }
+                }
+                break;
 #endif
 #ifdef MODULE_PERIPH_EEPROM
-        case 'M': {
-            strncpy(eeprom_file, optarg, EEPROM_FILEPATH_MAX_LEN);
-            break;
-        }
+            case 'M': {
+                strncpy(eeprom_file, optarg, EEPROM_FILEPATH_MAX_LEN);
+                break;
+            }
 #endif
 #ifdef MODULE_NETDEV_TAP
-        case 'w':
-            netdev_tap_params[taps].tap_name = &argv[optind - 1];
-            netdev_tap_params[taps].wired = false;
-            ++taps;
-            break;
+            case 'w':
+                netdev_tap_params[taps].tap_name = &argv[optind - 1];
+                netdev_tap_params[taps].wired = false;
+                ++taps;
+                break;
 #endif
-        default:
-            usage_exit(EXIT_FAILURE);
-            break;
+            default:
+                usage_exit(EXIT_FAILURE);
+                break;
         }
     }
 #ifdef MODULE_SOCKET_ZEP
