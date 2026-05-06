@@ -62,7 +62,7 @@ runtime_config_error_t runtime_config_get(
     assert(buf != NULL);
     assert(buf_len != NULL);
 
-    if (node->type != RUNTIME_CONFIG_NODE_PARAMETER) {
+    if (node->type != RUNTIME_CONFIG_NODE_TYPE_PARAMETER) {
         return -RUNTIME_CONFIG_ERROR_NODE_INVALID;
     }
 
@@ -73,7 +73,7 @@ runtime_config_error_t runtime_config_get(
     const runtime_config_parameter_t *parameter = node->as_parameter.parameter;
 
     parameter->schema->get_parameter_value_from_instance(
-        parameter->id, node->as_parameter.instance, &intern_val, &intern_val_len);
+        parameter->id, node->as_parameter.schema_instance, &intern_val, &intern_val_len);
 
     /* update buf pointer to point to its internal value
      * and set buf_len accordingly */
@@ -92,7 +92,7 @@ runtime_config_error_t runtime_config_set(
     assert(buf != NULL);
     assert(buf_len > 0);
 
-    if (node->type != RUNTIME_CONFIG_NODE_PARAMETER) {
+    if (node->type != RUNTIME_CONFIG_NODE_TYPE_PARAMETER) {
         return -RUNTIME_CONFIG_ERROR_NODE_INVALID;
     }
 
@@ -103,7 +103,7 @@ runtime_config_error_t runtime_config_set(
     const runtime_config_parameter_t *parameter = node->as_parameter.parameter;
 
     parameter->schema->get_parameter_value_from_instance(
-        parameter->id, node->as_parameter.instance, &intern_val, &intern_val_len);
+        parameter->id, node->as_parameter.schema_instance, &intern_val, &intern_val_len);
 
     if (buf_len > intern_val_len) {
         return -RUNTIME_CONFIG_ERROR_BUF_LEN_TOO_LARGE;
@@ -127,22 +127,22 @@ static runtime_config_error_t _apply_tree_traversal_cb(
 
     switch (node->type) {
     /* The apply function is only called for instance and below */
-    case RUNTIME_CONFIG_NODE_NAMESPACE:
-    case RUNTIME_CONFIG_NODE_SCHEMA:
+    case RUNTIME_CONFIG_NODE_TYPE_NAMESPACE:
+    case RUNTIME_CONFIG_NODE_TYPE_SCHEMA:
         return RUNTIME_CONFIG_ERROR_NONE;
 
-    case RUNTIME_CONFIG_NODE_INSTANCE:
-        instance = node->as_instance;
+    case RUNTIME_CONFIG_NODE_TYPE_SCHEMA_INSTANCE:
+        instance = node->as_schema_instance;
         return instance->apply_cb(NULL, instance);
 
-    case RUNTIME_CONFIG_NODE_GROUP:
-        instance = node->as_group.instance;
+    case RUNTIME_CONFIG_NODE_TYPE_GROUP:
+        instance = node->as_group.schema_instance;
         return instance->apply_cb(
             &node->as_group.group->id,
             instance);
 
-    case RUNTIME_CONFIG_NODE_PARAMETER:
-        instance = node->as_parameter.instance;
+    case RUNTIME_CONFIG_NODE_TYPE_PARAMETER:
+        instance = node->as_parameter.schema_instance;
         return instance->apply_cb(
             &node->as_parameter.parameter->id,
             instance);
@@ -157,17 +157,17 @@ runtime_config_error_t runtime_config_apply(const runtime_config_node_t *node)
 
     if (node != NULL) {
         switch (node->type) {
-        case RUNTIME_CONFIG_NODE_NAMESPACE:
+        case RUNTIME_CONFIG_NODE_TYPE_NAMESPACE:
             tree_traversal_depth = RUNTIME_CONFIG_TRAVERSE_TREE_WITH_N_LEVELS_OF_CHILDREN(2);
             break;
 
-        case RUNTIME_CONFIG_NODE_SCHEMA:
+        case RUNTIME_CONFIG_NODE_TYPE_SCHEMA:
             tree_traversal_depth = RUNTIME_CONFIG_TRAVERSE_TREE_WITH_N_LEVELS_OF_CHILDREN(1);
             break;
 
-        case RUNTIME_CONFIG_NODE_INSTANCE:
-        case RUNTIME_CONFIG_NODE_GROUP:
-        case RUNTIME_CONFIG_NODE_PARAMETER:
+        case RUNTIME_CONFIG_NODE_TYPE_SCHEMA_INSTANCE:
+        case RUNTIME_CONFIG_NODE_TYPE_GROUP:
+        case RUNTIME_CONFIG_NODE_TYPE_PARAMETER:
             tree_traversal_depth = RUNTIME_CONFIG_TRAVERSE_SINGLE_NODE;
             break;
         }
@@ -189,13 +189,8 @@ static runtime_config_error_t _runtime_config_traverse_parameter_tree(
     assert(parameter != NULL);
     assert(instance != NULL);
 
-    const runtime_config_node_t tree_traversal_node = {
-        .type = RUNTIME_CONFIG_NODE_PARAMETER,
-        .as_parameter = {
-            .instance = instance,
-            .parameter = parameter,
-        },
-    };
+    const runtime_config_node_t tree_traversal_node = RUNTIME_CONFIG_NODE_PARAMETER(
+        instance, parameter);
 
     return tree_traversal_cb(&tree_traversal_node, context);
 }
@@ -211,13 +206,7 @@ static runtime_config_error_t _runtime_config_traverse_group_tree(
     assert(instance != NULL);
 
     /* return the given configuration group */
-    const runtime_config_node_t tree_traversal_node = {
-        .type = RUNTIME_CONFIG_NODE_GROUP,
-        .as_group = {
-            .instance = instance,
-            .group = group,
-        },
-    };
+    const runtime_config_node_t tree_traversal_node = RUNTIME_CONFIG_NODE_GROUP(instance, group);
     runtime_config_error_t rc = tree_traversal_cb(&tree_traversal_node, context);
 
     /* traverse through all children of the given configuration group
@@ -252,18 +241,15 @@ static runtime_config_error_t _runtime_config_traverse_group_tree(
 }
 
 static runtime_config_error_t _runtime_config_traverse_schema_tree_instance(
-    const runtime_config_schema_instance_t *instance,
+    const runtime_config_schema_instance_t *schema_instance,
     const runtime_config_tree_traversal_cb_t tree_traversal_cb,
     const uint8_t tree_traversal_depth,
     const void *context)
 {
-    assert(instance != NULL);
+    assert(schema_instance != NULL);
 
     /* return the given configuration schema instance */
-    const runtime_config_node_t tree_traversal_node = {
-        .type = RUNTIME_CONFIG_NODE_INSTANCE,
-        .as_instance = instance,
-    };
+    const runtime_config_node_t tree_traversal_node = RUNTIME_CONFIG_NODE_SCHEMA_INSTANCE(schema_instance);
     runtime_config_error_t rc = tree_traversal_cb(&tree_traversal_node, context);
 
     /* traverse through all groups or parameters of the given configuration
@@ -273,9 +259,9 @@ static runtime_config_error_t _runtime_config_traverse_schema_tree_instance(
     }
     else {
         /* groups */
-        for (size_t i = 0; i < instance->schema->groups_len; i++) {
+        for (size_t i = 0; i < schema_instance->schema->groups_len; i++) {
             rc = _runtime_config_traverse_group_tree(
-                instance, instance->schema->groups[i], tree_traversal_cb,
+                schema_instance, schema_instance->schema->groups[i], tree_traversal_cb,
                 tree_traversal_depth - 1, context);
 
             if (!(rc == RUNTIME_CONFIG_ERROR_NONE)) {
@@ -284,9 +270,9 @@ static runtime_config_error_t _runtime_config_traverse_schema_tree_instance(
         }
 
         /* parameters */
-        for (size_t i = 0; i < instance->schema->parameters_len; i++) {
+        for (size_t i = 0; i < schema_instance->schema->parameters_len; i++) {
             rc = _runtime_config_traverse_parameter_tree(
-                instance, instance->schema->parameters[i], tree_traversal_cb, context);
+                schema_instance, schema_instance->schema->parameters[i], tree_traversal_cb, context);
 
             if (!(rc == RUNTIME_CONFIG_ERROR_NONE)) {
                 return rc;
@@ -306,10 +292,7 @@ static runtime_config_error_t _runtime_config_traverse_schema_tree(
     assert(schema != NULL);
 
     /* return the given configuration schema */
-    const runtime_config_node_t tree_traversal_node = {
-        .type = RUNTIME_CONFIG_NODE_SCHEMA,
-        .as_schema = schema,
-    };
+    const runtime_config_node_t tree_traversal_node = RUNTIME_CONFIG_NODE_SCHEMA(schema);
     runtime_config_error_t rc = tree_traversal_cb(&tree_traversal_node, context);
 
     /* traverse through all instances of the given configuration schema
@@ -348,10 +331,7 @@ static runtime_config_error_t _runtime_config_traverse_namespace_tree(
     assert(namespace != NULL);
 
     /* return the given namespace */
-    const runtime_config_node_t tree_traversal_node = {
-        .type = RUNTIME_CONFIG_NODE_NAMESPACE,
-        .as_namespace = namespace,
-    };
+    const runtime_config_node_t tree_traversal_node = RUNTIME_CONFIG_NODE_NAMESPACE(namespace);
     runtime_config_error_t rc = tree_traversal_cb(&tree_traversal_node, context);
 
     /* traverse through all configuration schemas of the given namespace
@@ -406,26 +386,26 @@ runtime_config_error_t runtime_config_traverse_config_tree(
     }
 
     switch (node->type) {
-    case RUNTIME_CONFIG_NODE_NAMESPACE:
+    case RUNTIME_CONFIG_NODE_TYPE_NAMESPACE:
         rc = _runtime_config_traverse_namespace_tree(
             node->as_namespace, tree_traversal_cb, tree_traversal_depth, context);
         break;
-    case RUNTIME_CONFIG_NODE_SCHEMA:
+    case RUNTIME_CONFIG_NODE_TYPE_SCHEMA:
         rc = _runtime_config_traverse_schema_tree(
             node->as_schema, tree_traversal_cb, tree_traversal_depth, context);
         break;
-    case RUNTIME_CONFIG_NODE_INSTANCE:
+    case RUNTIME_CONFIG_NODE_TYPE_SCHEMA_INSTANCE:
         rc = _runtime_config_traverse_schema_tree_instance(
-            node->as_instance, tree_traversal_cb, tree_traversal_depth, context);
+            node->as_schema_instance, tree_traversal_cb, tree_traversal_depth, context);
         break;
-    case RUNTIME_CONFIG_NODE_GROUP:
+    case RUNTIME_CONFIG_NODE_TYPE_GROUP:
         rc = _runtime_config_traverse_group_tree(
-            node->as_group.instance, node->as_group.group, tree_traversal_cb,
+            node->as_group.schema_instance, node->as_group.group, tree_traversal_cb,
             tree_traversal_depth, context);
         break;
-    case RUNTIME_CONFIG_NODE_PARAMETER:
+    case RUNTIME_CONFIG_NODE_TYPE_PARAMETER:
         rc = _runtime_config_traverse_parameter_tree(
-            node->as_parameter.instance, node->as_parameter.parameter,
+            node->as_parameter.schema_instance, node->as_parameter.parameter,
             tree_traversal_cb, context);
         break;
     }

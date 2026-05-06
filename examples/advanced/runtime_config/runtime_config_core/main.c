@@ -83,13 +83,9 @@ int main(void)
         board_led_enabled = !board_led_enabled;
 
         /* Create runtime_config_node_t for the board_led_parameter */
-        const runtime_config_node_t parameter_node = {
-            .type = RUNTIME_CONFIG_NODE_PARAMETER,
-            .as_parameter = {
-                .instance = &board_led_instance,
-                .parameter = &runtime_config_sys_board_led_enabled,
-            },
-        };
+        const runtime_config_node_t parameter_node = RUNTIME_CONFIG_NODE_PARAMETER(
+            &board_led_instance,
+            &runtime_config_sys_board_led_enabled);
 
         /* Set new runtime configuration value */
         runtime_config_set(&parameter_node, &board_led_enabled, sizeof(board_led_enabled));

@@ -128,13 +128,9 @@ static void tests_runtime_config_apply_parameter(void)
     successful = false;
     parameter_id = RUNTIME_CONFIG_TESTS_NESTED_PARAMETER;
 
-    const runtime_config_node_t node = {
-        .type = RUNTIME_CONFIG_NODE_PARAMETER,
-        .as_parameter = {
-            .instance = &test_nested_instance_parameter_test,
-            .parameter = &runtime_config_tests_nested_parameter,
-        },
-    };
+    const runtime_config_node_t node = RUNTIME_CONFIG_NODE_PARAMETER(
+        &test_nested_instance_parameter_test,
+        &runtime_config_tests_nested_parameter);
 
     runtime_config_apply(&node);
 
@@ -146,13 +142,9 @@ static void tests_runtime_config_apply_group(void)
     successful = false;
     group_id = RUNTIME_CONFIG_TESTS_NESTED_GROUP;
 
-    const runtime_config_node_t node = {
-        .type = RUNTIME_CONFIG_NODE_GROUP,
-        .as_group = {
-            .instance = &test_nested_instance_group_test,
-            .group = &runtime_config_tests_nested_group,
-        },
-    };
+    const runtime_config_node_t node = RUNTIME_CONFIG_NODE_GROUP(
+        &test_nested_instance_group_test,
+        &runtime_config_tests_nested_group);
 
     runtime_config_apply(&node);
 
@@ -163,10 +155,8 @@ static void tests_runtime_config_apply_instance(void)
 {
     successful = false;
 
-    const runtime_config_node_t node = {
-        .type = RUNTIME_CONFIG_NODE_INSTANCE,
-        .as_instance = &test_nested_instance_instance_test,
-    };
+    const runtime_config_node_t node = RUNTIME_CONFIG_NODE_SCHEMA_INSTANCE(
+        &test_nested_instance_instance_test);
 
     runtime_config_apply(&node);
 
@@ -177,10 +167,8 @@ static void tests_runtime_config_apply_schema(void)
 {
     successful = false;
 
-    const runtime_config_node_t node = {
-        .type = RUNTIME_CONFIG_NODE_SCHEMA,
-        .as_schema = &runtime_config_tests_nested,
-    };
+    const runtime_config_node_t node = RUNTIME_CONFIG_NODE_SCHEMA(
+        &runtime_config_tests_nested);
 
     runtime_config_apply(&node);
 
@@ -191,10 +179,8 @@ static void tests_runtime_config_apply_namespace(void)
 {
     successful = false;
 
-    const runtime_config_node_t node = {
-        .type = RUNTIME_CONFIG_NODE_NAMESPACE,
-        .as_namespace = &runtime_config_tests,
-    };
+    const runtime_config_node_t node = RUNTIME_CONFIG_NODE_NAMESPACE(
+        &runtime_config_tests);
 
     runtime_config_apply(&node);
 

@@ -142,31 +142,31 @@ typedef enum {
 /**
  * @brief The type of a runtime configuration node.
  *
- * A runtime configuration node points to a namespace, schema, instance, group or
- * parameter.
+ * A runtime configuration node points to a namespace, schema, schema instance,
+ * group or parameter.
  */
 typedef enum {
     /** The node points to @ref runtime_config_namespace_t */
-    RUNTIME_CONFIG_NODE_NAMESPACE = 0,
+    RUNTIME_CONFIG_NODE_TYPE_NAMESPACE = 0,
 
     /** The node points to @ref runtime_config_schema_t */
-    RUNTIME_CONFIG_NODE_SCHEMA,
+    RUNTIME_CONFIG_NODE_TYPE_SCHEMA,
 
     /** The node points to @ref runtime_config_schema_instance_t */
-    RUNTIME_CONFIG_NODE_INSTANCE,
+    RUNTIME_CONFIG_NODE_TYPE_SCHEMA_INSTANCE,
 
     /** The node points to @ref runtime_config_group_t */
-    RUNTIME_CONFIG_NODE_GROUP,
+    RUNTIME_CONFIG_NODE_TYPE_GROUP,
 
     /** The node points to @ref runtime_config_parameter_t */
-    RUNTIME_CONFIG_NODE_PARAMETER,
+    RUNTIME_CONFIG_NODE_TYPE_PARAMETER,
 } runtime_config_node_type_t;
 
 /**
  * @brief A runtime configuration node represents a specific location within the
  * runtime configuration tree.
  *
- * It can point to a namespace, schema, instance, group or parameter.
+ * It can point to a namespace, schema, schema instance, group or parameter.
  * The configuration group and the configuration parameter contain a pointer to
  * a schema instance, because they are children of a specific schema instance
  * in the configuration tree. The schema instance contains the actual values of
@@ -191,12 +191,12 @@ typedef struct {
         const runtime_config_schema_t *as_schema;
 
         /** Pointer to a schema instance */
-        const runtime_config_schema_instance_t *as_instance;
+        const runtime_config_schema_instance_t *as_schema_instance;
 
-        /** A configuration group depends on an instance */
+        /** A configuration group depends on an schema instance */
         struct {
             /** Pointer to a schema instance */
-            const runtime_config_schema_instance_t *instance;
+            const runtime_config_schema_instance_t *schema_instance;
 
             /** Pointer to a configuration group */
             const runtime_config_group_t *group;
@@ -205,13 +205,81 @@ typedef struct {
         /** A configuration parameter depends on an instance */
         struct {
             /** Pointer to a schema instance */
-            const runtime_config_schema_instance_t *instance;
+            const runtime_config_schema_instance_t *schema_instance;
 
             /** Pointer to a configuration parameter */
             const runtime_config_parameter_t *parameter;
         } as_parameter;
     };
 } runtime_config_node_t;
+
+/**
+ * @brief Initializes a runtime configuration node pointing to a configuration
+ *        namespace.
+ *
+ * @param[in] NAMESPACE Pointer to the target @ref runtime_config_namespace_t.
+ */
+#define RUNTIME_CONFIG_NODE_NAMESPACE(NAMESPACE)    \
+    {                                               \
+        .type = RUNTIME_CONFIG_NODE_TYPE_NAMESPACE, \
+        .as_namespace = NAMESPACE,                  \
+    }
+
+/**
+ * @brief Initializes a runtime configuration node pointing to a configuration
+ *        schema.
+ *
+ * @param[in] SCHEMA Pointer to the target @ref runtime_config_schema_t.
+ */
+#define RUNTIME_CONFIG_NODE_SCHEMA(SCHEMA)       \
+    {                                            \
+        .type = RUNTIME_CONFIG_NODE_TYPE_SCHEMA, \
+        .as_schema = SCHEMA,                     \
+    }
+
+/**
+ * @brief Initializes a runtime configuration node pointing to a configuration
+ *        schema instance.
+ *
+ * @param[in] SCHEMA_INSTANCE Pointer to the target @ref runtime_config_schema_instance_t.
+ */
+#define RUNTIME_CONFIG_NODE_SCHEMA_INSTANCE(SCHEMA_INSTANCE) \
+    {                                                        \
+        .type = RUNTIME_CONFIG_NODE_TYPE_SCHEMA_INSTANCE,    \
+        .as_schema_instance = SCHEMA_INSTANCE,               \
+    }
+
+/**
+ * @brief Initializes a runtime configuration node pointing to a configuration group.
+ *
+ * @param[in] SCHEMA_INSTANCE Pointer to the @ref runtime_config_schema_instance_t
+ *                            that this group belongs to.
+ * @param[in] GROUP           Pointer to the target @ref runtime_config_group_t.
+ */
+#define RUNTIME_CONFIG_NODE_GROUP(SCHEMA_INSTANCE, GROUP) \
+    {                                                     \
+        .type = RUNTIME_CONFIG_NODE_TYPE_GROUP,           \
+        .as_group = {                                     \
+            .schema_instance = SCHEMA_INSTANCE,           \
+            .group = GROUP,                               \
+        },                                                \
+    }
+
+/**
+ * @brief Initializes a runtime configuration node pointing to a configuration parameter.
+ *
+ * @param[in] SCHEMA_INSTANCE Pointer to the @ref runtime_config_schema_instance_t
+ *                            that this parameter belongs to.
+ * @param[in] PARAMETER       Pointer to the target @ref runtime_config_parameter_t.
+ */
+#define RUNTIME_CONFIG_NODE_PARAMETER(SCHEMA_INSTANCE, PARAMETER) \
+    {                                                             \
+        .type = RUNTIME_CONFIG_NODE_TYPE_PARAMETER,               \
+        .as_parameter = {                                         \
+            .schema_instance = SCHEMA_INSTANCE,                   \
+            .parameter = PARAMETER,                               \
+        },                                                        \
+    }
 
 /**
  * @brief Callback must be implemented by consumers of a configuration schema.
@@ -227,11 +295,11 @@ typedef struct {
  * at the same time; otherwise, the RGB-LED might display purple for a short period.
  *
  * @param[in] group_or_parameter_id Optional ID of the group or parameter to
- *                                  apply changes to; applies the whole instance
- *                                  if NULL.
- * @param[in] instance Pointer to the schema instance that will be applied.
- *                     Contains a context object and a pointer to the data
- *                     struct holding the configuration parameter values.
+ *                                  apply changes to; applies the whole schema
+ *                                  instance if NULL.
+ * @param[in] schema_instance Pointer to the schema instance that will be applied.
+        *                     Contains a context object and a pointer to the data
+        *                     struct holding the configuration parameter values.
  *
  * @return 0 on success, non-zero on failure.
  */
@@ -272,10 +340,11 @@ struct runtime_config_schema_instance {
     /** Configuration schema that the instance belongs to. */
     const runtime_config_schema_t *schema;
 
-    /** Will be called when @ref runtime_config_apply is called on this instance. */
+    /** Will be called when @ref runtime_config_apply is called on this schema
+     * instance. */
     runtime_config_apply_cb_t apply_cb;
 
-    /** Optional context used by the instance. */
+    /** Optional context used by the schema instance. */
     void *context;
 };
 
@@ -302,13 +371,15 @@ struct runtime_config_group {
     /** Configuration schema that the configuration group belongs to. */
     const runtime_config_schema_t *const schema;
 
-    /** Array of pointers to all the configuration groups that belong to this group. */
+    /** Array of pointers to all the configuration groups that belong to this
+     * group. */
     const runtime_config_group_t **const groups;
 
     /** Size of groups array. */
     const size_t groups_len;
 
-    /** Array of pointers to all the configuration parameters that belong to this group. */
+    /** Array of pointers to all the configuration parameters that belong to
+     * this group. */
     const runtime_config_parameter_t **const parameters;
 
     /** Size of parameters array. */
@@ -350,8 +421,8 @@ struct runtime_config_parameter {
  *
  * A configuration schema contains configuration groups and/or
  * configuration parameters.
- * Besides that, it also contains a list of instances that hold the actual
- * configuration parameter values.
+ * Besides that, it also contains a list of schema instances that hold the
+ * actual configuration parameter values.
  * It has an ID that is unique within the scope of its parent configuration namespace.
  */
 struct runtime_config_schema {
@@ -471,7 +542,7 @@ runtime_config_error_t runtime_config_add_schema_instance(
  *        instance of a configuration schema.
  *
  * @param[in]  node A location within the runtime configuration tree.
- *                  Must be of the type "RUNTIME_CONFIG_NODE_PARAMETER".
+ *                  Must be of the type "RUNTIME_CONFIG_NODE_TYPE_PARAMETER".
  * @param[out] buf Pointer to a pointer that will be updated to point to
  *                 the internal configuration value. Must not be NULL.
  * @param[out] buf_len Pointer to a variable where the length of the
@@ -489,7 +560,7 @@ runtime_config_error_t runtime_config_get(
  *        to an instance of a configuration schema.
  *
  * @param[in] node A location within the runtime configuration tree.
- *                 Must be of the type "RUNTIME_CONFIG_NODE_PARAMETER".
+ *                 Must be of the type "RUNTIME_CONFIG_NODE_TYPE_PARAMETER".
  * @param[in] buf Pointer to the new value for the configuration parameter.
  *                Must not be NULL.
  * @param[in] buf_len Length of the buffer. Must be larger than 0.
@@ -557,8 +628,8 @@ typedef runtime_config_error_t (*runtime_config_tree_traversal_cb_t)(
  *
  * @param[in] node A location within the runtime configuration tree.
  * @param[in] tree_traversal_cb Callback function that will be called for
- *                              each namespace, schema, instance, group and
- *                              parameter that are within the
+ *                              each namespace, schema, schema instance, group
+ *                              and parameter that are within the
  *                              @p tree_traversal_depth and specified @p node.
  * @param[in] tree_traversal_depth Defines how deeply nested child
  *                                 groups / parameters will be shown:

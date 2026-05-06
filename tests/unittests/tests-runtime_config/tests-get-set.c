@@ -87,8 +87,8 @@ static void tests_runtime_config_min_values(void)
     size_t output_len;
 
     runtime_config_node_t node = {
-        .type = RUNTIME_CONFIG_NODE_PARAMETER,
-        .as_parameter.instance = &test_full_instance_1,
+        .type = RUNTIME_CONFIG_NODE_TYPE_PARAMETER,
+        .as_parameter.schema_instance = &test_full_instance_1,
     };
 
     /* bytes */
@@ -221,8 +221,8 @@ static void tests_runtime_config_zero_values(void)
     size_t output_len;
 
     runtime_config_node_t node = {
-        .type = RUNTIME_CONFIG_NODE_PARAMETER,
-        .as_parameter.instance = &test_full_instance_1,
+        .type = RUNTIME_CONFIG_NODE_TYPE_PARAMETER,
+        .as_parameter.schema_instance = &test_full_instance_1,
     };
 
     /* bytes */
@@ -354,8 +354,8 @@ static void tests_runtime_config_ensure_that_max_values_can_be_set_and_get(void)
     size_t output_len;
 
     runtime_config_node_t node = {
-        .type = RUNTIME_CONFIG_NODE_PARAMETER,
-        .as_parameter.instance = &test_full_instance_1,
+        .type = RUNTIME_CONFIG_NODE_TYPE_PARAMETER,
+        .as_parameter.schema_instance = &test_full_instance_1,
     };
 
     /* bytes */
