@@ -39,13 +39,12 @@ static runtime_config_group_or_parameter_id_t parameter_id;
 static runtime_config_group_or_parameter_id_t group_id;
 
 static runtime_config_error_t apply_parameter_cb(
-    const runtime_config_group_or_parameter_id_t *group_or_parameter_id,
-    const runtime_config_schema_instance_t *instance)
+    const runtime_config_schema_instance_t *const schema_instance,
+    const runtime_config_group_or_parameter_id_t group_or_parameter_id)
 {
-    (void)instance;
+    (void)schema_instance;
 
-    if (group_or_parameter_id != NULL &&
-        *group_or_parameter_id == parameter_id) {
+    if (group_or_parameter_id == parameter_id) {
         successful = true;
     }
 
@@ -53,28 +52,24 @@ static runtime_config_error_t apply_parameter_cb(
 }
 
 static runtime_config_error_t apply_group_cb(
-    const runtime_config_group_or_parameter_id_t *group_or_parameter_id,
-    const runtime_config_schema_instance_t *instance)
+    const runtime_config_schema_instance_t *const schema_instance,
+    const runtime_config_group_or_parameter_id_t group_or_parameter_id)
 {
-    (void)instance;
+    (void)schema_instance;
 
-    if (group_or_parameter_id != NULL &&
-        *group_or_parameter_id == group_id) {
+    if (group_or_parameter_id == group_id) {
         successful = true;
     }
 
     return RUNTIME_CONFIG_ERROR_NONE;
 }
 
-static runtime_config_error_t apply_instance_cb(
-    const runtime_config_group_or_parameter_id_t *group_or_parameter_id,
-    const runtime_config_schema_instance_t *instance)
+static runtime_config_error_t apply_schema_instance_cb(
+    const runtime_config_schema_instance_t *const schema_instance)
 {
-    (void)instance;
+    (void)schema_instance;
 
-    if (group_or_parameter_id == NULL) {
-        successful = true;
-    }
+    successful = true;
 
     return RUNTIME_CONFIG_ERROR_NONE;
 }
@@ -89,7 +84,7 @@ static runtime_config_schema_instance_t test_nested_instance_parameter_test = {
     .name = "test-nested-parameter-test",
 #endif /* CONFIG_RUNTIME_CONFIG_ENABLE_META_NAME */
     .data = &test_nested_instance_data,
-    .apply_cb = &apply_parameter_cb,
+    .apply_group_or_parameter_cb = &apply_parameter_cb,
 };
 
 static runtime_config_schema_instance_t test_nested_instance_group_test = {
@@ -97,7 +92,7 @@ static runtime_config_schema_instance_t test_nested_instance_group_test = {
     .name = "test-nested-group-test",
 #endif /* CONFIG_RUNTIME_CONFIG_ENABLE_META_NAME */
     .data = &test_nested_instance_data,
-    .apply_cb = &apply_group_cb,
+    .apply_group_or_parameter_cb = &apply_group_cb,
 };
 
 static runtime_config_schema_instance_t test_nested_instance_instance_test = {
@@ -105,7 +100,7 @@ static runtime_config_schema_instance_t test_nested_instance_instance_test = {
     .name = "test-nested-instance-test",
 #endif /* CONFIG_RUNTIME_CONFIG_ENABLE_META_NAME */
     .data = &test_nested_instance_data,
-    .apply_cb = &apply_instance_cb,
+    .apply_schema_instance_cb = &apply_schema_instance_cb,
 };
 
 static void test_runtime_config_setup(void)

@@ -46,7 +46,8 @@ static runtime_config_schema_instance_t test_nested_instance_1 = {
     .name = "test-nested-parameter-test",
 #endif /* CONFIG_RUNTIME_CONFIG_ENABLE_META_NAME */
     .data = &test_nested_instance_data,
-    .apply_cb = NULL,
+    .apply_schema_instance_cb = NULL,
+    .apply_group_or_parameter_cb = NULL,
 };
 
 static runtime_config_error_t export_parameter_cb(const runtime_config_node_t *node,

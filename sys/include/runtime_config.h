@@ -282,30 +282,36 @@ typedef struct {
     }
 
 /**
- * @brief Callback must be implemented by consumers of a configuration schema.
+ * @brief Callback to apply all parameters within a specific schema instance.
  *
- * This callback is called when the runtime configuration module notifies the consumer
- * that a configuration parameter value has changed.
+ * This is triggered when a full synchronization is required or when multiple
+ * changes occur simultaneously. It allows for atomic updates, such as setting
+ * R, G, and B values at once to prevent flickering or invalid intermediate states.
  *
- * It is possible to apply all parameters of a schema instance at once
- * by setting @p group_or_parameter_id to NULL.
- * This is useful to let the consumer of a configuration schema apply multiple
- * parameter values simultaneously. For example, in the case of an RGB-LED, to change the
- * color from red to blue, the parameters "red" and "blue" need to be changed
- * at the same time; otherwise, the RGB-LED might display purple for a short period.
+ * @param[in] schema_instance Pointer to the instance containing the full dataset
+ *                            and context to be applied.
  *
- * @param[in] group_or_parameter_id Optional ID of the group or parameter to
- *                                  apply changes to; applies the whole schema
- *                                  instance if NULL.
- * @param[in] schema_instance Pointer to the schema instance that will be applied.
-        *                     Contains a context object and a pointer to the data
-        *                     struct holding the configuration parameter values.
- *
- * @return 0 on success, non-zero on failure.
+ * @return 0 on success, non-zero error code on failure.
  */
-typedef runtime_config_error_t (*runtime_config_apply_cb_t)(
-    const runtime_config_group_or_parameter_id_t *group_or_parameter_id,
-    const runtime_config_schema_instance_t *schema_instance);
+typedef runtime_config_error_t (*runtime_config_apply_schema_instance_cb_t)(
+    const runtime_config_schema_instance_t *const schema_instance);
+
+/**
+ * @brief Callback to apply changes to a specific group or parameter.
+ *
+ * This is triggered for granular updates. Depending on the system design, the
+ * @p group_or_parameter_id refers to either a logical collection of parameters
+ * or a single leaf node value.
+ *
+ * @param[in] schema_instance The parent instance context.
+ * @param[in] group_or_parameter_id  The identifier for the specific group or
+ *                                   parameter that has changed.
+ *
+ * @return 0 on success, non-zero error code on failure.
+ */
+typedef runtime_config_error_t (*runtime_config_apply_group_or_parameter_cb_t)(
+    const runtime_config_schema_instance_t *const schema_instance,
+    const runtime_config_group_or_parameter_id_t group_or_parameter_id);
 
 /**
  * @brief Instance of a schema containing its configuration parameter values.
@@ -340,9 +346,24 @@ struct runtime_config_schema_instance {
     /** Configuration schema that the instance belongs to. */
     const runtime_config_schema_t *schema;
 
-    /** Will be called when @ref runtime_config_apply is called on this schema
-     * instance. */
-    runtime_config_apply_cb_t apply_cb;
+    /**
+     * @brief Called when a full synchronization of the schema instance is
+     *        requested.
+     *
+     * Triggered when @ref runtime_config_apply is called targeting the entire
+     * instance.
+     * Use this for global updates or atomic multi-parameter synchronization.
+     */
+    runtime_config_apply_schema_instance_cb_t apply_schema_instance_cb;
+
+    /**
+     * @brief Called when a specific group or parameter update is requested.
+     *
+     * Triggered when @ref runtime_config_apply is called targeting a specific
+     * ID. This allows for localized updates without re-processing the entire
+     * schema instance.
+     */
+    runtime_config_apply_group_or_parameter_cb_t apply_group_or_parameter_cb;
 
     /** Optional context used by the schema instance. */
     void *context;

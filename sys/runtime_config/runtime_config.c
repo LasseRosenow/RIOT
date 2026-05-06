@@ -123,7 +123,7 @@ static runtime_config_error_t _apply_tree_traversal_cb(
 
     assert(node != NULL);
 
-    const runtime_config_schema_instance_t *instance;
+    const runtime_config_schema_instance_t *schema_instance;
 
     switch (node->type) {
     /* The apply function is only called for instance and below */
@@ -132,20 +132,18 @@ static runtime_config_error_t _apply_tree_traversal_cb(
         return RUNTIME_CONFIG_ERROR_NONE;
 
     case RUNTIME_CONFIG_NODE_TYPE_SCHEMA_INSTANCE:
-        instance = node->as_schema_instance;
-        return instance->apply_cb(NULL, instance);
+        schema_instance = node->as_schema_instance;
+        return schema_instance->apply_schema_instance_cb(schema_instance);
 
     case RUNTIME_CONFIG_NODE_TYPE_GROUP:
-        instance = node->as_group.schema_instance;
-        return instance->apply_cb(
-            &node->as_group.group->id,
-            instance);
+        schema_instance = node->as_group.schema_instance;
+        return schema_instance->apply_group_or_parameter_cb(
+            schema_instance, node->as_group.group->id);
 
     case RUNTIME_CONFIG_NODE_TYPE_PARAMETER:
-        instance = node->as_parameter.schema_instance;
-        return instance->apply_cb(
-            &node->as_parameter.parameter->id,
-            instance);
+        schema_instance = node->as_parameter.schema_instance;
+        return schema_instance->apply_group_or_parameter_cb(
+            schema_instance, node->as_parameter.parameter->id);
     }
 
     return RUNTIME_CONFIG_ERROR_NONE;

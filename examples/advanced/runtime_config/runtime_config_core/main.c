@@ -29,20 +29,43 @@
 #include "runtime_config/namespace/sys/board_led.h"
 #include "ztimer.h"
 
-/* This callback gets called, when new configurations shall be applied.
+/* This callback gets called, when all new configurations shall be applied.
  * If interacting with configurations of drivers then this callback should be
  * implemented by the driver itself. For custom application logic, we need to
  * define this for ourselves. */
-static runtime_config_error_t board_led_instance_apply_cb(
-    const runtime_config_group_or_parameter_id_t *group_or_parameter_id,
-    const runtime_config_schema_instance_t *instance)
+static runtime_config_error_t apply_instance_cb(
+    const runtime_config_schema_instance_t *const schema_instance)
 {
-    const runtime_config_sys_board_led_instance_t *instance_data = (const runtime_config_sys_board_led_instance_t *)instance->data;
+    const runtime_config_sys_board_led_instance_t *instance_data =
+        (const runtime_config_sys_board_led_instance_t *)schema_instance->data;
+
+    /* Get the correct field from the instance_data variable */
+    bool led_state = instance_data->enabled;
+    /* Turn the LED on or off depending on the led_state */
+    if (led_state == true) {
+        /* This is the apply_cb function of instance 0, so we toggle LED 0 as well */
+        LED_ON(0);
+    }
+    else {
+        LED_OFF(0);
+    }
+    return 0;
+}
+
+/* This callback gets called, when some specific new configurations shall be applied.
+ * If interacting with configurations of drivers then this callback should be
+ * implemented by the driver itself. For custom application logic, we need to
+ * define this for ourselves. */
+static runtime_config_error_t apply_group_or_parameter_cb(
+    const runtime_config_schema_instance_t *const schema_instance,
+    const runtime_config_group_or_parameter_id_t group_or_parameter_id)
+{
+    const runtime_config_sys_board_led_instance_t *instance_data =
+        (const runtime_config_sys_board_led_instance_t *)schema_instance->data;
 
     /* Either apply all parameters of the instance or only the given parameter.
      * For a single LED there is no difference as it only has one parameter. */
-    if ((group_or_parameter_id == NULL) ||
-        (*group_or_parameter_id == RUNTIME_CONFIG_SYS_BOARD_LED_ENABLED)) {
+    if (group_or_parameter_id == RUNTIME_CONFIG_SYS_BOARD_LED_ENABLED) {
         /* Get the correct field from the instance_data variable */
         bool led_state = instance_data->enabled;
         /* Turn the LED on or off depending on the led_state */
@@ -65,7 +88,8 @@ static runtime_config_sys_board_led_instance_t board_led_instance_data = {
 
 static runtime_config_schema_instance_t board_led_instance = {
     .data = &board_led_instance_data,
-    .apply_cb = &board_led_instance_apply_cb,
+    .apply_schema_instance_cb = &apply_instance_cb,
+    .apply_group_or_parameter_cb = &apply_group_or_parameter_cb,
 };
 
 /* This belongs into our main application */
