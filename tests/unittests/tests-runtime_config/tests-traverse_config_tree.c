@@ -54,9 +54,9 @@ static runtime_config_error_t export_parameter_cb(const runtime_config_node_t *n
 {
     (void)context;
 
-    if (node->type == RUNTIME_CONFIG_NODE_PARAMETER && node->value.parameter.parameter != NULL &&
-        node->value.parameter.parameter->id == *(runtime_config_parameter_id_t *)context &&
-        node->value.parameter.instance == &test_nested_instance_1) {
+    if (node->type == RUNTIME_CONFIG_NODE_PARAMETER && node->as_parameter.parameter != NULL &&
+        node->as_parameter.parameter->id == *(runtime_config_parameter_id_t *)context &&
+        node->as_parameter.instance == &test_nested_instance_1) {
         successful = true;
     }
 
@@ -68,8 +68,8 @@ static runtime_config_error_t export_group_cb(const runtime_config_node_t *node,
 {
     (void)context;
 
-    if (node->type == RUNTIME_CONFIG_NODE_GROUP && node->value.group.group != NULL &&
-        node->value.group.group->id == *(runtime_config_group_id_t *)context) {
+    if (node->type == RUNTIME_CONFIG_NODE_GROUP && node->as_group.group != NULL &&
+        node->as_group.group->id == *(runtime_config_group_id_t *)context) {
         successful = true;
     }
 
@@ -81,7 +81,7 @@ static runtime_config_error_t export_instance_cb(const runtime_config_node_t *no
 {
     (void)context;
 
-    if (node->type == RUNTIME_CONFIG_NODE_INSTANCE && node->value.instance == &test_nested_instance_1) {
+    if (node->type == RUNTIME_CONFIG_NODE_INSTANCE && node->as_instance == &test_nested_instance_1) {
         successful = true;
     }
 
@@ -93,8 +93,8 @@ static runtime_config_error_t export_schema_cb(const runtime_config_node_t *node
 {
     (void)context;
 
-    if (node->type == RUNTIME_CONFIG_NODE_SCHEMA && node->value.schema != NULL &&
-        node->value.schema == &runtime_config_tests_nested) {
+    if (node->type == RUNTIME_CONFIG_NODE_SCHEMA && node->as_schema != NULL &&
+        node->as_schema == &runtime_config_tests_nested) {
         successful = true;
     }
 
@@ -106,8 +106,8 @@ static runtime_config_error_t export_namespace_cb(const runtime_config_node_t *n
 {
     (void)context;
 
-    if (node->type == RUNTIME_CONFIG_NODE_NAMESPACE && node->value.namespace != NULL &&
-        node->value.namespace == &runtime_config_tests) {
+    if (node->type == RUNTIME_CONFIG_NODE_NAMESPACE && node->as_namespace != NULL &&
+        node->as_namespace == &runtime_config_tests) {
         successful = true;
     }
 

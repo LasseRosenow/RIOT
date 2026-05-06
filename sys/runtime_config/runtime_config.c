@@ -67,10 +67,10 @@ runtime_config_error_t runtime_config_get(const runtime_config_node_t *node, run
     void *intern_val = NULL;
     size_t intern_val_len;
 
-    const runtime_config_parameter_t *parameter = node->value.parameter.parameter;
+    const runtime_config_parameter_t *parameter = node->as_parameter.parameter;
 
     parameter->schema->get_parameter_value_from_instance(
-        parameter->id, node->value.parameter.instance, &intern_val, &intern_val_len);
+        parameter->id, node->as_parameter.instance, &intern_val, &intern_val_len);
 
     /* update buf pointer in runtime_config_value_t to point
      * to its internal value and set buf_len accordingly */
@@ -96,10 +96,10 @@ runtime_config_error_t runtime_config_set(const runtime_config_node_t *node, con
     void *intern_val = NULL;
     size_t intern_val_len;
 
-    const runtime_config_parameter_t *parameter = node->value.parameter.parameter;
+    const runtime_config_parameter_t *parameter = node->as_parameter.parameter;
 
     parameter->schema->get_parameter_value_from_instance(
-        parameter->id, node->value.parameter.instance, &intern_val, &intern_val_len);
+        parameter->id, node->as_parameter.instance, &intern_val, &intern_val_len);
 
     if (buf_len > intern_val_len) {
         return -RUNTIME_CONFIG_ERROR_BUF_LEN_TOO_LARGE;
@@ -126,19 +126,19 @@ static runtime_config_error_t _apply_tree_traversal_cb(const runtime_config_node
         return RUNTIME_CONFIG_ERROR_NONE;
 
     case RUNTIME_CONFIG_NODE_INSTANCE:
-        instance = node->value.instance;
+        instance = node->as_instance;
         return instance->apply_cb(NULL, instance);
 
     case RUNTIME_CONFIG_NODE_GROUP:
-        instance = node->value.group.instance;
+        instance = node->as_group.instance;
         return instance->apply_cb(
-            &node->value.group.group->id,
+            &node->as_group.group->id,
             instance);
 
     case RUNTIME_CONFIG_NODE_PARAMETER:
-        instance = node->value.parameter.instance;
+        instance = node->as_parameter.instance;
         return instance->apply_cb(
-            &node->value.parameter.parameter->id,
+            &node->as_parameter.parameter->id,
             instance);
     }
 
@@ -182,7 +182,7 @@ static runtime_config_error_t _runtime_config_traverse_parameter_tree(
 
     const runtime_config_node_t tree_traversal_node = {
         .type = RUNTIME_CONFIG_NODE_PARAMETER,
-        .value.parameter = {
+        .as_parameter = {
             .instance = instance,
             .parameter = parameter,
         },
@@ -204,7 +204,7 @@ static runtime_config_error_t _runtime_config_traverse_group_tree(
     /* return the given configuration group */
     const runtime_config_node_t tree_traversal_node = {
         .type = RUNTIME_CONFIG_NODE_GROUP,
-        .value.group = {
+        .as_group = {
             .instance = instance,
             .group = group,
         },
@@ -399,24 +399,24 @@ runtime_config_error_t runtime_config_traverse_config_tree(
     switch (node->type) {
     case RUNTIME_CONFIG_NODE_NAMESPACE:
         rc = _runtime_config_traverse_namespace_tree(
-            node->value.namespace, tree_traversal_cb, tree_traversal_depth, context);
+            node->as_namespace, tree_traversal_cb, tree_traversal_depth, context);
         break;
     case RUNTIME_CONFIG_NODE_SCHEMA:
         rc = _runtime_config_traverse_schema_tree(
-            node->value.schema, tree_traversal_cb, tree_traversal_depth, context);
+            node->as_schema, tree_traversal_cb, tree_traversal_depth, context);
         break;
     case RUNTIME_CONFIG_NODE_INSTANCE:
         rc = _runtime_config_traverse_schema_tree_instance(
-            node->value.instance, tree_traversal_cb, tree_traversal_depth, context);
+            node->as_instance, tree_traversal_cb, tree_traversal_depth, context);
         break;
     case RUNTIME_CONFIG_NODE_GROUP:
         rc = _runtime_config_traverse_group_tree(
-            node->value.group.instance, node->value.group.group, tree_traversal_cb,
+            node->as_group.instance, node->as_group.group, tree_traversal_cb,
             tree_traversal_depth, context);
         break;
     case RUNTIME_CONFIG_NODE_PARAMETER:
         rc = _runtime_config_traverse_parameter_tree(
-            node->value.parameter.instance, node->value.parameter.parameter,
+            node->as_parameter.instance, node->as_parameter.parameter,
             tree_traversal_cb, context);
         break;
     }

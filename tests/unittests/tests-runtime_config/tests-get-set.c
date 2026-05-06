@@ -352,7 +352,7 @@ static void tests_runtime_config_ensure_that_max_values_can_be_set_and_get(void)
 
     runtime_config_node_t node = {
         .type = RUNTIME_CONFIG_NODE_PARAMETER,
-        .value.parameter.instance = &test_full_instance_1,
+        .as_parameter.instance = &test_full_instance_1,
     };
 
     /* bytes */
