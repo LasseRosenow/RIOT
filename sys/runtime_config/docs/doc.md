@@ -3,21 +3,21 @@
 @warning This implementation is not complete and not yet thoroughly tested.
          Please do not use this module in production, as it is missing major
          features and may contain bugs.
-         Missing features are:
+         Missing features include:
          - A code generator that transpiles YAML schemas to C code
          - Persistent storage extension
-         - Int path extension
+         - Integer path extension
          - String path extension
 
 This module provides a system-level runtime configuration system for RIOT.
 
-A runtime configuration system is in charge of providing a mechanism to set and
-get the values of configuration parameters that are used during the execution of
-the firmware, as well as a way to persist these values. Runtime configurations
-are deployment-specific and can be changed on a per-node basis.
-Appropriate management tools can also enable to remotely configure RIOT nodes.
+A runtime configuration system provides a mechanism to set and get the values of
+configuration parameters used during the execution of the firmware, as well as a
+way to persist these values. Runtime configurations are deployment-specific and
+can be changed on a per-node basis. Appropriate management tools also enable
+remote configuration of RIOT nodes.
 
-Examples of runtime configurations are:
+Examples of runtime configurations include:
 
 - Transmission duty cycles
 - Sensor thresholds
@@ -25,86 +25,78 @@ Examples of runtime configurations are:
 - System state variables
 - RGB-LED colors
 
-The runtime configuration system allows to:
+The runtime configuration system allows you to:
 
-- **apply** multiple configurations at once
-- **persist** configurations to non-volatile storage
-- **expose** configurations to external configuration management tools such as
-a CLI, or a network based remote tool
+- **Apply** multiple configurations at once.
+- **Persist** configurations to non-volatile storage.
+- **Expose** configurations to external configuration management tools, such as
+  a CLI or a network-based remote tool.
 
 ## Design
 
 ### Architecture
 
 The architecture, as shown below, is formed by one or more applications or
-configuration managers and the runtime configuration API.
-The runtime configuration API acts as a common interface to access runtime
-configurations and store them in non-volatile storage.
+configuration managers and the runtime configuration API. The runtime configuration
+API acts as a common interface to access runtime configurations and store them
+in non-volatile storage.
+
 All runtime configurations can be accessed from the RIOT application either
 using the provided runtime configuration interfaces or through the interfaces
-exposed by the configuration managers.
-A RIOT application may interact with a configuration manager in order to modify
-access control rules or enable different exposed interfaces.
+exposed by the configuration managers. A RIOT application may interact with a
+configuration manager to modify access control rules or enable different exposed interfaces.
 
-#### Path Based Configuration Managers (Needs `int_path` or `string_path` extension)
+#### Path-Based Configuration Managers (Needs `int_path` or `string_path` extension)
 
-@warning There are no "Path Based Configuration Managers" implemented yet.
+@warning There are no Path-Based Configuration Managers implemented yet.
 
 These configuration managers mirror the internal structure of the RIOT runtime
-configuration tree.
-They use either the `int_path` or the `string_path` extension module to expose
-the parameters via a path of either strings or integers.
+configuration tree. They use either the `int_path` or the `string_path` extension
+module to expose the parameters via a path of strings or integers.
 
-#### Custom Schema Based Configuration Managers
+#### Custom Schema-Based Configuration Managers
 
-@warning There are no "Path Based Configuration Managers" implemented yet.
+@warning There are no Custom Schema-Based Configuration Managers implemented yet.
 
-These configuration managers have their own configuration structure (custom
-predefined object models etc.) and can not automatically be mapped to / from the
-runtime configuration schemas.
-To make them work, a custom mapping module needs to be implemented per
-configuration manager, which maps each configuration parameter from the RIOT
-runtime configuration module to the correct format of the configuration manager.
+These configuration managers have their own configuration structure (e.g., custom
+predefined object models) and cannot automatically be mapped to or from the
+runtime configuration schemas. To make them work, a custom mapping module must
+be implemented per configuration manager, mapping each configuration parameter from
+the RIOT runtime configuration module to the correct format of the configuration manager.
 
 <img src="./architecture.svg" style="width: 800px; max-width: 100%" alt="design_architecture" />
 
 ### Configuration Structure
 
-The runtime configuration system interacts with RIOT modules via
-`Configuration Schemas`, and with non-volatile storages via `Storages`.
-This way the functionality of the runtime configuration is independent of the
-functionality of a `module` or `storage` implementation.
-It is possible to get or set the values of `Configuration Parameters`.
-It is also possible to apply configurations, export their values to a buffer or
-print them.
-To persist Configuration Values, it is possible to store them in non-volatile
-storages.
+The runtime configuration system interacts with RIOT modules via **configuration schemas**,
+and with non-volatile storages via **storages**. This ensures the functionality
+of the runtime configuration remains independent of specific module or storage implementations.
 
-Any mechanism of security (`access control`, `encryption` of configurations) is
-`not` directly in the scope of the runtime configuration module but in the
-Configuration Managers and the specific implementations of the
-`Configuration Schemas` and `Storages`.
+Through this structure, it is possible to get or set the values of **configuration parameters**.
+It is also possible to apply configurations, export their values to a buffer, or
+print them. To persist configuration values, they can be stored in non-volatile storages.
 
-The graphic below shows an example of two `Configuration Namespaces` (SYS and APP).
-The `APP` namespace contains a application specific `My app` Configuration
-Schema and the `SYS` namespace specifies a `WLAN` and a `LED Strip`
-Configuration Schema.
-The application `My app` uses the custom `My app` Configuration Schema to expose
-custom Configuration Parameters to the runtime configuration and the drivers
-`WS2812`, `SK6812` and `UCS1903` contain instances of
-the `LED Strip` Configuration Schema to expose common LED Strip Configuration
-Parameters.
+Mechanisms for security (such as access control or encryption of configurations)
+are **not** directly in the scope of the runtime configuration module, but are
+handled by the configuration managers and the specific implementations of the
+configuration schemas and storages.
 
-Also, there are two Storages available: `MTD` and `VFS`.
-The `MTD` Storage internally uses the RIOT `MTD` driver and the `VFS` Storage
-internally uses the RIOT `VFS` module.
+The graphic below shows an example of two configuration namespaces (`SYS` and `APP`).
+The `APP` namespace contains an application-specific `My app` configuration schema,
+and the `SYS` namespace specifies a `WLAN` and an `LED Strip` configuration schema.
+The application `My app` uses the custom `My app` schema to expose custom parameters.
+Meanwhile, the drivers `WS2812`, `SK6812`, and `UCS1903` contain instances of
+the `LED Strip` configuration schema to expose common LED strip parameters.
+
+Additionally, there are two storages available: `MTD` and `VFS`. The `MTD` storage
+internally uses the RIOT `MTD` driver, while the `VFS` storage internally uses
+the RIOT `VFS` module.
 
 <img src="./namespaces_and_storages.svg" style="width: 800px; max-width: 100%" alt="design_namespaces_and_storages" />
 
 ### Components
 
-The runtime configuration system is split into multiple components as can be
-seen in the graphic below:
+The runtime configuration system is split into multiple components, as seen in the graphic below:
 
 #### Runtime Configuration Core
 
@@ -113,33 +105,27 @@ USEMODULE += runtime_config
 ```
 
 This component holds the most basic functionality of the runtime configuration system.
-It allows to `set` and `get` Configuration Values, transactionally `apply` them
-to make the changes come into effect and `list` all Configuration Parameters
-that exist in a given `Configuration Namespace`, `Configuration Schema` or
-`Configuration Group`.
-
-Furthermore it is possible to `add` `Configuration Namespaces` or
-`Configuration Schema Instances`.
+It allows you to `set` and `get` configuration values, transactionally `apply` them
+so changes take effect, and `list` all configuration parameters that exist in a
+given namespace, schema, or group. Furthermore, it provides the ability to `add`
+namespaces or schema instances.
 
 #### Runtime Configuration Namespace
 
-The `Configuration Namespaces` such as `SYS` or `APP` and their respective
-`Configuration Schemas` are not part of the runtime configuration module itself.
-It is possible to `add` custom `Configuration Namespaces` depending on the given
-needs.
+The configuration namespaces (such as `SYS` or `APP`) and their respective schemas
+are not inherently part of the runtime configuration module itself. It is possible
+to `add` custom configuration namespaces depending on your specific application needs.
 
 <img src="./runtime_config.svg" style="width: 800px; max-width: 100%" alt="design_runtime_config" />
 
 ## API
 
-The graphic below shows the API of the runtime configuration system.
-The top shows the Core API to manage Configuration Parameters.
-On the right-hand side are functions to `set` and `get` Configuration Parameters,
-transactionally `apply` them and `list` them to a buffer or terminal.
-On the left-hand side are setup functions to `add` `Configuration Namespaces`
-and `Configuration Schema Instances`.
+The graphic below illustrates the API of the runtime configuration system.
+The top shows the Core API for managing configuration parameters. On the right-hand side
+are functions to `set`, `get`, `apply`, and `list` configuration parameters to a buffer
+or terminal. On the left-hand side are setup functions to `add` namespaces and schema instances.
 
-The functionality of these functions is explained in the following paragraphs.
+The functionality of these functions is detailed in the following sections.
 
 <img src="./api_structure.svg" style="width: 800px; max-width: 100%" alt="api_structure" />
 
@@ -147,13 +133,11 @@ The functionality of these functions is explained in the following paragraphs.
 
 ### Add Namespaces
 
-To be able to use `Configuration Schemas` and their `Parameters` etc. it is
-necessary to add a `Configuration Namespace` that contains the required
-`Configuration Schemas`.
+To be able to use configuration schemas and their parameters, you must first add
+a configuration namespace that will contain the required schemas.
 
-This is possible using the `RUNTIME_CONFIG_ADD_NAMESPACE` macro, providing the
-name of the `Configuration Namespace` and a pointer to a
-`runtime_config_namespace_t` object as arguments.
+This is done using the `RUNTIME_CONFIG_ADD_NAMESPACE` macro, providing the
+name of the namespace and a pointer to a `runtime_config_namespace_t` object.
 
 ```c
 #define RUNTIME_CONFIG_ADD_NAMESPACE(_name, _namespace)
@@ -161,12 +145,11 @@ name of the `Configuration Namespace` and a pointer to a
 
 ### Add Configuration Schema Instances
 
-To expose runtime configurations, it is necessary to add a
-`Configuration Schema Instance` of the needed `Configuration Schema`.
+To expose runtime configurations, it is necessary to add an instance of the
+required configuration schema.
 
-This is possible using the `runtime_config_add_schema_instance` function,
-providing the `Configuration Schema` and the `Configuration Schema Instance`
-as arguments.
+This is done using the `runtime_config_add_schema_instance` function, providing
+the schema and the schema instance as arguments.
 
 ```c
 #include "runtime_config.h"
@@ -178,8 +161,7 @@ static runtime_config_error_t board_led_instance_apply_cb(
     const runtime_config_schema_instance_t *instance)
 {
     /* Handle configuration changes */
-
-    return 0;
+    return RUNTIME_CONFIG_ERROR_NONE;
 }
 
 static runtime_config_sys_board_led_instance_t board_led_instance_data = {
@@ -191,16 +173,18 @@ static runtime_config_schema_instance_t board_led_instance = {
     .apply_cb = &board_led_instance_apply_cb,
 };
 
+/* Assuming runtime_config_sys_board_led is defined elsewhere */
 runtime_config_add_schema_instance(&runtime_config_sys_board_led, &board_led_instance);
 ```
 
-### Get configurations
+### Get Configurations
 
-A Configuration Value can be retrieved using the `runtime_config_get` function.
-The function takes the `runtime_config_node_t` as input and a pointer to a buffer
-and a pointer to the buffers size as output.
-After the function finished executing, the output pointer will point to the
-internal buffer holding the actual configuration value.
+A configuration value can be retrieved using the `runtime_config_get` function.
+The function takes a pointer to a `runtime_config_node_t` as input, alongside
+a double pointer to a buffer and a pointer to the buffer's size.
+
+After execution, the output pointer (`*buf`) will point directly to the internal
+buffer holding the actual configuration value, and `*buf_len` will hold its size.
 
 ```c
 runtime_config_error_t runtime_config_get(
@@ -210,63 +194,57 @@ runtime_config_error_t runtime_config_get(
 );
 ```
 
-### Set configurations
+### Set Configurations
 
-A Configuration Value can be set using the `runtime_config_set` function.
-The function takes the `runtime_config_node_t`, a `void*` buffer and the
-buffer size as its arguments.
+A configuration value can be set using the `runtime_config_set` function.
+The function takes a `runtime_config_node_t`, a `const void *` buffer containing
+the new value, and the buffer's size as its arguments.
 
-The buffer must contain the value in its correct c-type.
-If the config schema expects a `u8`, but a `u16` is provided, the operation will
-fail.
+The buffer must contain the value in its correct C data type. For example, if
+the configuration schema expects a `uint8_t` but a `uint16_t` is provided,
+the operation will fail.
 
 ```c
-int runtime_config_set(
+runtime_config_error_t runtime_config_set(
     const runtime_config_node_t *node,
     const void *buf,
-    const size_t buf_len,
+    const size_t buf_len
 );
 ```
 
-### Apply configurations
+### Apply Configurations
 
-Once the value(s) of one or multiple `Configuration Parameter(s)` are changed by
-the `runtime_config_set` function, they still need to be applied, so that the
-new values are taken into effect.
+Once the value(s) of one or multiple configuration parameters are changed via
+the `runtime_config_set` function, they still need to be applied for the new
+values to take effect.
 
-Configuration Parameter(s) can be applied using the `runtime_config_apply` function.
-This function applies every `Configuration Parameter` currently available in the
-runtime configuration tree that is a direct or indirect child of the specified
-location within the configuration tree, specified by the `runtime_config_node_t`
-argument.
+Parameters can be applied using the `runtime_config_apply` function. This function
+applies every configuration parameter currently available in the runtime configuration
+tree that is a direct or indirect child of the specified location.
 
-When a whole `Schema Instance`, or a single `Configuration Parameter` is applied,
-it will be passed on to the `apply_cb` handler of the `Configuration Schema Instance`,
-provided by the module that needs runtime configuration.
-This way the module gets notified, when the `Configuration Parameter` has been
-applied and can apply the changes accordingly.
+When a whole schema instance or a single configuration parameter is applied, it
+is passed to the `apply_cb` handler of the schema instance (provided by the module
+that owns the configuration). This ensures the module is notified when parameters
+are applied and can react to the changes accordingly.
 
 ```c
-int runtime_config_apply(const runtime_config_node_t *node);
+runtime_config_error_t runtime_config_apply(const runtime_config_node_t *node);
 ```
 
-### List available configurations
+### List Available Configurations
 
-Some times it is convenient to have a way to see what `Configuration Namespaces`,
-`Configuration Schemas`, `Configuration Schema Instances`, `Configuration Groups`
-or `Configuration Parameters` are available within our current runtime configuration
-deployment.
-To get this information there is the `runtime_config_traverse_config_tree` function.
+Sometimes it is necessary to see what configuration namespaces, schemas, instances,
+groups, or parameters are currently available within the deployment.
 
-This function lists every `Configuration Object` currently available in the
-runtime configuration tree within the scope of the provided `runtime_config_node_t`
-argument.
+This information can be retrieved using the `runtime_config_traverse_config_tree`
+function. This function iterates over every configuration object available in the
+configuration tree, restricted to the scope of the provided `node` argument.
 
-Each traversed node will be passed on to the `tree_traversal_cb` handler provided
-as an argument of each `runtime_config_traverse_config_tree` function.
+Each traversed node will be passed to the `tree_traversal_cb` callback provided
+as an argument.
 
 ```c
-int runtime_config_traverse_config_tree(
+runtime_config_error_t runtime_config_traverse_config_tree(
     const runtime_config_node_t *node,
     const runtime_config_tree_traversal_cb_t tree_traversal_cb,
     const uint8_t tree_traversal_depth,
