@@ -386,6 +386,7 @@ struct runtime_config_schema {
     const size_t parameters_len;
 
     /**
+     * @internal
      * @brief Get the value of a configuration parameter of a specific schema
      *        instance.
      *
