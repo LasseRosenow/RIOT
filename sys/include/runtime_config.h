@@ -172,8 +172,8 @@ typedef enum {
  * in the configuration tree. The schema instance contains the actual values of
  * configuration parameters.
  *
- * The main use-case of this node is to make the `runtime_config_get` and
- * `runtime_config_set` functions more ergonomic.
+ * The main use-case of this node is to make the @ref runtime_config_get and
+ * @ref runtime_config_set functions more ergonomic.
  * Using this struct, other configuration identifiers (such as an array of IDs
  * or names) that point to a specific location in the tree can be converted to a
  * @ref runtime_config_node_t, which can then be passed easily to target functions.
@@ -511,16 +511,16 @@ runtime_config_error_t runtime_config_set(
 runtime_config_error_t runtime_config_apply(const runtime_config_node_t *node);
 
 /**
- * @brief Callback definition of the `runtime_config_traverse_config_tree`
+ * @brief Callback definition of the @ref runtime_config_traverse_config_tree
  *        function.
  *
  * This callback will be called for each location inside of the
  * configuration tree that is within the scope of the runtime configuration node
- * passed on to the `runtime_config_traverse_config_tree` function.
+ * passed on to the @ref runtime_config_traverse_config_tree function.
  *
  * @param[in] node A location within the runtime configuration tree.
  * @param[in] context Context that is passed by the
- *                    `runtime_config_traverse_config_tree` function.
+ *                    @ref runtime_config_traverse_config_tree function.
  *
  * @return 0 on success, non-zero on failure.
  */
@@ -531,20 +531,20 @@ typedef runtime_config_error_t (*runtime_config_tree_traversal_cb_t)(
 /**
  * @brief In this mode, the function traverses through every child of the
  *        given node including all sub-children when calling the
- *        `runtime_config_traverse_config_tree` function.
+ *        @ref runtime_config_traverse_config_tree function.
  */
 #define RUNTIME_CONFIG_TRAVERSE_ALL                                0
 
 /**
  * @brief In this mode, the function only traverses through the given node when
- *        calling the `runtime_config_traverse_config_tree` function.
+ *        calling the @ref runtime_config_traverse_config_tree function.
  */
 #define RUNTIME_CONFIG_TRAVERSE_SINGLE_NODE                        1
 
 /**
  * @brief This mode traverses through the tree until the given node plus n-1
  *        levels of children when calling the
- *        `runtime_config_traverse_config_tree` function.
+ *        @ref runtime_config_traverse_config_tree function.
  */
 #define RUNTIME_CONFIG_TRAVERSE_TREE_WITH_N_LEVELS_OF_CHILDREN(_n) (((_n) + 1))
 
