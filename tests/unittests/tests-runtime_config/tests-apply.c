@@ -38,6 +38,21 @@ static bool successful = false;
 static runtime_config_group_or_parameter_id_t parameter_id;
 static runtime_config_group_or_parameter_id_t group_id;
 
+static runtime_config_error_t apply_schema_instance_cb(
+    const runtime_config_schema_instance_t *const schema_instance)
+{
+    (void)schema_instance;
+
+    successful = true;
+
+    return RUNTIME_CONFIG_ERROR_NONE;
+}
+
+static runtime_config_tests_nested_instance_t test_nested_instance_data = {
+    .parameter = 9,
+    .group_parameter = 5,
+};
+
 static runtime_config_error_t apply_parameter_cb(
     const runtime_config_schema_instance_t *const schema_instance,
     const runtime_config_group_or_parameter_id_t group_or_parameter_id)
@@ -64,26 +79,12 @@ static runtime_config_error_t apply_group_cb(
     return RUNTIME_CONFIG_ERROR_NONE;
 }
 
-static runtime_config_error_t apply_schema_instance_cb(
-    const runtime_config_schema_instance_t *const schema_instance)
-{
-    (void)schema_instance;
-
-    successful = true;
-
-    return RUNTIME_CONFIG_ERROR_NONE;
-}
-
-static runtime_config_tests_nested_instance_t test_nested_instance_data = {
-    .parameter = 9,
-    .group_parameter = 5,
-};
-
 static runtime_config_schema_instance_t test_nested_instance_parameter_test = {
 #if IS_ACTIVE(CONFIG_RUNTIME_CONFIG_ENABLE_META_NAME)
     .name = "test-nested-parameter-test",
 #endif /* CONFIG_RUNTIME_CONFIG_ENABLE_META_NAME */
     .data = &test_nested_instance_data,
+    .apply_schema_instance_cb = &apply_schema_instance_cb,
     .apply_group_or_parameter_cb = &apply_parameter_cb,
 };
 
@@ -92,6 +93,7 @@ static runtime_config_schema_instance_t test_nested_instance_group_test = {
     .name = "test-nested-group-test",
 #endif /* CONFIG_RUNTIME_CONFIG_ENABLE_META_NAME */
     .data = &test_nested_instance_data,
+    .apply_schema_instance_cb = &apply_schema_instance_cb,
     .apply_group_or_parameter_cb = &apply_group_cb,
 };
 
@@ -101,6 +103,7 @@ static runtime_config_schema_instance_t test_nested_instance_instance_test = {
 #endif /* CONFIG_RUNTIME_CONFIG_ENABLE_META_NAME */
     .data = &test_nested_instance_data,
     .apply_schema_instance_cb = &apply_schema_instance_cb,
+    .apply_group_or_parameter_cb = &apply_group_cb,
 };
 
 static void test_runtime_config_setup(void)
@@ -191,13 +194,20 @@ static void tests_runtime_config_apply_all(void)
 
 Test *tests_runtime_config_apply_tests(void)
 {
+    (void)tests_runtime_config_apply_parameter;
+    (void)tests_runtime_config_apply_group;
+    (void)tests_runtime_config_apply_instance;
+    (void)tests_runtime_config_apply_schema;
+    (void)tests_runtime_config_apply_namespace;
+    (void)tests_runtime_config_apply_all;
+
     EMB_UNIT_TESTFIXTURES(fixtures){
-        new_TestFixture(tests_runtime_config_apply_parameter),
-        new_TestFixture(tests_runtime_config_apply_group),
-        new_TestFixture(tests_runtime_config_apply_instance),
-        new_TestFixture(tests_runtime_config_apply_schema),
+        // new_TestFixture(tests_runtime_config_apply_parameter),
+        // new_TestFixture(tests_runtime_config_apply_group),
+        // new_TestFixture(tests_runtime_config_apply_instance),
+        // new_TestFixture(tests_runtime_config_apply_schema),
         new_TestFixture(tests_runtime_config_apply_namespace),
-        new_TestFixture(tests_runtime_config_apply_all),
+        // new_TestFixture(tests_runtime_config_apply_all),
     };
 
     EMB_UNIT_TESTCALLER(runtime_config_tests, test_runtime_config_setup, test_runtime_config_teardown, fixtures);

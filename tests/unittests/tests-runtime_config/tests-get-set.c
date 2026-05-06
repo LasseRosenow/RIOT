@@ -34,6 +34,24 @@
 #include "namespace/tests.h"
 #include "namespace/tests/full.h"
 
+static runtime_config_error_t apply_schema_instance_cb(
+    const runtime_config_schema_instance_t *const schema_instance)
+{
+    (void)schema_instance;
+
+    return RUNTIME_CONFIG_ERROR_NONE;
+}
+
+static runtime_config_error_t apply_group_cb(
+    const runtime_config_schema_instance_t *const schema_instance,
+    const runtime_config_group_or_parameter_id_t group_or_parameter_id)
+{
+    (void)schema_instance;
+    (void)group_or_parameter_id;
+
+    return RUNTIME_CONFIG_ERROR_NONE;
+}
+
 static runtime_config_tests_full_instance_t test_full_instance_1_data = {
     .bytes = { 7 },
     .string = "hello world",
@@ -55,8 +73,8 @@ static runtime_config_schema_instance_t test_full_instance_1 = {
     .name = "test-full-1",
 #endif /* CONFIG_RUNTIME_CONFIG_ENABLE_META_NAME */
     .data = &test_full_instance_1_data,
-    .apply_schema_instance_cb = NULL,
-    .apply_group_or_parameter_cb = NULL,
+    .apply_schema_instance_cb = apply_schema_instance_cb,
+    .apply_group_or_parameter_cb = apply_group_cb,
 };
 
 static void test_runtime_config_setup(void)

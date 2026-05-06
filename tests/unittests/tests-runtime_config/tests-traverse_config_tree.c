@@ -34,6 +34,24 @@
 #include "namespace/tests.h"
 #include "namespace/tests/nested.h"
 
+static runtime_config_error_t apply_schema_instance_cb(
+    const runtime_config_schema_instance_t *const schema_instance)
+{
+    (void)schema_instance;
+
+    return RUNTIME_CONFIG_ERROR_NONE;
+}
+
+static runtime_config_error_t apply_group_cb(
+    const runtime_config_schema_instance_t *const schema_instance,
+    const runtime_config_group_or_parameter_id_t group_or_parameter_id)
+{
+    (void)schema_instance;
+    (void)group_or_parameter_id;
+
+    return RUNTIME_CONFIG_ERROR_NONE;
+}
+
 static bool successful = false;
 
 static runtime_config_tests_nested_instance_t test_nested_instance_data = {
@@ -46,8 +64,8 @@ static runtime_config_schema_instance_t test_nested_instance_1 = {
     .name = "test-nested-parameter-test",
 #endif /* CONFIG_RUNTIME_CONFIG_ENABLE_META_NAME */
     .data = &test_nested_instance_data,
-    .apply_schema_instance_cb = NULL,
-    .apply_group_or_parameter_cb = NULL,
+    .apply_schema_instance_cb = apply_schema_instance_cb,
+    .apply_group_or_parameter_cb = apply_group_cb,
 };
 
 static runtime_config_error_t export_parameter_cb(const runtime_config_node_t *node,
