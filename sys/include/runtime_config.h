@@ -30,18 +30,18 @@ extern "C" {
 
 #ifndef CONFIG_RUNTIME_CONFIG_ENABLE_META_NAME
 /**
- * @brief Enables the "name" field inside the @p runtime_config_namespace_t,
- *        @p runtime_config_schema_t, @p runtime_config_schema_instance_t,
- *        @p runtime_config_parameter_t or @p runtime_config_group_t structs.
+ * @brief Enables the "name" field inside the @ref runtime_config_namespace_t,
+ *        @ref runtime_config_schema_t, @ref runtime_config_schema_instance_t,
+ *        @ref runtime_config_parameter_t, or @ref runtime_config_group_t structs.
  */
 #  define CONFIG_RUNTIME_CONFIG_ENABLE_META_NAME 0
 #endif
 
 #ifndef CONFIG_RUNTIME_CONFIG_ENABLE_META_DESCRIPTION
 /**
- * @brief Enables the "description" field inside the @p runtime_config_namespace_t,
- *        @p runtime_config_schema_t, @p runtime_config_schema_instance_t,
- *        @p runtime_config_parameter_t or @p runtime_config_group_t structs.
+ * @brief Enables the "description" field inside the @ref runtime_config_namespace_t,
+ *        @ref runtime_config_schema_t, @ref runtime_config_schema_instance_t,
+ *        @ref runtime_config_parameter_t, or @ref runtime_config_group_t structs.
  */
 #  define CONFIG_RUNTIME_CONFIG_ENABLE_META_DESCRIPTION 0
 #endif
@@ -146,19 +146,19 @@ typedef enum {
  * parameter.
  */
 typedef enum {
-    /** The node points to @p runtime_config_namespace_t */
+    /** The node points to @ref runtime_config_namespace_t */
     RUNTIME_CONFIG_NODE_NAMESPACE = 0,
 
-    /** The node points to @p runtime_config_schema_t */
+    /** The node points to @ref runtime_config_schema_t */
     RUNTIME_CONFIG_NODE_SCHEMA,
 
-    /** The node points to @p runtime_config_schema_instance_t */
+    /** The node points to @ref runtime_config_schema_instance_t */
     RUNTIME_CONFIG_NODE_INSTANCE,
 
-    /** The node points to @p runtime_config_group_t */
+    /** The node points to @ref runtime_config_group_t */
     RUNTIME_CONFIG_NODE_GROUP,
 
-    /** The node points to @p runtime_config_parameter_t */
+    /** The node points to @ref runtime_config_parameter_t */
     RUNTIME_CONFIG_NODE_PARAMETER,
 } runtime_config_node_type_t;
 
@@ -172,13 +172,11 @@ typedef enum {
  * in the configuration tree. The schema instance contains the actual values of
  * configuration parameters.
  *
- * The main use-case of this node is to make the @p runtime_config_get and
- * @p runtime_config_set functions more ergonomic.
- * Using this struct we can have other configuration identifiers such as
- * an array of the IDs in the configuration tree or an array of the names in
- * the configuration tree that together point to a specific location in that
- * tree be converted to a @p runtime_config_note_t and then just pass them to
- * whatever function we want to use them inside.
+ * The main use-case of this node is to make the `runtime_config_get` and
+ * `runtime_config_set` functions more ergonomic.
+ * Using this struct, other configuration identifiers (such as an array of IDs
+ * or names) that point to a specific location in the tree can be converted to a
+ * @ref runtime_config_node_t, which can then be passed easily to target functions.
  */
 typedef struct {
     /** The type of the node */
@@ -216,25 +214,24 @@ typedef struct {
 } runtime_config_node_t;
 
 /**
- * @brief The callback must be implemented by consumers of a configuration schema.
+ * @brief Callback must be implemented by consumers of a configuration schema.
  *
- * This callback is called when the runtime configuration module notifies the consumer,
+ * This callback is called when the runtime configuration module notifies the consumer
  * that a configuration parameter value has changed.
  *
- * It is possible to apply all parameters of a schema instance at once,
+ * It is possible to apply all parameters of a schema instance at once
  * by setting @p group_or_parameter_id to NULL.
  * This is useful to let the consumer of a configuration schema apply multiple
- * parameter values at once. For example in case of an RGB-LED, to change the
+ * parameter values simultaneously. For example, in the case of an RGB-LED, to change the
  * color from red to blue, the parameters "red" and "blue" need to be changed
- * at the same time, otherwise the RGB-LED will be purple for a short period
- * of time.
+ * at the same time; otherwise, the RGB-LED might display purple for a short period.
  *
  * @param[in] group_or_parameter_id Optional ID of the group or parameter to
- *                                  apply changes to, applies the whole instance
- *                                  on NULL.
+ *                                  apply changes to; applies the whole instance
+ *                                  if NULL.
  * @param[in] instance Pointer to the schema instance that will be applied.
  *                     Contains a context object and a pointer to the data
- *                     struct that contains the configuration parameter values.
+ *                     struct holding the configuration parameter values.
  *
  * @return 0 on success, non-zero on failure.
  */
@@ -243,18 +240,18 @@ typedef runtime_config_error_t (*runtime_config_apply_cb_t)(
     const runtime_config_schema_instance_t *instance);
 
 /**
- * @brief Instance of a schema containing its configuration parameters values.
+ * @brief Instance of a schema containing its configuration parameter values.
  *
  * The instance of a configuration schema is created by consumers of that schema
  * who need to expose runtime configurations.
- * The consumers also need to implement the @p apply_cb
- * function to get informed when configuration changes.
+ * The consumers also need to implement the `apply_cb` function to get informed
+ * when configurations change.
  */
 struct runtime_config_schema_instance {
     /** Linked list node pointing to the next schema instance. */
     clist_node_t node;
 
-    /** ID of the instance within the scope of it's schema */
+    /** ID of the instance within the scope of its schema. */
     runtime_config_schema_instance_id_t id;
 
 #if IS_ACTIVE(CONFIG_RUNTIME_CONFIG_ENABLE_META_NAME) || IS_ACTIVE(DOXYGEN)
@@ -275,10 +272,10 @@ struct runtime_config_schema_instance {
     /** Configuration schema that the instance belongs to. */
     const runtime_config_schema_t *schema;
 
-    /** Will be called when @ref runtime_config_apply() was called on this instance. */
+    /** Will be called when @ref runtime_config_apply is called on this instance. */
     runtime_config_apply_cb_t apply_cb;
 
-    /** Optional context used by the instance */
+    /** Optional context used by the instance. */
     void *context;
 };
 
@@ -338,7 +335,7 @@ struct runtime_config_parameter {
     const char *const description;
 #endif /* CONFIG_RUNTIME_CONFIG_ENABLE_META_DESCRIPTION */
 
-    /** Configuration Schema that the configuration parameter belongs to. */
+    /** Configuration schema that the configuration parameter belongs to. */
     const runtime_config_schema_t *const schema;
 
     /** Type of the configuration parameter. */
@@ -351,9 +348,9 @@ struct runtime_config_parameter {
 /**
  * @brief Data structure of a configuration schema.
  *
- * A configuration schema contains configuration configuration groups and/or
+ * A configuration schema contains configuration groups and/or
  * configuration parameters.
- * Besides that it also contains a list of instances that hold the actual
+ * Besides that, it also contains a list of instances that hold the actual
  * configuration parameter values.
  * It has an ID that is unique within the scope of its parent configuration namespace.
  */
@@ -369,10 +366,11 @@ struct runtime_config_schema {
     /** String describing the schema with more details. */
     const char *const description;
 #endif /* CONFIG_RUNTIME_CONFIG_ENABLE_META_DESCRIPTION */
-       /** Configuration Namespace that the Configuration Schema belongs to. */
+
+    /** Configuration namespace that the schema belongs to. */
     const runtime_config_namespace_t *const namespace;
 
-    /** Linked list of schema instances @ref runtime_config_schema_instance_t. */
+    /** Linked list of schema instances (@ref runtime_config_schema_instance_t). */
     clist_node_t instances;
 
     /** Array of pointers to all the configuration groups that belong to this schema. */
@@ -391,16 +389,16 @@ struct runtime_config_schema {
      * @brief Get the value of a configuration parameter of a specific schema
      *        instance.
      *
-     * A configuration schema has many parameters and a configuration schema
+     * A configuration schema has many parameters, and a configuration schema
      * instance stores their concrete values in a struct provided in the `data`
-     * field. With this function it is possible to get a pointer to the values
+     * field. With this function, it is possible to get a pointer to the values
      * of this struct based on the ID of the configuration parameter.
-     * This way it is possible for the runtime_config module to make the
+     * This way, it is possible for the runtime_config module to make the
      * connection between the configuration schema meta-data and the actual
      * data in the schema instances.
      *
      * @param[in] parameter_id ID of the parameter that contains the value.
-     * @param[in] instance Pointer to the schema instance, that contains the parameter.
+     * @param[in] instance Pointer to the schema instance that contains the parameter.
      * @param[out] val Pointer to buffer containing the new value.
      * @param[out] val_len Pointer to length of the buffer to store the current value.
      */
@@ -503,26 +501,26 @@ runtime_config_error_t runtime_config_set(
 
 /**
  * @brief Applies every configuration parameter within the given configuration
- *        location (@p runtime_config_node_t) of the runtime configuration tree.
+ *        location (@ref runtime_config_node_t) of the runtime configuration tree.
  *
  * @param[in] node Optional location within the runtime configuration tree.
- *                 Applies all existing configurations on NULL.
+ *                 Applies all existing configurations if NULL.
  *
  * @return 0 on success, non-zero on failure.
  */
 runtime_config_error_t runtime_config_apply(const runtime_config_node_t *node);
 
 /**
- * @brief Callback definition of the @p runtime_config_traverse_config_tree
+ * @brief Callback definition of the `runtime_config_traverse_config_tree`
  *        function.
  *
  * This callback will be called for each location inside of the
  * configuration tree that is within the scope of the runtime configuration node
- * passed on to the @p runtime_config_traverse_config_tree function.
+ * passed on to the `runtime_config_traverse_config_tree` function.
  *
  * @param[in] node A location within the runtime configuration tree.
  * @param[in] context Context that is passed by the
- *                    @p runtime_config_traverse_config_tree function.
+ *                    `runtime_config_traverse_config_tree` function.
  *
  * @return 0 on success, non-zero on failure.
  */
@@ -531,28 +529,28 @@ typedef runtime_config_error_t (*runtime_config_tree_traversal_cb_t)(
     const void *context);
 
 /**
- * @brief In this mode the function traverses through every children of the
+ * @brief In this mode, the function traverses through every child of the
  *        given node including all sub-children when calling the
- *        @p runtime_config_traverse_config_tree function.
+ *        `runtime_config_traverse_config_tree` function.
  */
 #define RUNTIME_CONFIG_TRAVERSE_ALL                                0
 
 /**
- * @brief In this mode the function only traverses through the given node when
- *        calling the @p runtime_config_traverse_config_tree function.
+ * @brief In this mode, the function only traverses through the given node when
+ *        calling the `runtime_config_traverse_config_tree` function.
  */
 #define RUNTIME_CONFIG_TRAVERSE_SINGLE_NODE                        1
 
 /**
  * @brief This mode traverses through the tree until the given node plus n-1
  *        levels of children when calling the
- *        @p runtime_config_traverse_config_tree function.
+ *        `runtime_config_traverse_config_tree` function.
  */
-#define RUNTIME_CONFIG_TRAVERSE_TREE_WITH_N_LEVELS_OF_CHILDREN(_n) (_n + 1)
+#define RUNTIME_CONFIG_TRAVERSE_TREE_WITH_N_LEVELS_OF_CHILDREN(_n) (((_n) + 1))
 
 /**
  * @brief Iterates over every configuration parameter within the given
- *        configuration location (@p runtime_config_node_t) of the runtime
+ *        configuration location (@ref runtime_config_node_t) of the runtime
  *        configuration tree.
  *
  * @param[in] node A location within the runtime configuration tree.
